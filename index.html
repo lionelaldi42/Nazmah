@@ -897,7 +897,9 @@ function renderOrtu(s){
     </div>
     <div class="tabs">
       <button class="tab active" onclick="switchOrtuTab(this,'ot-k')">Kesehatan</button>
-      <button class="tab" onclick="switchOrtuTab(this,'ot-s')">Pembayaran SPP</button>
+      <button class="tab" onclick="switchOrtuTab(this,'ot-s')">SPP</button>
+      <button class="tab" onclick="switchOrtuTab(this,'ot-m')">Menu</button>
+      <button class="tab" onclick="switchOrtuTab(this,'ot-j')">Jadwal</button>
     </div>
     <div id="ot-k" class="tab-panel active">
       ${lastRm?`<div class="metrics">
@@ -926,14 +928,258 @@ function renderOrtu(s){
           <div class="pay-right">${p.status==='lunas'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadgeOrtu(p.status)}</div>
         </div>`).join('')}
       </div>
-    </div>`;
+    </div>
+    <div id="ot-m" class="tab-panel">${menuHariIniHtml()}</div>
+    <div id="ot-j" class="tab-panel">${jadwalHariIniHtml(s.kelas)}</div>`;
 }
 function switchOrtuTab(btn,id){
   btn.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  ['ot-k','ot-s'].forEach(x=>{const el=document.getElementById(x);if(el)el.classList.toggle('active',x===id);});
+  ['ot-k','ot-s','ot-m','ot-j'].forEach(x=>{const el=document.getElementById(x);if(el)el.classList.toggle('active',x===id);});
 }
-// ─ STARS ──────────────────────────────────────────────────────────────────
+
+// ─ MENU HARIAN ────────────────────────────────────────────────────────────
+const LAUK_UTAMA=[
+  {nama:'Ikan pindang',ikon:'🐟'},
+  {nama:'Lele goreng',ikon:'🐟'},
+  {nama:'Ayam kecap',ikon:'🍗'},
+  {nama:'Ikan pindang',ikon:'🐟'},
+  {nama:'Bandeng goreng',ikon:'🐟'},
+  {nama:'Ayam goreng',ikon:'🍗'},
+  {nama:'Lele goreng',ikon:'🐟'},
+  {nama:'Ayam suwir soto',ikon:'🍗'},
+  {nama:'Ikan pindang',ikon:'🐟'},
+  {nama:'Sarden goreng',ikon:'🐠'},
+  {nama:'Ayam kecap',ikon:'🍗'},
+  {nama:'Lele goreng',ikon:'🐟'},
+  {nama:'Bandeng goreng',ikon:'🐟'},
+  {nama:'Ayam goreng',ikon:'🍗'},
+];
+const SAYUR_PAGI=['Sayur asem','Sayur bening','Sop wortel','Cah kangkung','Lodeh','Sayur cambah tahu','Capjay','Sayur asem','Mie kecap kuning','Sop wortel'];
+const SAYUR_SORE=['Cah kangkung','Lodeh','Sayur bening','Sayur asem','Capjay','Sop wortel','Sayur cambah tahu','Terong balado','Sayur asem','Lodeh'];
+const SAYUR_IKON_P=['🍲','🥣','🥕','🥬','🍲','🫛','🥦','🍲','🍜','🥕'];
+const SAYUR_IKON_S=['🥬','🍲','🥣','🍲','🥦','🥕','🫛','🍆','🍲','🍲'];
+const SPECIAL_PAGI={1:{nama:'Fuyunghai',ikon:'🥚'},4:{nama:'Asparagus crab stick tahu',ikon:'🥦'}};
+
+function getDayIndex(){
+  const now=new Date();
+  const start=new Date(now.getFullYear(),0,0);
+  return Math.floor((now-start)/86400000);
+}
+
+function menuHariIniHtml(){
+  const now=new Date();
+  const dow=now.getDay();
+  const idx=getDayIndex();
+  const hariIni=now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'});
+
+  const lauk=LAUK_UTAMA[idx%LAUK_UTAMA.length];
+  const sayurPagiNama=SAYUR_PAGI[idx%SAYUR_PAGI.length];
+  const sayurPagiIkon=SAYUR_IKON_P[idx%SAYUR_IKON_P.length];
+  const sayurSoreNama=SAYUR_SORE[(idx+5)%SAYUR_SORE.length];
+  const sayurSoreIkon=SAYUR_IKON_S[(idx+5)%SAYUR_IKON_S.length];
+  const specialPagi=SPECIAL_PAGI[dow];
+  const adaKerupuk=[2,4,6].includes(dow);
+
+  function menuRow(ikon,nama){
+    return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:20px;width:32px;text-align:center;flex-shrink:0">${ikon}</div>
+      <div style="font-size:14px;font-weight:500;color:var(--text)">${nama}</div>
+    </div>`;
+  }
+
+  function mealCard(label,ikon,items){
+    return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow)">
+      <div style="padding:10px 1.25rem;background:var(--cream2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">${ikon}</span>
+        <span style="font-size:13px;font-weight:600;color:var(--text)">${label}</span>
+      </div>
+      <div style="padding:0 1.25rem">${items.map(i=>menuRow(i.ikon,i.nama)).join('')}</div>
+    </div>`;
+  }
+
+  const pagiItems=[
+    {ikon:'🍚',nama:'Nasi putih'},
+    ...(specialPagi?[{ikon:specialPagi.ikon,nama:specialPagi.nama}]:[{ikon:lauk.ikon,nama:lauk.nama}]),
+    {ikon:sayurPagiIkon,nama:sayurPagiNama},
+    ...(adaKerupuk?[{ikon:'🫓',nama:'Kerupuk'}]:[]),
+  ];
+
+  const soreItems=[
+    {ikon:'🍚',nama:'Nasi putih'},
+    {ikon:lauk.ikon,nama:lauk.nama},
+    {ikon:sayurSoreIkon,nama:sayurSoreNama},
+    ...(adaKerupuk?[{ikon:'🫓',nama:'Kerupuk'}]:[]),
+  ];
+
+  return`
+    <div style="background:linear-gradient(135deg,var(--g900),var(--g700));border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:12px">
+      <div style="font-size:28px">🍽️</div>
+      <div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.55);font-weight:500;text-transform:uppercase;letter-spacing:0.05em">Menu hari ini</div>
+        <div style="font-family:Fraunces,serif;font-size:17px;font-weight:600;color:#fff;margin-top:3px">${hariIni}</div>
+      </div>
+    </div>
+    ${mealCard('Makan pagi','🌅',pagiItems)}
+    ${mealCard('Makan sore','🌇',soreItems)}
+    <div style="background:var(--g50);border:1px solid var(--g300);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:600;color:var(--g700);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="ti ti-check" style="font-size:13px"></i>Selalu tersedia</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text)"><span>🥚</span> Telur</div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px">Alternatif bagi santri dengan alergi atau yang tidak menyukai lauk utama hari ini</div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px">Menu berputar otomatis setiap hari</div>`;
+}
+// ─ JADWAL NGAJI ───────────────────────────────────────────────────────────
+const BANDONGAN={
+  0:{kitab:'Bulughul Marom',jenis:'Bandongan'},
+  1:{kitab:'Fathul Qorib',jenis:'Bandongan'},
+  2:{kitab:'Bayan Fi Ulumil Quran',jenis:'Bandongan'},
+  3:{kitab:'Sorogan',jenis:'Sorogan'},
+  4:{kitab:'Nashoihul Ibad',jenis:'Bandongan'},
+  5:null,
+  6:{kitab:'Bulughul Marom',jenis:'Bandongan'},
+};
+
+const QURAN_MALAM={
+  6:{materi:'Qiro\'ah'},
+  0:{materi:'Tajwid & Ghorib'},
+  1:{materi:'Imla\''},
+  2:{materi:'Hafalan'},
+  3:{materi:'Tilawah Al-Quran'},
+  4:{materi:'Tilawah Al-Quran'},
+  5:{materi:'Tilawah Al-Quran'},
+};
+
+// Diniyah: {kelas_group: {hari: {kitab, ustadz, tempat}}}
+// Hari: 6=Sabtu, 0=Ahad, 1=Senin, 2=Selasa
+const DINIYAH={
+  '1SMP':{
+    6:{kitab:'Aqidatul Awam',ustadz:'Us. Syafik',tempat:'Depan Kantor'},
+    0:{kitab:'Shorof',ustadz:'Us. Putri',tempat:'Depan Kantor'},
+    1:{kitab:'Bahasa Arab',ustadz:'Us. Nafis',tempat:'Depan Kantor'},
+    2:{kitab:'Fiqih',ustadz:'Us. Nafis',tempat:'Depan Kantor'},
+  },
+  '2SMPA':{
+    6:{kitab:'Fiqih',ustadz:'Us. Syafi\'i',tempat:'DU 3'},
+    0:{kitab:'Shorof',ustadz:'Us. Nabila',tempat:'DU 3'},
+    1:{kitab:'Aqidatul Awam',ustadz:'Us. Sibli',tempat:'DU 3'},
+    2:{kitab:'Jurumiyah',ustadz:'Us. Tya',tempat:'DU 3'},
+  },
+  '2SMPB':{
+    6:{kitab:'Fiqih',ustadz:'Us. Syamsuri',tempat:'Depan Audit'},
+    0:{kitab:'Shorof',ustadz:'Us. Dina',tempat:'Depan Audit'},
+    1:{kitab:'Aqidatul Awam',ustadz:'Us. Nabila',tempat:'Depan Audit'},
+    2:{kitab:'Jurumiyah',ustadz:'Us. Salwa',tempat:'Depan Audit'},
+  },
+  '3SMP':{
+    6:{kitab:'Akhlaqul Banat',ustadz:'Us. Tya',tempat:'Audit'},
+    0:{kitab:'Akhlaqul Banat',ustadz:'Us. Salwa',tempat:'Audit'},
+    1:{kitab:'Akhlaqul Banat',ustadz:'Us. Alda',tempat:'Audit'},
+    2:{kitab:'Akhlaqul Banat',ustadz:'Us. Putri',tempat:'Audit'},
+  },
+  '1SMA':{
+    6:{kitab:'Shorof',ustadz:'Us. Sibli',tempat:'DU 3'},
+    0:{kitab:'Fiqih',ustadz:'Us. Syafi\'i',tempat:'DU 3'},
+    1:{kitab:'Tauhid',ustadz:'Us. Syafi\'i',tempat:'DU 3'},
+    2:{kitab:'Imrithi',ustadz:'Us. Alda',tempat:'DU 3'},
+  },
+  '2SMAA':{
+    6:{kitab:'Jawahirul Maknun',ustadz:'Us. Syarif',tempat:'DU 3'},
+    0:{kitab:'Ta\'lim Muta\'allim',ustadz:'Us. Sibli',tempat:'DU 3'},
+    1:{kitab:'Imrithi',ustadz:'Us. Agus',tempat:'DU 3'},
+    2:{kitab:'Shorof',ustadz:'Us. Syahudi',tempat:'DU 3'},
+  },
+  '2SMAB':{
+    6:{kitab:'Ta\'lim Muta\'allim',ustadz:'Us. Agus',tempat:'DU 3'},
+    0:{kitab:'Jawahirul Maknun',ustadz:'Us. Syarif',tempat:'DU 3'},
+    1:{kitab:'Shorof',ustadz:'Us. Syahudi',tempat:'DU 3'},
+    2:{kitab:'Imrithi',ustadz:'Us. Syarif',tempat:'DU 3'},
+  },
+};
+
+function getKelasGroup(kelas){
+  if(kelas.startsWith('VII')) return '1SMP';
+  if(kelas.startsWith('VIII A')||kelas==='VIII A') return '2SMPA';
+  if(kelas.startsWith('VIII B')||kelas==='VIII B') return '2SMPB';
+  if(kelas.startsWith('IX')) return '3SMP';
+  if(kelas.startsWith('X')) return '1SMA';
+  if(kelas==='XI A') return '2SMAA';
+  if(kelas==='XI B') return '2SMAB';
+  return null;
+}
+
+function jadwalHariIniHtml(kelas){
+  const now=new Date();
+  const dow=now.getDay();
+  const hariIni=now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'});
+  const hariNama=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][dow];
+
+  const bandongan=BANDONGAN[dow];
+  const kelasGroup=getKelasGroup(kelas);
+  const diniyah=kelasGroup&&DINIYAH[kelasGroup]?DINIYAH[kelasGroup][dow]:null;
+
+  function jadwalCard(icon,title,rows,color='var(--g50)',borderColor='var(--g300)'){
+    return`<div style="background:${color};border:1px solid ${borderColor};border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:18px">${icon}</span>
+        <span style="font-size:13px;font-weight:700;color:var(--g900)">${title}</span>
+      </div>
+      ${rows.map(r=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-top:1px solid ${borderColor}">
+        <div style="font-size:12px;color:var(--text2);font-weight:500">${r.label}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);text-align:right;max-width:60%">${r.value}</div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  let html=`
+    <div style="background:linear-gradient(135deg,var(--g900),var(--g700));border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:12px">
+      <div style="font-size:28px">📖</div>
+      <div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.55);font-weight:500;text-transform:uppercase;letter-spacing:0.05em">Jadwal ngaji hari ini</div>
+        <div style="font-family:Fraunces,serif;font-size:17px;font-weight:600;color:#fff;margin-top:3px">${hariIni}</div>
+      </div>
+    </div>`;
+
+  // Bandongan
+  if(dow===5){
+    html+=`<div style="background:var(--cream2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:center;margin-bottom:10px">
+      <div style="font-size:20px;margin-bottom:8px">🌙</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text)">Jumat — Libur Diniyah</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px">Ngaji Al-Quran tetap berlangsung setelah Maghrib</div>
+    </div>`;
+  } else {
+    if(bandongan){
+      html+=jadwalCard('🕌',bandongan.jenis+' — Ba\'da Subuh',[
+        {label:'Kitab',value:bandongan.kitab},
+        {label:'Waktu',value:"Ba'da Subuh"},
+      ]);
+    }
+    if(diniyah){
+      html+=jadwalCard('🎓','Diniyah — Ba\'da Ashar',[
+        {label:'Kitab',value:diniyah.kitab},
+        {label:'Ustadz/Ustadzah',value:diniyah.ustadz},
+        {label:'Tempat',value:diniyah.tempat},
+        {label:'Waktu',value:"Ba'da Ashar"},
+      ],'var(--gold-light)','#E8C870');
+    } else if(![0,1,2,6].includes(dow)){
+      html+=`<div style="background:var(--cream2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;text-align:center">
+        <div style="font-size:13px;color:var(--text2)">Tidak ada jadwal diniyah hari ini</div>
+      </div>`;
+    }
+  }
+
+  // Ngaji Quran — every night ba'da Isya
+  const quranMalam=QURAN_MALAM[dow];
+  html+=jadwalCard('✨','Ngaji Al-Quran — Ba\'da Isya',[
+    {label:'Materi',value:quranMalam.materi},
+    {label:'Waktu',value:"Ba'da Isya"},
+  ],'var(--blue-bg)','#BFDBFE');
+
+  html+=`<div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px">Jadwal tetap · Tahun Ajaran 2025/2026</div>`;
+  return html;
+}
 (function(){
   const c=document.getElementById('l-stars');
   if(!c)return;
