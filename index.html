@@ -491,11 +491,10 @@ function can(a){return CP&&CAN[CP.role]?.includes(a);}
 
 // ─ DB ─────────────────────────────────────────────────────────────────────
 function getDb(){
-  const r=localStorage.getItem('medika-db');
-  if(r)return JSON.parse(r);
-  const d=seed(); localStorage.setItem('medika-db',JSON.stringify(d)); return d;
+  try{const r=localStorage.getItem('medika-db');if(r){const p=JSON.parse(r);if(!p.log)p.log=[];return p;}}catch(e){}
+  const d=seed();localStorage.setItem('medika-db',JSON.stringify(d));return d;
 }
-function setDb(d){localStorage.setItem('medika-db',JSON.stringify(d));}
+function setDb(d){try{localStorage.setItem('medika-db',JSON.stringify(d));}catch(e){}}
 
 function seed(){
   const p=(b,s,day)=>({bulan:b,status:s,tglBayar:`${b}-${String(day).padStart(2,'0')}`,nominal:SPP,catatan:'Transfer BRI'});
@@ -600,6 +599,10 @@ function sBadge(s){
   if(s==='lunas')return'<span class="badge badge-green">Lunas</span>';
   if(s==='terlambat')return'<span class="badge badge-amber">Terlambat</span>';
   return'<span class="badge badge-red">Belum bayar</span>';
+}
+function sBadgeOrtu(s){
+  if(s==='lunas')return'<span class="badge badge-green">Dibayar</span>';
+  return'<span class="badge badge-red">Belum dibayar</span>';
 }
 function rBadge(role){
   const r=ROLES[role]||{label:role,bg:'var(--cream2)',text:'var(--text2)'};
@@ -913,14 +916,14 @@ function renderOrtu(s){
       <div style="background:linear-gradient(135deg,var(--g900),var(--g700));border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden">
         <div style="position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center">
           <div><div style="font-size:12px;color:rgba(255,255,255,0.6);font-weight:500;text-transform:uppercase;letter-spacing:0.04em">SPP bulan ini</div><div style="font-family:Fraunces,serif;font-size:18px;font-weight:600;color:#fff;margin-top:4px">${bl(cbb)}</div><div style="font-family:Fraunces,serif;font-size:24px;font-weight:700;color:var(--gold-mid);margin-top:4px">${rp(SPP)}</div></div>
-          <div>${sBadge(sppNow.status)}</div>
+          <div>${sBadgeOrtu(sppNow.status)}</div>
         </div>
       </div>
       <div class="section-label">Riwayat pembayaran</div>
       <div class="pay-list">
         ${[...(s.pembayaran||[])].reverse().map(p=>`<div class="pay-row">
           <div><div class="pay-month">${bl(p.bulan)}</div>${p.tglBayar?`<div class="pay-sub">Bayar ${fd(p.tglBayar)}</div>`:''}</div>
-          <div class="pay-right">${p.status!=='belum'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}</div>
+          <div class="pay-right">${p.status==='lunas'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadgeOrtu(p.status)}</div>
         </div>`).join('')}
       </div>
     </div>`;
