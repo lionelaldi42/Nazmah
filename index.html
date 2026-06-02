@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Nazmah — Muzamzamah An'amta</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
@@ -613,6 +614,45 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
   </div></div>
 </div>
 <script>
+// ─ SUPABASE ───────────────────────────────────────────────────────────────
+const _SB=window.supabase.createClient(
+  'https://potufeavjdjwnwfohoxm.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvdHVmZWF2amRqd253Zm9ob3htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MDAxODIsImV4cCI6MjA5NTk3NjE4Mn0.zZJQx2zzekAvdTpb4q79QsZ0z8UFfI09motJPiGXcBE'
+);
+const DB_KEY='nazmah-db-v3';
+
+async function syncToSupabase(d){
+  try{
+    await _SB.from('nazmah_data').upsert({id:'main',data:d,updated_at:new Date().toISOString()});
+  }catch(e){console.warn('Supabase sync failed:',e);}
+}
+
+async function initApp(){
+  // Show loading
+  const app=document.querySelector('.app');
+  if(app){app.style.opacity='0';app.style.transition='opacity 0.3s';}
+  try{
+    const{data,error}=await _SB.from('nazmah_data').select('data').eq('id','main').single();
+    if(data&&data.data){
+      const d=data.data;
+      if(!d.log)d.log=[];
+      localStorage.setItem(DB_KEY,JSON.stringify(d));
+    }
+  }catch(e){console.warn('Supabase load failed, using localStorage:',e);}
+  // Init stars and show app
+  const c=document.getElementById('l-stars');
+  if(c){
+    for(let i=0;i<60;i++){
+      const s=document.createElement('div');
+      s.className='star';
+      const size=Math.random()<0.3?2:Math.random()<0.6?1.5:1;
+      s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*85}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;--min-op:${0.05+Math.random()*0.1};--max-op:${0.3+Math.random()*0.5}`;
+      c.appendChild(s);
+    }
+  }
+  if(app){app.style.opacity='1';}
+}
+
 const SPP=750000;
 let CP=null; // current pengurus
 
@@ -627,10 +667,10 @@ function can(a){return CP&&CAN[CP.role]?.includes(a);}
 
 // ─ DB ─────────────────────────────────────────────────────────────────────
 function getDb(){
-  try{const r=localStorage.getItem('nazmah-db-v3');if(r){const p=JSON.parse(r);if(!p.log)p.log=[];return p;}}catch(e){}
-  const d=seed();localStorage.setItem('nazmah-db-v3',JSON.stringify(d));return d;
+  try{const r=localStorage.getItem(DB_KEY);if(r){const p=JSON.parse(r);if(!p.log)p.log=[];return p;}}catch(e){}
+  const d=seed();localStorage.setItem(DB_KEY,JSON.stringify(d));return d;
 }
-function setDb(d){try{localStorage.setItem('nazmah-db-v3',JSON.stringify(d));}catch(e){}}
+function setDb(d){try{localStorage.setItem(DB_KEY,JSON.stringify(d));}catch(e){}syncToSupabase(d);}
 
 function seed(){
   const p=(b,s,day)=>({bulan:b,status:s,tglBayar:`${b}-${String(day).padStart(2,'0')}`,nominal:SPP,catatan:'Transfer BRI'});
@@ -1720,17 +1760,8 @@ function jadwalHariIniHtml(kelas){
   html+=`<div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px">Jadwal tetap · Tahun Ajaran 2025/2026</div>`;
   return html;
 }
-(function(){
-  const c=document.getElementById('l-stars');
-  if(!c)return;
-  for(let i=0;i<60;i++){
-    const s=document.createElement('div');
-    s.className='star';
-    const size=Math.random()<0.3?2:Math.random()<0.6?1.5:1;
-    s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*85}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;--min-op:${0.05+Math.random()*0.1};--max-op:${0.3+Math.random()*0.5}`;
-    c.appendChild(s);
-  }
-})();
+// ─ INIT ───────────────────────────────────────────────────────────────────
+initApp();
 </script>
 </body>
 </html>
