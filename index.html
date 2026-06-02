@@ -18,6 +18,7 @@
   --red:#B83232;--red-bg:#FDF0EF;--red-text:#8C2020;
   --amber:#B86800;--amber-bg:#FEF3E2;--amber-text:#8F5000;
   --blue:#1E55B0;--blue-bg:#EEF3FC;--blue-text:#1840A0;
+  --purple:#7C3AED;--purple-bg:#F5F3FF;--purple-text:#5B21B6;
   --radius:14px;--radius-sm:8px;--radius-xs:5px;
   --shadow:0 1px 4px rgba(0,0,0,0.07),0 1px 2px rgba(0,0,0,0.05);
   --shadow-md:0 6px 20px rgba(0,0,0,0.08),0 2px 6px rgba(0,0,0,0.05);
@@ -60,7 +61,7 @@ h1,h2,.display{font-family:'Fraunces',serif}
 .l-subtitle{font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);line-height:1.6;max-width:260px;opacity:0;animation:fadeUp 0.8s ease 0.6s forwards}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 /* Bottom card */
-.landing-card{background:var(--cream);border-radius:28px 28px 0 0;width:100%;max-width:440px;padding:2rem 1.75rem 3rem;position:relative;z-index:3;box-shadow:0 -20px 60px rgba(0,0,0,0.4);animation:slideUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.8s both}
+.landing-card{background:var(--cream);border-radius:28px 28px 0 0;width:100%;max-width:440px;padding:2rem 1.75rem 4rem;position:relative;z-index:3;box-shadow:0 -20px 60px rgba(0,0,0,0.4);animation:slideUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.8s both}
 @keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
 .l-card-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto 1.5rem}
 .l-card-label{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
@@ -71,7 +72,7 @@ h1,h2,.display{font-family:'Fraunces',serif}
 .role-btn:hover::after{opacity:0.02}
 .role-btn:active{transform:translateY(0)}
 .role-btn-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
-.role-btn-title{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px}
+.role-btn-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:4px}
 .role-btn-desc{font-size:12px;color:var(--text2);line-height:1.4;font-weight:400}
 
 /* ── APP SHELL ────────────────────────────────────────────────────────── */
@@ -298,17 +299,14 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     <!-- Bottom card -->
     <div class="landing-card">
       <div class="l-card-handle"></div>
-      <div class="l-card-label">Masuk sebagai</div>
       <div class="role-grid">
         <button class="role-btn" onclick="goTo('screen-pengurus-login')">
-          <div class="role-btn-icon" style="background:var(--g50)"><i class="ti ti-shield-check" style="color:var(--g700)"></i></div>
+          <div style="font-size:36px;margin-bottom:14px">🛡️</div>
           <div class="role-btn-title">Pengurus</div>
-          <div class="role-btn-desc">Admin, bendahara & kader kesehatan</div>
         </button>
         <button class="role-btn" onclick="goTo('screen-ortu-login')">
-          <div class="role-btn-icon" style="background:var(--gold-light)"><i class="ti ti-users" style="color:var(--gold)"></i></div>
+          <div style="font-size:36px;margin-bottom:14px">🏠</div>
           <div class="role-btn-title">Orang tua</div>
-          <div class="role-btn-desc">Pantau kesehatan & pembayaran anak</div>
         </button>
       </div>
     </div>
@@ -384,31 +382,139 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
   <div class="inner" id="audit-content"></div>
 </div>
 
-<!-- ═══ ORTU LOGIN ═════════════════════════════════════════════════════════ -->
+<!-- ═══ TITIPAN DASHBOARD ══════════════════════════════════════════════════ -->
+<div id="screen-titipan" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-pengurus')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title">Titipan Uang Saku</div>
+  </div>
+  <div class="inner" id="titipan-content"></div>
+</div>
+
+<!-- ═══ DETAIL TITIPAN SANTRI ══════════════════════════════════════════════ -->
+<div id="screen-titipan-detail" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-titipan')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title" id="titipan-detail-name"></div>
+  </div>
+  <div class="inner" id="titipan-detail-content"></div>
+</div>
+<!-- ═══ KELOLA KAMAR ════════════════════════════════════════════════════════ -->
+<div id="screen-kelola-kamar" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-pengurus')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title">Kelola Kamar</div>
+  </div>
+  <div class="inner" id="kelola-kamar-content"></div>
+</div>
 <div id="screen-ortu-login" class="screen">
   <div class="login-screen">
     <div class="login-icon"><i class="ti ti-key" style="font-size:28px;color:#B8C9A0"></i></div>
     <div class="login-title">Nazmah</div>
-    <div class="login-sub">Masukkan kode santri yang tertera di kartu</div>
-    <div class="pin-wrap">
-      <input type="number" id="p1" oninput="pm(this,'p2')" onkeydown="pb(event,this,'')"/>
-      <input type="number" id="p2" oninput="pm(this,'p3')" onkeydown="pb(event,this,'p1')"/>
-      <input type="number" id="p3" oninput="pm(this,'p4')" onkeydown="pb(event,this,'p2')"/>
-      <input type="number" id="p4" oninput="pm(this,'p5')" onkeydown="pb(event,this,'p3')"/>
-      <input type="number" id="p5" oninput="pm(this,'p6')" onkeydown="pb(event,this,'p4')"/>
-      <input type="number" id="p6" oninput="pm(this,null)" onkeydown="pb(event,this,'p5')"/>
+    <div class="login-sub" id="ortu-login-sub">Masukkan kode santri yang tertera di kartu</div>
+
+    <!-- Step 1: Kode santri -->
+    <div id="ortu-step1">
+      <div class="pin-wrap">
+        <input type="text" inputmode="numeric" maxlength="1" id="p1" oninput="pm(this,'p2')" onkeydown="pb(event,this,'')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p2" oninput="pm(this,'p3')" onkeydown="pb(event,this,'p1')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p3" oninput="pm(this,'p4')" onkeydown="pb(event,this,'p2')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p4" oninput="pm(this,'p5')" onkeydown="pb(event,this,'p3')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p5" oninput="pm(this,'p6')" onkeydown="pb(event,this,'p4')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p6" oninput="pm(this,null)" onkeydown="pb(event,this,'p5')"/>
+      </div>
+      <p id="pin-err" style="font-size:13px;color:var(--red);text-align:center;min-height:20px;margin-bottom:12px"></p>
+      <button class="btn btn-primary" style="max-width:240px;margin:0 auto" onclick="ortuStep1()">Lanjut</button>
     </div>
-    <p id="pin-err" style="font-size:13px;color:var(--red);text-align:center;min-height:20px;margin-bottom:12px"></p>
-    <button class="btn btn-primary" style="max-width:240px;margin:0 auto" onclick="loginOrtu()">Lihat data anak</button>
+
+    <!-- Step 2: PIN -->
+    <div id="ortu-step2" style="display:none">
+      <div id="ortu-step2-nama" style="font-family:Fraunces,serif;font-size:18px;font-weight:700;color:var(--g900);margin-bottom:6px;text-align:center"></div>
+      <div class="pin-wrap">
+        <input type="text" inputmode="numeric" maxlength="1" id="pp1" oninput="pm(this,'pp2')" onkeydown="pb(event,this,'')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="pp2" oninput="pm(this,'pp3')" onkeydown="pb(event,this,'pp1')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="pp3" oninput="pm(this,'pp4')" onkeydown="pb(event,this,'pp2')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="pp4" oninput="pm(this,null)" onkeydown="pb(event,this,'pp3')"/>
+      </div>
+      <p id="pin-err2" style="font-size:13px;color:var(--red);text-align:center;min-height:20px;margin-bottom:12px"></p>
+      <button class="btn btn-primary" style="max-width:240px;margin:0 auto" onclick="ortuStep2()">Masuk</button>
+      <div style="margin-top:10px;text-align:center;display:flex;gap:8px;justify-content:center">
+        <button class="btn btn-ghost" onclick="resetOrtuLogin()" style="font-size:13px">Ganti kode</button>
+        <button class="btn btn-ghost" onclick="showLupaPin()" style="font-size:13px;color:var(--amber-text)">Lupa PIN</button>
+      </div>
+    </div>
+
     <div style="margin-top:10px;text-align:center"><button class="btn btn-ghost" onclick="goTo('screen-landing')">Kembali</button></div>
   </div>
 </div>
+
+<!-- Modal lupa PIN -->
+<div id="m-lupa-pin" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Lupa PIN</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.5;background:var(--amber-bg);border-radius:var(--radius-sm);padding:10px 12px;">
+      <i class="ti ti-info-circle" style="font-size:14px;color:var(--amber-text);margin-right:4px"></i>
+      Masukkan nomor HP orang tua yang terdaftar untuk reset PIN.
+    </div>
+    <div class="form-group"><label class="form-label">No. HP terdaftar</label>
+      <input type="tel" id="lupa-pin-hp" placeholder="08xxxxxxxxxx"/>
+    </div>
+    <div class="err-msg" id="lupa-pin-err"></div>
+    <div style="margin-top:4px;font-size:12px;color:var(--text3);margin-bottom:12px">
+      Setelah verifikasi, Anda dapat membuat PIN baru. Setelah Supabase aktif, verifikasi akan dikirim via WhatsApp.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-lupa-pin')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="verifikasiHpLupaPin()">Verifikasi</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- Modal set PIN baru -->
+<div id="m-set-pin" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Buat PIN</div>
+    <div id="set-pin-desc" style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.5"></div>
+    <div class="form-group"><label class="form-label">PIN baru (4 digit)</label>
+      <input type="password" inputmode="numeric" maxlength="4" id="new-pin1" placeholder="••••"/>
+    </div>
+    <div class="form-group"><label class="form-label">Konfirmasi PIN</label>
+      <input type="password" inputmode="numeric" maxlength="4" id="new-pin2" placeholder="••••"/>
+    </div>
+    <div class="err-msg" id="set-pin-err"></div>
+    <button class="btn btn-primary" onclick="saveNewPin()">Simpan PIN</button>
+  </div></div>
+</div>
+
+<!-- Modal ganti PIN -->
+<div id="m-ganti-pin" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Ganti PIN</div>
+    <div class="form-group"><label class="form-label">PIN lama</label>
+      <input type="password" inputmode="numeric" maxlength="4" id="ganti-pin-lama" placeholder="••••"/>
+    </div>
+    <div class="form-group"><label class="form-label">PIN baru</label>
+      <input type="password" inputmode="numeric" maxlength="4" id="ganti-pin-baru" placeholder="••••"/>
+    </div>
+    <div class="form-group"><label class="form-label">Konfirmasi PIN baru</label>
+      <input type="password" inputmode="numeric" maxlength="4" id="ganti-pin-konfirm" placeholder="••••"/>
+    </div>
+    <div class="err-msg" id="ganti-pin-err"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-ganti-pin')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveGantiPin()">Simpan</button>
+    </div>
+  </div></div>
+</div>
+
+<div id="screen-ortu-dashboard-real" style="display:none"><!-- placeholder --></div>
 
 <!-- ═══ ORTU DASHBOARD ═════════════════════════════════════════════════════ -->
 <div id="screen-ortu-dashboard" class="screen">
   <div class="app-bar">
     <button class="btn-back" onclick="goTo('screen-ortu-login')"><i class="ti ti-arrow-left"></i> Kembali</button>
     <div class="app-bar-title" id="ortu-nav-name"></div>
+    <button class="btn-logout" onclick="showGantiPin()" style="font-size:12px"><i class="ti ti-lock" style="font-size:13px"></i> PIN</button>
   </div>
   <div class="inner" id="ortu-content"></div>
 </div>
@@ -427,6 +533,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
       <div class="form-group"><label class="form-label">Kamar</label><input type="text" id="ns-kamar" placeholder="Kamar 7"/></div>
     </div>
     <div class="form-group"><label class="form-label">Tanggal lahir</label><input type="date" id="ns-tgl"/></div>
+    <div class="form-group"><label class="form-label">No. HP orang tua</label><input type="tel" id="ns-hp" placeholder="08xxxxxxxxxx"/></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="cm('m-add-santri')">Batal</button>
       <button class="btn btn-primary" style="margin-top:0" onclick="saveSantri()">Simpan</button>
@@ -477,6 +584,34 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
   </div></div>
 </div>
 
+<div id="m-titipan-masuk" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Catat titipan masuk</div>
+    <div id="tm-santri-info" style="font-size:14px;color:var(--text2);margin-bottom:1rem;padding:10px 14px;background:var(--surface2);border-radius:var(--radius-sm);font-weight:500"></div>
+    <div class="form-group"><label class="form-label">Tanggal diterima</label><input type="date" id="tm-tgl"/></div>
+    <div class="form-group"><label class="form-label">Nominal (Rp)</label><input type="number" id="tm-nominal" placeholder="50000"/></div>
+    <div class="form-group"><label class="form-label">Keterangan</label><input type="text" id="tm-ket" placeholder="Uang saku bulan ini, dll"/></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-titipan-masuk')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveTitipanMasuk()">Simpan</button>
+    </div>
+  </div></div>
+</div>
+
+<div id="m-titipan-keluar" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Catat pengeluaran</div>
+    <div id="tk-santri-info" style="font-size:14px;color:var(--text2);margin-bottom:1rem;padding:10px 14px;background:var(--surface2);border-radius:var(--radius-sm);font-weight:500"></div>
+    <div id="tk-saldo-info" style="font-size:13px;color:var(--g700);margin-bottom:1rem;font-weight:600"></div>
+    <div class="form-group"><label class="form-label">Tanggal diambil</label><input type="date" id="tk-tgl"/></div>
+    <div class="form-group"><label class="form-label">Nominal (Rp)</label><input type="number" id="tk-nominal" placeholder="20000"/></div>
+    <div class="form-group"><label class="form-label">Keterangan</label><input type="text" id="tk-ket" placeholder="Uang jajan, keperluan, dll"/></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-titipan-keluar')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveTitipanKeluar()">Simpan</button>
+    </div>
+  </div></div>
+</div>
 <script>
 const SPP=750000;
 let CP=null; // current pengurus
@@ -485,43 +620,71 @@ const ROLES={
   admin:{label:'Admin',bg:'var(--red-bg)',text:'var(--red-text)',icon:'ti-crown',menuBg:'var(--red-bg)'},
   bendahara:{label:'Bendahara',bg:'var(--amber-bg)',text:'var(--amber-text)',icon:'ti-credit-card',menuBg:'var(--amber-bg)'},
   kader:{label:'Kader Kesehatan',bg:'var(--g100)',text:'var(--g700)',icon:'ti-heart-rate-monitor',menuBg:'var(--g50)'},
+  ustadzah:{label:'Ustadzah',bg:'var(--purple-bg)',text:'var(--purple-text)',icon:'ti-wallet',menuBg:'var(--purple-bg)'},
 };
-const CAN={admin:['santri','kesehatan','spp','audit','addSantri'],bendahara:['spp'],kader:['santri','kesehatan']};
+const CAN={admin:['santri','kesehatan','spp','audit','addSantri','titipan','kelolaKamar'],bendahara:['spp'],kader:['santri','kesehatan'],ustadzah:['santri','titipan']};
 function can(a){return CP&&CAN[CP.role]?.includes(a);}
 
 // ─ DB ─────────────────────────────────────────────────────────────────────
 function getDb(){
-  try{const r=localStorage.getItem('medika-db');if(r){const p=JSON.parse(r);if(!p.log)p.log=[];return p;}}catch(e){}
-  const d=seed();localStorage.setItem('medika-db',JSON.stringify(d));return d;
+  try{const r=localStorage.getItem('nazmah-db-v3');if(r){const p=JSON.parse(r);if(!p.log)p.log=[];return p;}}catch(e){}
+  const d=seed();localStorage.setItem('nazmah-db-v3',JSON.stringify(d));return d;
 }
-function setDb(d){try{localStorage.setItem('medika-db',JSON.stringify(d));}catch(e){}}
+function setDb(d){try{localStorage.setItem('nazmah-db-v3',JSON.stringify(d));}catch(e){}}
 
 function seed(){
   const p=(b,s,day)=>({bulan:b,status:s,tglBayar:`${b}-${String(day).padStart(2,'0')}`,nominal:SPP,catatan:'Transfer BRI'});
+  const bayar=(status)=>{
+    const days=[3,5,7,8,9,10,12,15,18,20];
+    return['2026-01','2026-02','2026-03','2026-04','2026-05'].map((b,i)=>{
+      if(status==='lunas-semua')return p(b,'lunas',days[i%days.length]);
+      if(status==='ada-telat'&&i===2)return p(b,'terlambat',20);
+      if(status==='ada-telat')return i<4?p(b,'lunas',days[i]):({bulan:b,status:'belum'});
+      return i<3?p(b,'lunas',days[i]):({bulan:b,status:'belum'});
+    });
+  };
+  const santri=[
+    // Kamar 1
+    {id:'100001',nama:'Ahmad Fauzi',hp:'081234567890',kelas:'X A',kamar:'Kamar 1',tgl:'2008-04-12',rekam:[{tgl:'2026-05-20',keluhan:'Demam dan batuk',diagnosa:'ISPA ringan',td:'118/72',suhu:'38.2',gula:'88',hb:'13.2',bb:'52',tb:'162',obat:'Paracetamol 3x1',status:'sehat',by:'Rafi (Kader)',ts:'2026-05-20T10:00:00'},{tgl:'2026-03-05',keluhan:'Lemas',diagnosa:'Anemia ringan',td:'108/68',suhu:'36.9',gula:'85',hb:'11.4',bb:'50',tb:'162',obat:'Tablet Fe',status:'sakit-ringan',by:'Dina (Kader)',ts:'2026-03-05T09:30:00'}],pembayaran:bayar('ada-telat'),titipan:[{id:1,tipe:'masuk',tgl:'2026-05-01',nominal:150000,ket:'Uang saku bulan Mei',by:'Ust. Sinta',ts:'2026-05-01T08:00:00'},{id:2,tipe:'keluar',tgl:'2026-05-03',nominal:30000,ket:'Jajan',by:'Ust. Sinta',ts:'2026-05-03T10:00:00'}]},
+    {id:'100002',nama:'Bilal Maulana',kelas:'X A',kamar:'Kamar 1',tgl:'2008-07-20',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    {id:'100003',nama:'Chairul Anwar',kelas:'X B',kamar:'Kamar 1',tgl:'2008-11-03',rekam:[],pembayaran:bayar('belum'),titipan:[{id:3,tipe:'masuk',tgl:'2026-04-15',nominal:200000,ket:'Uang saku',by:'Ust. Sinta',ts:'2026-04-15T09:00:00'}]},
+    {id:'100004',nama:'Daffa Rizqullah',kelas:'XI A',kamar:'Kamar 1',tgl:'2007-09-14',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    {id:'100005',nama:'Evan Habibi',kelas:'IX A',kamar:'Kamar 1',tgl:'2009-02-28',rekam:[{tgl:'2026-04-10',keluhan:'Pusing kepala',diagnosa:'Tension headache',td:'115/75',suhu:'36.8',gula:'90',hb:'13.5',bb:'55',tb:'165',obat:'Paracetamol',status:'sehat',by:'Rafi (Kader)',ts:'2026-04-10T09:00:00'}],pembayaran:bayar('ada-telat'),titipan:[]},
+    // Kamar 2
+    {id:'100006',nama:'Farhan Dzikri',kelas:'VIII A',kamar:'Kamar 2',tgl:'2010-05-11',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:4,tipe:'masuk',tgl:'2026-05-01',nominal:100000,ket:'Uang saku',by:'Ust. Sinta',ts:'2026-05-01T08:30:00'},{id:5,tipe:'keluar',tgl:'2026-05-10',nominal:25000,ket:'Beli alat tulis',by:'Ust. Sinta',ts:'2026-05-10T10:00:00'}]},
+    {id:'100007',nama:'Ghazi Pratama',kelas:'VIII A',kamar:'Kamar 2',tgl:'2010-08-17',rekam:[],pembayaran:bayar('belum'),titipan:[]},
+    {id:'100008',nama:'Hafidz Rahman',kelas:'VIII B',kamar:'Kamar 2',tgl:'2010-12-25',rekam:[{tgl:'2026-05-15',keluhan:'Sakit perut',diagnosa:'Gastritis',td:'100/65',suhu:'37.2',gula:'85',hb:'12.5',bb:'40',tb:'150',obat:'Antasida',status:'sakit-ringan',by:'Dina (Kader)',ts:'2026-05-15T14:00:00'}],pembayaran:bayar('ada-telat'),titipan:[]},
+    {id:'100009',nama:'Ilham Syauqi',kelas:'VII A',kamar:'Kamar 2',tgl:'2011-03-09',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:6,tipe:'masuk',tgl:'2026-05-01',nominal:75000,ket:'Uang jajan',by:'Ust. Sinta',ts:'2026-05-01T09:00:00'}]},
+    {id:'100010',nama:'Jihad Akbar',kelas:'VII A',kamar:'Kamar 2',tgl:'2011-06-30',rekam:[],pembayaran:bayar('belum'),titipan:[]},
+    // Kamar 3
+    {id:'100011',nama:'Khalid Muzakki',kelas:'XII A',kamar:'Kamar 3',tgl:'2007-01-15',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    {id:'100012',nama:'Luthfi Hakim',kelas:'XII A',kamar:'Kamar 3',tgl:'2007-04-22',rekam:[],pembayaran:bayar('ada-telat'),titipan:[{id:7,tipe:'masuk',tgl:'2026-05-01',nominal:200000,ket:'Uang saku bulan Mei',by:'Ust. Sinta',ts:'2026-05-01T08:00:00'},{id:8,tipe:'keluar',tgl:'2026-05-05',nominal:50000,ket:'Keperluan sekolah',by:'Ust. Sinta',ts:'2026-05-05T10:00:00'},{id:9,tipe:'keluar',tgl:'2026-05-12',nominal:30000,ket:'Jajan',by:'Ust. Sinta',ts:'2026-05-12T11:00:00'}]},
+    {id:'100013',nama:'Mufid Hasan',kelas:'XII B',kamar:'Kamar 3',tgl:'2007-09-08',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    {id:'100014',nama:'Nabil Azzam',kelas:'XI B',kamar:'Kamar 3',tgl:'2007-12-01',rekam:[],pembayaran:bayar('belum'),titipan:[]},
+    {id:'100015',nama:'Omar Faruq',kelas:'XI A',kamar:'Kamar 3',tgl:'2007-06-18',rekam:[{tgl:'2026-05-22',keluhan:'Batuk pilek',diagnosa:'Common cold',td:'110/70',suhu:'37.5',gula:'88',hb:'13.8',bb:'60',tb:'170',obat:'CTM, Vit C',status:'sehat',by:'Rafi (Kader)',ts:'2026-05-22T11:00:00'}],pembayaran:bayar('lunas-semua'),titipan:[]},
+    // Kamar 4
+    {id:'100016',nama:'Putri Rahmawati',hp:'082345678901',kelas:'IX B',kamar:'Kamar 4',tgl:'2009-07-15',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:10,tipe:'masuk',tgl:'2026-05-01',nominal:120000,ket:'Uang saku',by:'Ust. Sinta',ts:'2026-05-01T08:00:00'}]},
+    {id:'100017',nama:'Qonita Azizah',kelas:'IX A',kamar:'Kamar 4',tgl:'2009-10-03',rekam:[],pembayaran:bayar('ada-telat'),titipan:[]},
+    {id:'100018',nama:'Rania Salsabila',kelas:'VIII B',kamar:'Kamar 4',tgl:'2010-02-14',rekam:[{tgl:'2026-05-25',keluhan:'Nyeri perut',diagnosa:'Dispepsia',td:'105/65',suhu:'37.1',gula:'82',hb:'11.8',bb:'42',tb:'152',obat:'Antasida',status:'sakit-ringan',by:'Dina (Kader)',ts:'2026-05-25T14:00:00'}],pembayaran:bayar('lunas-semua'),titipan:[]},
+    {id:'100019',nama:'Safira Nuraini',kelas:'VIII A',kamar:'Kamar 4',tgl:'2010-05-20',rekam:[],pembayaran:bayar('belum'),titipan:[{id:11,tipe:'masuk',tgl:'2026-04-01',nominal:150000,ket:'Uang saku April',by:'Ust. Sinta',ts:'2026-04-01T09:00:00'},{id:12,tipe:'keluar',tgl:'2026-04-10',nominal:50000,ket:'Beli buku',by:'Ust. Sinta',ts:'2026-04-10T10:00:00'},{id:13,tipe:'keluar',tgl:'2026-04-20',nominal:30000,ket:'Jajan',by:'Ust. Sinta',ts:'2026-04-20T14:00:00'}]},
+    {id:'100020',nama:'Tasya Kamila',kelas:'VII B',kamar:'Kamar 4',tgl:'2011-08-11',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    // Kamar 5
+    {id:'100021',nama:'Umar Sidiq',kelas:'XI B',kamar:'Kamar 5',tgl:'2007-11-25',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    {id:'100022',nama:'Vino Ramadhan',kelas:'XI A',kamar:'Kamar 5',tgl:'2008-01-09',rekam:[],pembayaran:bayar('ada-telat'),titipan:[{id:14,tipe:'masuk',tgl:'2026-05-01',nominal:180000,ket:'Uang saku bulan Mei',by:'Ust. Sinta',ts:'2026-05-01T08:00:00'},{id:15,tipe:'keluar',tgl:'2026-05-08',nominal:40000,ket:'Keperluan',by:'Ust. Sinta',ts:'2026-05-08T10:00:00'}]},
+    {id:'100023',nama:'Wahyu Nugroho',kelas:'X B',kamar:'Kamar 5',tgl:'2008-06-14',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    {id:'100024',nama:'Xander Putra',kelas:'X A',kamar:'Kamar 5',tgl:'2008-09-30',rekam:[{tgl:'2026-05-18',keluhan:'Lemas kurang darah',diagnosa:'Anemia ringan',td:'105/68',suhu:'36.7',gula:'82',hb:'10.8',bb:'48',tb:'160',obat:'Tablet Fe, Vit C',status:'sakit-ringan',by:'Rafi (Kader)',ts:'2026-05-18T10:00:00'}],pembayaran:bayar('belum'),titipan:[]},
+    {id:'100025',nama:'Yusuf Maulana',kelas:'IX B',kamar:'Kamar 5',tgl:'2009-04-07',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+  ];
   return{
     pengurus:[
       {id:'p1',nama:'Admin Utama',username:'admin',password:'pesantren123',role:'admin'},
       {id:'p2',nama:'Ust. Hasan',username:'hasan',password:'hasan123',role:'bendahara'},
       {id:'p3',nama:'Rafi (Kader)',username:'rafi',password:'rafi123',role:'kader'},
       {id:'p4',nama:'Dina (Kader)',username:'dina',password:'dina123',role:'kader'},
+      {id:'p5',nama:'Ust. Sinta',username:'sinta',password:'sinta123',role:'ustadzah'},
     ],
-    santri:[
-      {id:'123456',nama:'Ahmad Fauzi',kelas:'X A',kamar:'Kamar 3',tgl:'2008-04-12',
-       rekam:[
-         {tgl:'2026-05-20',keluhan:'Demam dan batuk',diagnosa:'ISPA ringan',td:'118/72',suhu:'38.2',gula:'88',hb:'13.2',bb:'52',tb:'162',obat:'Paracetamol 3x1',status:'sehat',by:'Rafi (Kader)',ts:'2026-05-20T10:00:00'},
-         {tgl:'2026-03-05',keluhan:'Lemas',diagnosa:'Anemia ringan',td:'108/68',suhu:'36.9',gula:'85',hb:'11.4',bb:'50',tb:'162',obat:'Tablet Fe',status:'sakit-ringan',by:'Dina (Kader)',ts:'2026-03-05T09:30:00'},
-       ],
-       pembayaran:[p('2026-01','lunas',5),p('2026-02','lunas',7),p('2026-03','terlambat',20),p('2026-04','lunas',8),{bulan:'2026-05',status:'belum'}]},
-      {id:'234567',nama:'Nurul Hidayah',kelas:'VIII B',kamar:'Kamar 7',tgl:'2010-09-03',
-       rekam:[{tgl:'2026-05-25',keluhan:'Nyeri perut',diagnosa:'Dispepsia',td:'105/65',suhu:'37.1',gula:'82',hb:'11.8',bb:'42',tb:'152',obat:'Antasida',status:'sakit-ringan',by:'Rafi (Kader)',ts:'2026-05-25T14:00:00'}],
-       pembayaran:[p('2026-01','lunas',3),p('2026-02','lunas',5),p('2026-03','lunas',4),p('2026-04','lunas',6),{bulan:'2026-05',status:'belum'}]},
-      {id:'345678',nama:'Muhammad Rizki',kelas:'XII A',kamar:'Kamar 1',tgl:'2007-01-22',
-       rekam:[],
-       pembayaran:[p('2026-01','terlambat',15),{bulan:'2026-02',status:'belum'},{bulan:'2026-03',status:'belum'},p('2026-04','terlambat',25),{bulan:'2026-05',status:'belum'}]},
-      {id:'456789',nama:'Siti Aisyah',kelas:'IX B',kamar:'Kamar 9',tgl:'2009-07-15',
-       rekam:[],
-       pembayaran:[p('2026-01','lunas',4),p('2026-02','lunas',3),p('2026-03','lunas',5),p('2026-04','lunas',4),p('2026-05','lunas',2)]},
-    ],
+    santri,
+    kamarAssign:{'p5':['Kamar 1','Kamar 2']},
     log:[],sppBulan:null,sppSantriId:null,activeId:null,
   };
 }
@@ -562,7 +725,9 @@ function renderPMenu(){
   let h='<div class="menu-grid">';
   if(can('santri')||can('kesehatan'))h+=`<div class="menu-card" onclick="goTo('screen-santri-list')"><div class="menu-card-icon" style="background:var(--g50)"><i class="ti ti-users" style="font-size:20px;color:var(--g700)"></i></div><div class="menu-card-title">${can('kesehatan')?'Santri & Kesehatan':'Data Santri'}</div></div>`;
   if(can('spp'))h+=`<div class="menu-card" onclick="goTo('screen-spp-dashboard')"><div class="menu-card-icon" style="background:var(--gold-light)"><i class="ti ti-credit-card" style="font-size:20px;color:var(--gold)"></i></div><div class="menu-card-title">Dashboard SPP</div></div>`;
+  if(can('titipan'))h+=`<div class="menu-card" onclick="goTo('screen-titipan')"><div class="menu-card-icon" style="background:var(--purple-bg)"><i class="ti ti-wallet" style="font-size:20px;color:var(--purple-text)"></i></div><div class="menu-card-title">Titipan Uang Saku</div></div>`;
   h+='</div>';
+  if(can('kelolaKamar'))h+=`<div class="menu-card menu-card-wide" onclick="goTo('screen-kelola-kamar')" style="margin-bottom:10px"><div class="menu-card-icon" style="background:var(--purple-bg);flex-shrink:0"><i class="ti ti-door" style="font-size:20px;color:var(--purple-text)"></i></div><div><div class="menu-card-title" style="text-align:left">Kelola Kamar</div><div style="font-size:12px;color:var(--text2);margin-top:3px">Assign kamar ke ustadzah</div></div></div>`;
   if(can('audit'))h+=`<div class="menu-card menu-card-wide" onclick="goTo('screen-audit-log')" style="margin-bottom:0"><div class="menu-card-icon" style="background:var(--red-bg);flex-shrink:0"><i class="ti ti-history" style="font-size:20px;color:var(--red-text)"></i></div><div><div class="menu-card-title" style="text-align:left">Log aktivitas</div><div style="font-size:12px;color:var(--text2);margin-top:3px">Riwayat semua tindakan pengurus</div></div></div>`;
   document.getElementById('p-menu').innerHTML=h;
 }
@@ -576,6 +741,9 @@ function goTo(id){
   dc();
   if(id==='screen-santri-list')renderSantriList('');
   if(id==='screen-spp-dashboard')renderSpp();
+  if(id==='screen-titipan')renderTitipan();
+  if(id==='screen-kelola-kamar')renderKelolaKamar();
+  if(id==='screen-ortu-login')resetOrtuLogin();
   if(id==='screen-audit-log'){can('audit')?renderAudit():document.getElementById('audit-content').innerHTML=noAccess();}
 }
 function noAccess(){return`<div class="no-access"><div class="no-access-icon"><i class="ti ti-lock"></i></div><div class="no-access-title">Akses terbatas</div><div class="no-access-sub">Fitur ini hanya tersedia untuk Admin.</div></div>`;}
@@ -609,13 +777,14 @@ function rBadge(role){
   return`<span class="badge" style="background:${r.bg};color:${r.text}">${r.label}</span>`;
 }
 function cm(id){document.getElementById(id).style.display='none';}
-function pm(el,nid){el.value=el.value.slice(-1);if(el.value&&nid)document.getElementById(nid).focus();}
+function pm(el,nid){el.value=el.value.replace(/[^0-9]/g,'').slice(-1);if(el.value&&nid)document.getElementById(nid).focus();}
 function pb(e,el,pid){if(e.key==='Backspace'&&!el.value&&pid)document.getElementById(pid).focus();}
 
 // ─ SANTRI LIST ────────────────────────────────────────────────────────────
 function renderSantriList(q){
   const db=getDb(); const cbb=cb();
-  const f=db.santri.filter(s=>s.nama.toLowerCase().includes((q||'').toLowerCase()));
+  const all=getSantriForRole();
+  const f=all.filter(s=>s.nama.toLowerCase().includes((q||'').toLowerCase()));
   const el=document.getElementById('santri-list');
   if(!f.length){el.innerHTML=`<div class="empty"><div class="empty-icon"><i class="ti ti-user-off"></i></div><div class="empty-text">Belum ada data santri</div></div>`;return;}
   el.innerHTML=f.map(s=>{
@@ -723,7 +892,7 @@ function switchTab(btn,id){
 
 // ─ ADD SANTRI ─────────────────────────────────────────────────────────────
 function showAddSantriModal(){
-  ['ns-nama','ns-kamar'].forEach(id=>document.getElementById(id).value='');
+  ['ns-nama','ns-kamar','ns-hp'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('ns-tgl').value='';
   document.getElementById('m-add-santri').style.display='flex';
 }
@@ -732,7 +901,7 @@ function saveSantri(){
   if(!nama){alert('Nama wajib diisi');return;}
   const id=String(Math.floor(100000+Math.random()*900000));
   const db=getDb();
-  db.santri.push({id,nama,kelas:document.getElementById('ns-kelas').value,kamar:document.getElementById('ns-kamar').value,tgl:document.getElementById('ns-tgl').value,rekam:[],pembayaran:[]});
+  db.santri.push({id,nama,kelas:document.getElementById('ns-kelas').value,kamar:document.getElementById('ns-kamar').value,tgl:document.getElementById('ns-tgl').value,hp:document.getElementById('ns-hp').value,rekam:[],pembayaran:[]});
   setDb(db);
   log('Tambah santri',`${nama} (kode: ${id})`,'ti-user-plus','var(--blue-bg)','var(--blue-text)');
   cm('m-add-santri'); renderSantriList('');
@@ -869,15 +1038,133 @@ function renderAudit(){
 }
 
 // ─ ORTU ───────────────────────────────────────────────────────────────────
-function loginOrtu(){
-  const pin=['p1','p2','p3','p4','p5','p6'].map(id=>document.getElementById(id).value).join('');
+let ortuSantriTemp=null;
+
+function resetOrtuLogin(){
+  ortuSantriTemp=null;
+  ['p1','p2','p3','p4','p5','p6'].forEach(id=>document.getElementById(id).value='');
+  ['pp1','pp2','pp3','pp4'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('pin-err').textContent='';
-  if(pin.length<6){document.getElementById('pin-err').textContent='Masukkan 6 digit kode';return;}
-  const db=getDb(); const s=db.santri.find(x=>x.id===pin);
+  document.getElementById('pin-err2').textContent='';
+  document.getElementById('ortu-step1').style.display='block';
+  document.getElementById('ortu-step2').style.display='none';
+  document.getElementById('ortu-login-sub').textContent='Masukkan kode santri yang tertera di kartu';
+}
+
+function ortuStep1(){
+  const kode=['p1','p2','p3','p4','p5','p6'].map(id=>document.getElementById(id).value).join('');
+  document.getElementById('pin-err').textContent='';
+  if(kode.length<6){document.getElementById('pin-err').textContent='Masukkan 6 digit kode';return;}
+  const db=getDb(); const s=db.santri.find(x=>x.id===kode);
   if(!s){document.getElementById('pin-err').textContent='Kode tidak ditemukan';return;}
+  ortuSantriTemp=s;
+  // Cek apakah sudah punya PIN
+  if(!s.ortuPin){
+    // PIN belum ada — tampilkan form buat PIN
+    document.getElementById('set-pin-desc').textContent=`Halo, ini pertama kali Anda masuk untuk ${s.nama}. Buat PIN 4 digit untuk keamanan akun.`;
+    document.getElementById('new-pin1').value='';
+    document.getElementById('new-pin2').value='';
+    document.getElementById('set-pin-err').textContent='';
+    document.getElementById('m-set-pin').style.display='flex';
+  } else {
+    // Sudah punya PIN — minta PIN
+    document.getElementById('ortu-step2-nama').textContent=s.nama;
+    document.getElementById('ortu-login-sub').textContent='Masukkan PIN 4 digit Anda';
+    document.getElementById('ortu-step1').style.display='none';
+    document.getElementById('ortu-step2').style.display='block';
+    ['pp1','pp2','pp3','pp4'].forEach(id=>document.getElementById(id).value='');
+    setTimeout(()=>document.getElementById('pp1').focus(),100);
+  }
+}
+
+function saveNewPin(){
+  const p1=document.getElementById('new-pin1').value;
+  const p2=document.getElementById('new-pin2').value;
+  const errEl=document.getElementById('set-pin-err');
+  if(p1.length<4){errEl.textContent='PIN harus 4 digit';return;}
+  if(!/^\d{4}$/.test(p1)){errEl.textContent='PIN hanya boleh angka';return;}
+  if(p1!==p2){errEl.textContent='Konfirmasi PIN tidak cocok';return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===ortuSantriTemp.id);
+  s.ortuPin=p1; setDb(db);
+  cm('m-set-pin');
+  // Langsung masuk
   db.activeId=s.id; setDb(db);
   document.getElementById('ortu-nav-name').textContent=s.nama;
   renderOrtu(s); goTo('screen-ortu-dashboard');
+}
+
+function ortuStep2(){
+  const pin=['pp1','pp2','pp3','pp4'].map(id=>document.getElementById(id).value).join('');
+  document.getElementById('pin-err2').textContent='';
+  if(pin.length<4){document.getElementById('pin-err2').textContent='Masukkan 4 digit PIN';return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===ortuSantriTemp.id);
+  if(s.ortuPin!==pin){
+    document.getElementById('pin-err2').textContent='PIN salah';
+    ['pp1','pp2','pp3','pp4'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pp1').focus();
+    return;
+  }
+  db.activeId=s.id; setDb(db);
+  document.getElementById('ortu-nav-name').textContent=s.nama;
+  renderOrtu(s); goTo('screen-ortu-dashboard');
+}
+
+function loginOrtu(){
+  // Legacy, redirect ke step1
+  ortuStep1();
+}
+
+function saveGantiPin(){
+  const lama=document.getElementById('ganti-pin-lama').value;
+  const baru=document.getElementById('ganti-pin-baru').value;
+  const konfirm=document.getElementById('ganti-pin-konfirm').value;
+  const errEl=document.getElementById('ganti-pin-err');
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.activeId);
+  if(s.ortuPin!==lama){errEl.textContent='PIN lama tidak sesuai';return;}
+  if(baru.length<4||!/^\d{4}$/.test(baru)){errEl.textContent='PIN baru harus 4 digit angka';return;}
+  if(baru!==konfirm){errEl.textContent='Konfirmasi tidak cocok';return;}
+  s.ortuPin=baru; setDb(db);
+  cm('m-ganti-pin');
+  alert('PIN berhasil diubah.');
+}
+
+function showLupaPin(){
+  document.getElementById('lupa-pin-hp').value='';
+  document.getElementById('lupa-pin-err').textContent='';
+  document.getElementById('m-lupa-pin').style.display='flex';
+}
+
+function verifikasiHpLupaPin(){
+  const hp=document.getElementById('lupa-pin-hp').value.trim().replace(/\s/g,'');
+  const errEl=document.getElementById('lupa-pin-err');
+  if(!hp){errEl.textContent='Nomor HP tidak boleh kosong';return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===ortuSantriTemp?.id);
+  if(!s){errEl.textContent='Data santri tidak ditemukan';return;}
+  // Normalize: strip leading 0, compare last 8 digits
+  const norm=(n)=>n.replace(/\D/g,'').slice(-8);
+  if(!s.hp||norm(s.hp)!==norm(hp)){
+    errEl.textContent='Nomor HP tidak sesuai dengan data terdaftar';
+    return;
+  }
+  // Verified — reset PIN
+  s.ortuPin=null; setDb(db);
+  cm('m-lupa-pin');
+  // Langsung tampilkan buat PIN baru
+  document.getElementById('set-pin-desc').textContent=`Verifikasi berhasil. Buat PIN baru untuk ${s.nama}.`;
+  document.getElementById('new-pin1').value='';
+  document.getElementById('new-pin2').value='';
+  document.getElementById('set-pin-err').textContent='';
+  document.getElementById('m-set-pin').style.display='flex';
+}
+
+function showGantiPin(){
+  ['ganti-pin-lama','ganti-pin-baru','ganti-pin-konfirm'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ganti-pin-err').textContent='';
+  document.getElementById('m-ganti-pin').style.display='flex';
 }
 
 function renderOrtu(s){
@@ -898,6 +1185,7 @@ function renderOrtu(s){
     <div class="tabs">
       <button class="tab active" onclick="switchOrtuTab(this,'ot-k')">Kesehatan</button>
       <button class="tab" onclick="switchOrtuTab(this,'ot-s')">SPP</button>
+      <button class="tab" onclick="switchOrtuTab(this,'ot-t')">Titipan</button>
       <button class="tab" onclick="switchOrtuTab(this,'ot-m')">Menu</button>
       <button class="tab" onclick="switchOrtuTab(this,'ot-j')">Jadwal</button>
     </div>
@@ -930,12 +1218,42 @@ function renderOrtu(s){
       </div>
     </div>
     <div id="ot-m" class="tab-panel">${menuHariIniHtml()}</div>
-    <div id="ot-j" class="tab-panel">${jadwalHariIniHtml(s.kelas)}</div>`;
+    <div id="ot-j" class="tab-panel">${jadwalHariIniHtml(s.kelas)}</div>
+    <div id="ot-t" class="tab-panel">${ortuTitipanHtml(s)}</div>`;
 }
+
+function ortuTitipanHtml(s){
+  const titipan=(s.titipan||[]).slice().sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  const saldo=getSaldo(s);
+  const saldoColor=saldo>0?'var(--g700)':saldo===0?'var(--text3)':'var(--red-text)';
+  return`
+    <div style="background:linear-gradient(135deg,var(--purple-text),var(--purple));border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem">
+      <div style="font-size:12px;color:rgba(255,255,255,0.6);font-weight:500;text-transform:uppercase;letter-spacing:0.05em">Saldo titipan</div>
+      <div style="font-family:Fraunces,serif;font-size:32px;font-weight:700;color:#fff;margin:6px 0">${rp(saldo)}</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.6)">${titipan.length} transaksi tercatat</div>
+    </div>
+    <div class="section-label">Riwayat transaksi</div>
+    ${titipan.length?`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+      ${titipan.map(t=>{
+        const masuk=t.tipe==='masuk';
+        return`<div style="display:flex;align-items:center;gap:12px;padding:11px 1.25rem;border-bottom:1px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:50%;background:${masuk?'var(--g100)':'var(--red-bg)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="ti ${masuk?'ti-arrow-down':'ti-arrow-up'}" style="font-size:14px;color:${masuk?'var(--g700)':'var(--red-text)'}"></i>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;color:var(--text)">${t.ket||'-'}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px">${fd(t.tgl)}</div>
+          </div>
+          <div style="font-family:Fraunces,serif;font-size:15px;font-weight:700;color:${masuk?'var(--g700)':'var(--red-text)'};flex-shrink:0">${masuk?'+':'-'}${rp(t.nominal)}</div>
+        </div>`;
+      }).join('')}
+    </div>`:'<div class="empty"><div class="empty-icon"><i class="ti ti-wallet-off"></i></div><div class="empty-text">Belum ada transaksi titipan</div></div>'}`;
+}
+
 function switchOrtuTab(btn,id){
   btn.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  ['ot-k','ot-s','ot-m','ot-j'].forEach(x=>{const el=document.getElementById(x);if(el)el.classList.toggle('active',x===id);});
+  ['ot-k','ot-s','ot-t','ot-m','ot-j'].forEach(x=>{const el=document.getElementById(x);if(el)el.classList.toggle('active',x===id);});
 }
 
 // ─ MENU HARIAN ────────────────────────────────────────────────────────────
@@ -1031,6 +1349,228 @@ function menuHariIniHtml(){
     </div>
     <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px">Menu berputar otomatis setiap hari</div>`;
 }
+// ─ USTADZAH KAMAR FILTER ─────────────────────────────────────────────────
+function getMyKamar(){
+  if(!CP||CP.role!=='ustadzah')return null; // null = all
+  const db=getDb();
+  return(db.kamarAssign||{})[CP.id]||[];
+}
+
+function getSantriForRole(){
+  const db=getDb();
+  const kamar=getMyKamar();
+  if(!kamar)return db.santri; // admin/kader/bendahara: semua santri
+  return db.santri.filter(s=>kamar.includes(s.kamar));
+}
+
+// ─ KELOLA KAMAR ──────────────────────────────────────────────────────────
+function renderKelolaKamar(){
+  const db=getDb();
+  const kamarList=[...new Set(db.santri.map(s=>s.kamar))].sort();
+  const assign=db.kamarAssign||{};
+  const ustadzahList=db.pengurus.filter(p=>p.role==='ustadzah');
+
+  const el=document.getElementById('kelola-kamar-content');
+  el.innerHTML=`
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:1.5rem;font-size:13px;color:var(--text2)">
+      Assign setiap kamar ke ustadzah yang bertanggung jawab. Ustadzah hanya bisa kelola titipan santri dari kamarnya.
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)">
+      ${kamarList.map(kamar=>{
+        const assignedId=Object.keys(assign).find(uid=>assign[uid]?.includes(kamar));
+        const assignedUst=assignedId?db.pengurus.find(p=>p.id===assignedId):null;
+        const santriCount=db.santri.filter(s=>s.kamar===kamar).length;
+        return`<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 1.25rem;border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text)">${kamar}</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px">${santriCount} santri</div>
+          </div>
+          <select onchange="assignKamar('${kamar}',this.value)" style="width:auto;min-width:130px;font-size:13px;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--border)">
+            <option value="">— Belum diassign —</option>
+            ${ustadzahList.map(u=>`<option value="${u.id}" ${assignedId===u.id?'selected':''}>${u.nama}</option>`).join('')}
+          </select>
+        </div>`;
+      }).join('')}
+    </div>
+    ${ustadzahList.length===0?`<div class="empty"><div class="empty-icon"><i class="ti ti-user-off"></i></div><div class="empty-text">Belum ada akun ustadzah</div></div>`:''}`;
+}
+
+function assignKamar(kamar,ustadzahId){
+  const db=getDb();
+  if(!db.kamarAssign)db.kamarAssign={};
+
+  // Remove kamar dari assign lama
+  Object.keys(db.kamarAssign).forEach(uid=>{
+    db.kamarAssign[uid]=(db.kamarAssign[uid]||[]).filter(k=>k!==kamar);
+  });
+
+  // Assign ke ustadzah baru kalau dipilih
+  if(ustadzahId){
+    if(!db.kamarAssign[ustadzahId])db.kamarAssign[ustadzahId]=[];
+    db.kamarAssign[ustadzahId].push(kamar);
+    const ust=db.pengurus.find(p=>p.id===ustadzahId);
+    log('Assign kamar',`${kamar} → ${ust?.nama}`,'ti-door','var(--purple-bg)','var(--purple-text)');
+  } else {
+    log('Unassign kamar',`${kamar} dilepas dari ustadzah`,'ti-door','var(--surface2)','var(--text2)');
+  }
+  setDb(db);
+}
+
+// ─ TITIPAN ────────────────────────────────────────────────────────────────
+function getSaldo(s){
+  const t=s.titipan||[];
+  return t.reduce((acc,e)=>e.tipe==='masuk'?acc+e.nominal:acc-e.nominal,0);
+}
+
+function renderTitipan(){
+  const db=getDb();
+  const santri=getSantriForRole();
+  const el=document.getElementById('titipan-content');
+  const total=santri.reduce((a,s)=>a+getSaldo(s),0);
+  const adaSaldo=santri.filter(s=>getSaldo(s)>0);
+  const kamar=getMyKamar();
+  const kamarInfo=kamar&&kamar.length?`<div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:4px">Kamar tanggung jawab: ${kamar.join(', ')}</div>`:'';
+
+  el.innerHTML=`
+    <div style="background:linear-gradient(135deg,var(--purple-text),var(--purple));border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden">
+      <div style="position:relative;z-index:1">
+        <div style="font-size:12px;color:rgba(255,255,255,0.6);font-weight:500;text-transform:uppercase;letter-spacing:0.05em">Total titipan aktif</div>
+        <div style="font-family:Fraunces,serif;font-size:28px;font-weight:700;color:#fff;margin:6px 0">${rp(total)}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.65)">${adaSaldo.length} santri memiliki saldo titipan</div>
+        ${kamarInfo}
+      </div>
+    </div>
+    <div class="search-wrap" style="margin-bottom:1rem">
+      <i class="ti ti-search search-ico"></i>
+      <input type="text" placeholder="Cari nama santri…" oninput="renderTitipanList(this.value)"/>
+    </div>
+    <div id="titipan-list"></div>`;
+  renderTitipanList('');
+}
+
+function renderTitipanList(q){
+  const santri=getSantriForRole();
+  const filtered=santri.filter(s=>s.nama.toLowerCase().includes((q||'').toLowerCase()));
+  const el=document.getElementById('titipan-list');
+  el.innerHTML=filtered.map(s=>{
+    const saldo=getSaldo(s);
+    const saldoColor=saldo>0?'var(--g700)':saldo===0?'var(--text3)':'var(--red-text)';
+    return`<div class="card" onclick="openTitipan('${s.id}')">
+      <div class="card-row">
+        <div class="ava ava-sm">${ini(s.nama)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:var(--text)">${s.nama}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">${s.kelas} · ${s.kamar}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-family:Fraunces,serif;font-size:15px;font-weight:700;color:${saldoColor}">${rp(saldo)}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:1px">saldo</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openTitipan(id){
+  const db=getDb(); db.activeId=id; setDb(db);
+  const s=db.santri.find(x=>x.id===id);
+  document.getElementById('titipan-detail-name').textContent=s.nama;
+  renderTitipanDetail(s);
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('screen-titipan-detail').classList.add('active');
+}
+
+function renderTitipanDetail(s){
+  const titipan=(s.titipan||[]).slice().sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  const saldo=getSaldo(s);
+  const saldoColor=saldo>0?'var(--g700)':saldo===0?'var(--text3)':'var(--red-text)';
+
+  document.getElementById('titipan-detail-content').innerHTML=`
+    <div class="profile-header">
+      <div class="profile-header-content">
+        <div class="ava ava-md ava-colored">${ini(s.nama)}</div>
+        <div>
+          <div class="profile-name">${s.nama}</div>
+          <div class="profile-meta">${s.kelas} · ${s.kamar}</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow)">
+      <div>
+        <div style="font-size:12px;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:0.05em">Saldo titipan</div>
+        <div style="font-family:Fraunces,serif;font-size:28px;font-weight:700;color:${saldoColor};margin-top:4px">${rp(saldo)}</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" style="padding:8px 14px;font-size:13px;border-color:var(--red);color:var(--red-text)" onclick="showTitipanKeluar('${s.id}')"><i class="ti ti-minus"></i> Keluar</button>
+        <button class="btn btn-primary" style="width:auto;margin-top:0;padding:8px 14px;font-size:13px;background:var(--purple-text)" onclick="showTitipanMasuk('${s.id}')"><i class="ti ti-plus"></i> Masuk</button>
+      </div>
+    </div>
+    <div class="section-label">Riwayat transaksi</div>
+    ${titipan.length?`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+      ${titipan.map(t=>{
+        const masuk=t.tipe==='masuk';
+        return`<div style="display:flex;align-items:center;gap:12px;padding:11px 1.25rem;border-bottom:1px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:50%;background:${masuk?'var(--g100)':'var(--red-bg)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="ti ${masuk?'ti-arrow-down':'ti-arrow-up'}" style="font-size:14px;color:${masuk?'var(--g700)':'var(--red-text)'}"></i>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;color:var(--text)">${t.ket||'-'}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px">${fd(t.tgl)} · ${t.by}</div>
+          </div>
+          <div style="font-family:Fraunces,serif;font-size:15px;font-weight:700;color:${masuk?'var(--g700)':'var(--red-text)'};flex-shrink:0">${masuk?'+':'-'}${rp(t.nominal)}</div>
+        </div>`;
+      }).join('')}
+    </div>`:'<div class="empty"><div class="empty-icon"><i class="ti ti-wallet-off"></i></div><div class="empty-text">Belum ada transaksi</div></div>'}`;
+}
+
+function showTitipanMasuk(id){
+  const db=getDb(); db.activeId=id; setDb(db);
+  const s=db.santri.find(x=>x.id===id);
+  document.getElementById('tm-santri-info').textContent=`${s.nama} · ${s.kelas}`;
+  document.getElementById('tm-tgl').value=new Date().toISOString().split('T')[0];
+  document.getElementById('tm-nominal').value='';
+  document.getElementById('tm-ket').value='';
+  document.getElementById('m-titipan-masuk').style.display='flex';
+}
+
+function saveTitipanMasuk(){
+  const nominal=parseInt(document.getElementById('tm-nominal').value);
+  if(!nominal||nominal<=0){alert('Nominal tidak valid');return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.activeId);
+  if(!s.titipan)s.titipan=[];
+  const e={id:Date.now(),tipe:'masuk',tgl:document.getElementById('tm-tgl').value,nominal,ket:document.getElementById('tm-ket').value,by:CP?.nama||'-',ts:new Date().toISOString()};
+  s.titipan.push(e); setDb(db);
+  log('Titipan masuk',`${s.nama}: +${rp(nominal)} · ${e.ket}`,'ti-arrow-down','var(--purple-bg)','var(--purple-text)');
+  cm('m-titipan-masuk'); renderTitipanDetail(s);
+}
+
+function showTitipanKeluar(id){
+  const db=getDb(); db.activeId=id; setDb(db);
+  const s=db.santri.find(x=>x.id===id);
+  const saldo=getSaldo(s);
+  document.getElementById('tk-santri-info').textContent=`${s.nama} · ${s.kelas}`;
+  document.getElementById('tk-saldo-info').textContent=`Saldo tersedia: ${rp(saldo)}`;
+  document.getElementById('tk-tgl').value=new Date().toISOString().split('T')[0];
+  document.getElementById('tk-nominal').value='';
+  document.getElementById('tk-ket').value='';
+  document.getElementById('m-titipan-keluar').style.display='flex';
+}
+
+function saveTitipanKeluar(){
+  const nominal=parseInt(document.getElementById('tk-nominal').value);
+  if(!nominal||nominal<=0){alert('Nominal tidak valid');return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.activeId);
+  const saldo=getSaldo(s);
+  if(nominal>saldo){alert(`Nominal melebihi saldo (${rp(saldo)})`);return;}
+  if(!s.titipan)s.titipan=[];
+  const e={id:Date.now(),tipe:'keluar',tgl:document.getElementById('tk-tgl').value,nominal,ket:document.getElementById('tk-ket').value,by:CP?.nama||'-',ts:new Date().toISOString()};
+  s.titipan.push(e); setDb(db);
+  log('Titipan keluar',`${s.nama}: -${rp(nominal)} · ${e.ket}`,'ti-arrow-up','var(--purple-bg)','var(--purple-text)');
+  cm('m-titipan-keluar'); renderTitipanDetail(s);
+}
+
 // ─ JADWAL NGAJI ───────────────────────────────────────────────────────────
 const BANDONGAN={
   0:{kitab:'Bulughul Marom',jenis:'Bandongan'},
@@ -1151,17 +1691,17 @@ function jadwalHariIniHtml(kelas){
     </div>`;
   } else {
     if(bandongan){
-      html+=jadwalCard('🕌',bandongan.jenis+' — Ba\'da Subuh',[
+      html+=jadwalCard('🕌',"Ba'da Subuh",[
         {label:'Kitab',value:bandongan.kitab},
         {label:'Waktu',value:"Ba'da Subuh"},
       ]);
     }
     if(diniyah){
-      html+=jadwalCard('🎓','Diniyah — Ba\'da Ashar',[
+      html+=jadwalCard('🎓','Diniyah — Ba\'da Maghrib',[
         {label:'Kitab',value:diniyah.kitab},
         {label:'Ustadz/Ustadzah',value:diniyah.ustadz},
         {label:'Tempat',value:diniyah.tempat},
-        {label:'Waktu',value:"Ba'da Ashar"},
+        {label:'Waktu',value:"Ba'da Maghrib"},
       ],'var(--gold-light)','#E8C870');
     } else if(![0,1,2,6].includes(dow)){
       html+=`<div style="background:var(--cream2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;text-align:center">
