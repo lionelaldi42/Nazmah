@@ -652,7 +652,7 @@ const _SB=window.supabase.createClient(
   'https://potufeavjdjwnwfohoxm.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvdHVmZWF2amRqd253Zm9ob3htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MDAxODIsImV4cCI6MjA5NTk3NjE4Mn0.zZJQx2zzekAvdTpb4q79QsZ0z8UFfI09motJPiGXcBE'
 );
-const DB_KEY='nazmah-db-v6';
+const DB_KEY='nazmah-db-v7';
 
 async function syncToSupabase(d){
   try{
@@ -660,7 +660,7 @@ async function syncToSupabase(d){
   }catch(e){console.warn('Supabase sync failed:',e);}
 }
 
-const DB_VERSION=6;
+const DB_VERSION=7;
 
 async function initApp(){
   const app=document.querySelector('.app');
@@ -833,6 +833,9 @@ function seed(){
   return{
     pengurus:[
       {id:'p1',nama:'Admin Utama',username:'admin',password:'pesantren123',role:'admin'},
+      {id:'p15',nama:'Gus Ahmad',username:'ahmad',password:'ahmad123',role:'admin'},
+      {id:'p16',nama:'Ning Naila',username:'naila',password:'naila123',role:'admin'},
+      {id:'p17',nama:'Gus Tholhah',username:'tholhah',password:'tholhah123',role:'admin'},
       {id:'p2',nama:'Ust. Hasan',username:'hasan',password:'hasan123',role:'bendahara'},
       {id:'p3',nama:'Rafi (Kader)',username:'rafi',password:'rafi123',role:'kader'},
       {id:'p4',nama:'Ust. Hamid',username:'hamid',password:'hamid123',role:'ustadz'},
