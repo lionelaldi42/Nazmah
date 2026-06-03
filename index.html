@@ -660,18 +660,34 @@ async function syncToSupabase(d){
   }catch(e){console.warn('Supabase sync failed:',e);}
 }
 
+const DB_VERSION=6;
+
 async function initApp(){
-  // Show loading
   const app=document.querySelector('.app');
   if(app){app.style.opacity='0';app.style.transition='opacity 0.3s';}
   try{
-    const{data,error}=await _SB.from('nazmah_data').select('data').eq('id','main').single();
+    const{data}=await _SB.from('nazmah_data').select('data').eq('id','main').single();
     if(data&&data.data){
-      const d=data.data;
-      if(!d.log)d.log=[];
+      if(data.data._version===DB_VERSION){
+        // Versi sama — pakai data Supabase
+        const d=data.data;
+        if(!d.log)d.log=[];
+        localStorage.setItem(DB_KEY,JSON.stringify(d));
+      } else {
+        // Versi lama — seed baru, overwrite Supabase
+        const d=seed();
+        localStorage.setItem(DB_KEY,JSON.stringify(d));
+        syncToSupabase(d);
+      }
+    } else {
+      // Supabase kosong — seed dan sync
+      const d=seed();
       localStorage.setItem(DB_KEY,JSON.stringify(d));
+      syncToSupabase(d);
     }
-  }catch(e){console.warn('Supabase load failed, using localStorage:',e);}
+  }catch(e){
+    console.warn('Supabase load failed, using localStorage:',e);
+  }
   // Init stars and show app
   const c=document.getElementById('l-stars');
   if(c){
@@ -833,6 +849,7 @@ function seed(){
     ],
     santri,
     kamarAssign:{'p4':['Kamar 6','Kamar 7'],'p5':['Kamar 8','Kamar 9'],'p6':['Kamar 10'],'p7':['Kamar 11'],'p8':['Kamar 12'],'p9':['Kamar 13'],'p10':['Kamar 14'],'p11':['Kamar 15'],'p12':['Kamar 16'],'p13':['Kamar 17'],'p14':['Kamar 18']},
+    _version:DB_VERSION,
     log:[],sppBulan:null,sppSantriId:null,activeId:null,
   };
 }
