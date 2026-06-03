@@ -400,6 +400,15 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
   </div>
   <div class="inner" id="titipan-detail-content"></div>
 </div>
+<!-- ═══ KELOLA AKUN ═════════════════════════════════════════════════════════ -->
+<div id="screen-kelola-akun" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-pengurus')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title">Kelola Akun Pengurus</div>
+  </div>
+  <div class="inner" id="kelola-akun-content"></div>
+</div>
+
 <!-- ═══ KELOLA KAMAR ════════════════════════════════════════════════════════ -->
 <div id="screen-kelola-kamar" class="screen">
   <div class="app-bar">
@@ -467,6 +476,30 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="cm('m-lupa-pin')">Batal</button>
       <button class="btn btn-primary" style="margin-top:0" onclick="verifikasiHpLupaPin()">Verifikasi</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- Modal tambah akun pengurus -->
+<div id="m-add-akun" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Tambah akun pengurus</div>
+    <div class="form-group"><label class="form-label">Nama lengkap</label><input type="text" id="ak-nama" placeholder="Ust. Nafis"/></div>
+    <div class="form-group"><label class="form-label">Username</label><input type="text" id="ak-username" placeholder="nafis" autocomplete="off"/></div>
+    <div class="form-group"><label class="form-label">Password</label><input type="password" id="ak-password" placeholder="Minimal 6 karakter"/></div>
+    <div class="form-group"><label class="form-label">Role</label>
+      <select id="ak-role">
+        <option value="ustadzah">Ustadzah</option>
+        <option value="ustadz">Ustadz</option>
+        <option value="kader">Kader Kesehatan</option>
+        <option value="bendahara">Bendahara</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div class="err-msg" id="ak-err"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-add-akun')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveAkun()">Simpan</button>
     </div>
   </div></div>
 </div>
@@ -619,7 +652,7 @@ const _SB=window.supabase.createClient(
   'https://potufeavjdjwnwfohoxm.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvdHVmZWF2amRqd253Zm9ob3htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MDAxODIsImV4cCI6MjA5NTk3NjE4Mn0.zZJQx2zzekAvdTpb4q79QsZ0z8UFfI09motJPiGXcBE'
 );
-const DB_KEY='nazmah-db-v3';
+const DB_KEY='nazmah-db-v6';
 
 async function syncToSupabase(d){
   try{
@@ -661,8 +694,9 @@ const ROLES={
   bendahara:{label:'Bendahara',bg:'var(--amber-bg)',text:'var(--amber-text)',icon:'ti-credit-card',menuBg:'var(--amber-bg)'},
   kader:{label:'Kader Kesehatan',bg:'var(--g100)',text:'var(--g700)',icon:'ti-heart-rate-monitor',menuBg:'var(--g50)'},
   ustadzah:{label:'Ustadzah',bg:'var(--purple-bg)',text:'var(--purple-text)',icon:'ti-wallet',menuBg:'var(--purple-bg)'},
+  ustadz:{label:'Ustadz',bg:'var(--blue-bg)',text:'var(--blue-text)',icon:'ti-wallet',menuBg:'var(--blue-bg)'},
 };
-const CAN={admin:['santri','kesehatan','spp','audit','addSantri','titipan','kelolaKamar'],bendahara:['spp'],kader:['santri','kesehatan'],ustadzah:['santri','titipan']};
+const CAN={admin:['santri','kesehatan','spp','audit','addSantri','titipan','kelolaKamar','kelolaAkun'],bendahara:['spp'],kader:['santri','kesehatan'],ustadzah:['santri','titipan'],ustadz:['santri','titipan']};
 function can(a){return CP&&CAN[CP.role]?.includes(a);}
 
 // ─ DB ─────────────────────────────────────────────────────────────────────
@@ -714,17 +748,91 @@ function seed(){
     {id:'100023',nama:'Wahyu Nugroho',kelas:'X B',kamar:'Kamar 5',tgl:'2008-06-14',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
     {id:'100024',nama:'Xander Putra',kelas:'X A',kamar:'Kamar 5',tgl:'2008-09-30',rekam:[{tgl:'2026-05-18',keluhan:'Lemas kurang darah',diagnosa:'Anemia ringan',td:'105/68',suhu:'36.7',gula:'82',hb:'10.8',bb:'48',tb:'160',obat:'Tablet Fe, Vit C',status:'sakit-ringan',by:'Rafi (Kader)',ts:'2026-05-18T10:00:00'}],pembayaran:bayar('belum'),titipan:[]},
     {id:'100025',nama:'Yusuf Maulana',kelas:'IX B',kamar:'Kamar 5',tgl:'2009-04-07',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    // Kamar 6 & 7 — Ust. Hamid
+    {id:'200001',nama:'Zainal Abidin',kelas:'XI A',kamar:'Kamar 6',tgl:'2007-05-10',hp:'081111111111',ortuPin:'1111',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:20,tipe:'masuk',tgl:'2026-05-01',nominal:200000,ket:'Uang saku bulan Mei',by:'Ust. Hamid',ts:'2026-05-01T08:00:00'},{id:21,tipe:'keluar',tgl:'2026-05-07',nominal:50000,ket:'Keperluan',by:'Ust. Hamid',ts:'2026-05-07T10:00:00'}]},
+    {id:'200002',nama:'Faisal Rahman',kelas:'XI B',kamar:'Kamar 6',tgl:'2007-08-22',hp:'082222222222',ortuPin:'2222',rekam:[],pembayaran:bayar('ada-telat'),titipan:[{id:22,tipe:'masuk',tgl:'2026-05-01',nominal:150000,ket:'Uang saku',by:'Ust. Hamid',ts:'2026-05-01T08:30:00'}]},
+    {id:'200003',nama:'Ghufron Aziz',kelas:'X A',kamar:'Kamar 6',tgl:'2008-03-15',hp:'083333333333',ortuPin:'3333',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:23,tipe:'masuk',tgl:'2026-04-01',nominal:100000,ket:'Uang saku April',by:'Ust. Hamid',ts:'2026-04-01T09:00:00'},{id:24,tipe:'keluar',tgl:'2026-04-15',nominal:30000,ket:'Jajan',by:'Ust. Hamid',ts:'2026-04-15T14:00:00'},{id:25,tipe:'masuk',tgl:'2026-05-01',nominal:100000,ket:'Uang saku Mei',by:'Ust. Hamid',ts:'2026-05-01T09:00:00'}]},
+    {id:'200004',nama:'Ibrahim Kholis',kelas:'IX A',kamar:'Kamar 7',tgl:'2009-11-08',hp:'084444444444',ortuPin:'4444',rekam:[],pembayaran:bayar('belum'),titipan:[{id:26,tipe:'masuk',tgl:'2026-05-03',nominal:175000,ket:'Titipan orang tua',by:'Ust. Hamid',ts:'2026-05-03T08:00:00'},{id:27,tipe:'keluar',tgl:'2026-05-10',nominal:25000,ket:'Beli buku',by:'Ust. Hamid',ts:'2026-05-10T10:00:00'}]},
+    {id:'200005',nama:'Jalal Ahsan',kelas:'IX B',kamar:'Kamar 7',tgl:'2009-07-19',hp:'085555555555',ortuPin:'5555',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:28,tipe:'masuk',tgl:'2026-05-01',nominal:120000,ket:'Uang saku',by:'Ust. Hamid',ts:'2026-05-01T08:00:00'}]},
+    // Kamar 8 & 9 — Ust. Firman
+    {id:'300001',nama:'Kamil Fikri',kelas:'XII A',kamar:'Kamar 8',tgl:'2007-02-14',hp:'086666666666',ortuPin:'6666',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:30,tipe:'masuk',tgl:'2026-05-01',nominal:250000,ket:'Uang saku bulan Mei',by:'Ust. Firman',ts:'2026-05-01T08:00:00'},{id:31,tipe:'keluar',tgl:'2026-05-05',nominal:60000,ket:'Keperluan sekolah',by:'Ust. Firman',ts:'2026-05-05T10:00:00'},{id:32,tipe:'keluar',tgl:'2026-05-12',nominal:40000,ket:'Jajan',by:'Ust. Firman',ts:'2026-05-12T14:00:00'}]},
+    {id:'300002',nama:'Latif Hakim',kelas:'XII B',kamar:'Kamar 8',tgl:'2007-06-30',hp:'087777777777',ortuPin:'7777',rekam:[],pembayaran:bayar('ada-telat'),titipan:[{id:33,tipe:'masuk',tgl:'2026-04-01',nominal:200000,ket:'Uang saku April',by:'Ust. Firman',ts:'2026-04-01T09:00:00'},{id:34,tipe:'keluar',tgl:'2026-04-20',nominal:75000,ket:'Keperluan',by:'Ust. Firman',ts:'2026-04-20T10:00:00'},{id:35,tipe:'masuk',tgl:'2026-05-01',nominal:200000,ket:'Uang saku Mei',by:'Ust. Firman',ts:'2026-05-01T09:00:00'}]},
+    {id:'300003',nama:"Ma'ruf Zain",kelas:'X B',kamar:'Kamar 8',tgl:'2008-09-03',hp:'088888888888',ortuPin:'8888',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:36,tipe:'masuk',tgl:'2026-05-01',nominal:130000,ket:'Uang saku',by:'Ust. Firman',ts:'2026-05-01T08:30:00'}]},
+    {id:'300004',nama:'Nashir Amin',kelas:'VIII A',kamar:'Kamar 9',tgl:'2010-04-17',hp:'089999999999',ortuPin:'9999',rekam:[],pembayaran:bayar('belum'),titipan:[{id:37,tipe:'masuk',tgl:'2026-05-02',nominal:100000,ket:'Titipan orang tua',by:'Ust. Firman',ts:'2026-05-02T08:00:00'},{id:38,tipe:'keluar',tgl:'2026-05-08',nominal:20000,ket:'Jajan',by:'Ust. Firman',ts:'2026-05-08T14:00:00'}]},
+    // Kamar 10 — Ust. Nafis (1 SMP)
+    {id:'410001',nama:'Nur Aisyah',kelas:'VII A',kamar:'Kamar 10',tgl:'2011-02-14',hp:'081101000001',ortuPin:'1101',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:50,tipe:'masuk',tgl:'2026-05-01',nominal:80000,ket:'Uang saku',by:'Ust. Nafis',ts:'2026-05-01T08:00:00'},{id:51,tipe:'keluar',tgl:'2026-05-08',nominal:20000,ket:'Jajan',by:'Ust. Nafis',ts:'2026-05-08T10:00:00'}]},
+    {id:'410002',nama:'Siti Fatimah',kelas:'VII A',kamar:'Kamar 10',tgl:'2011-05-20',hp:'081101000002',ortuPin:'1102',rekam:[],pembayaran:bayar('ada-telat'),titipan:[{id:52,tipe:'masuk',tgl:'2026-05-01',nominal:100000,ket:'Uang saku',by:'Ust. Nafis',ts:'2026-05-01T08:30:00'}]},
+    {id:'410003',nama:'Rizki Amalia',kelas:'VII B',kamar:'Kamar 10',tgl:'2011-08-03',hp:'081101000003',ortuPin:'1103',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    {id:'410004',nama:'Laila Maghfiroh',kelas:'VII B',kamar:'Kamar 10',tgl:'2011-11-17',hp:'081101000004',ortuPin:'1104',rekam:[],pembayaran:bayar('belum'),titipan:[{id:53,tipe:'masuk',tgl:'2026-05-02',nominal:75000,ket:'Titipan',by:'Ust. Nafis',ts:'2026-05-02T09:00:00'}]},
+    {id:'410005',nama:'Umi Kulsum',kelas:'VII A',kamar:'Kamar 10',tgl:'2011-04-09',hp:'081101000005',ortuPin:'1105',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:54,tipe:'masuk',tgl:'2026-05-01',nominal:60000,ket:'Uang saku',by:'Ust. Nafis',ts:'2026-05-01T09:00:00'}]},
+    // Kamar 11 — Ust. Tia (2 SMP A)
+    {id:'420001',nama:'Anisa Rahmawati',kelas:'VIII A',kamar:'Kamar 11',tgl:'2010-03-11',hp:'081201000001',ortuPin:'1201',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:55,tipe:'masuk',tgl:'2026-05-01',nominal:120000,ket:'Uang saku',by:'Ust. Tia',ts:'2026-05-01T08:00:00'},{id:56,tipe:'keluar',tgl:'2026-05-10',nominal:30000,ket:'Keperluan',by:'Ust. Tia',ts:'2026-05-10T10:00:00'}]},
+    {id:'420002',nama:'Balqis Hasanah',kelas:'VIII A',kamar:'Kamar 11',tgl:'2010-07-25',hp:'081201000002',ortuPin:'1202',rekam:[],pembayaran:bayar('ada-telat'),titipan:[]},
+    {id:'420003',nama:'Cahya Nuraini',kelas:'VIII A',kamar:'Kamar 11',tgl:'2010-10-08',hp:'081201000003',ortuPin:'1203',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:57,tipe:'masuk',tgl:'2026-05-01',nominal:90000,ket:'Uang saku',by:'Ust. Tia',ts:'2026-05-01T08:30:00'}]},
+    {id:'420004',nama:'Dewi Safitri',kelas:'VIII A',kamar:'Kamar 11',tgl:'2010-01-30',hp:'081201000004',ortuPin:'1204',rekam:[],pembayaran:bayar('belum'),titipan:[]},
+    {id:'420005',nama:'Eka Fitriani',kelas:'VIII A',kamar:'Kamar 11',tgl:'2010-06-14',hp:'081201000005',ortuPin:'1205',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:58,tipe:'masuk',tgl:'2026-05-01',nominal:110000,ket:'Uang saku',by:'Ust. Tia',ts:'2026-05-01T09:00:00'},{id:59,tipe:'keluar',tgl:'2026-05-12',nominal:25000,ket:'Jajan',by:'Ust. Tia',ts:'2026-05-12T14:00:00'}]},
+    // Kamar 12 — Ust. Nabila (2 SMP B)
+    {id:'430001',nama:'Fauziah Lestari',kelas:'VIII B',kamar:'Kamar 12',tgl:'2010-02-19',hp:'081301000001',ortuPin:'1301',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:60,tipe:'masuk',tgl:'2026-05-01',nominal:95000,ket:'Uang saku',by:'Ust. Nabila',ts:'2026-05-01T08:00:00'}]},
+    {id:'430002',nama:'Ghina Maulida',kelas:'VIII B',kamar:'Kamar 12',tgl:'2010-09-04',hp:'081301000002',ortuPin:'1302',rekam:[],pembayaran:bayar('ada-telat'),titipan:[]},
+    {id:'430003',nama:'Hana Azizah',kelas:'VIII B',kamar:'Kamar 12',tgl:'2010-05-28',hp:'081301000003',ortuPin:'1303',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:61,tipe:'masuk',tgl:'2026-05-01',nominal:130000,ket:'Uang saku',by:'Ust. Nabila',ts:'2026-05-01T08:30:00'},{id:62,tipe:'keluar',tgl:'2026-05-09',nominal:40000,ket:'Keperluan',by:'Ust. Nabila',ts:'2026-05-09T10:00:00'}]},
+    {id:'430004',nama:'Indah Permata',kelas:'VIII B',kamar:'Kamar 12',tgl:'2010-12-11',hp:'081301000004',ortuPin:'1304',rekam:[],pembayaran:bayar('belum'),titipan:[]},
+    {id:'430005',nama:'Jihan Aulia',kelas:'VIII B',kamar:'Kamar 12',tgl:'2010-04-23',hp:'081301000005',ortuPin:'1305',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:63,tipe:'masuk',tgl:'2026-05-02',nominal:80000,ket:'Titipan',by:'Ust. Nabila',ts:'2026-05-02T09:00:00'}]},
+    // Kamar 13 — Ust. Alda (1 SMA A)
+    {id:'440001',nama:'Khadijah Salimah',kelas:'X A',kamar:'Kamar 13',tgl:'2008-07-15',hp:'081401000001',ortuPin:'1401',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:64,tipe:'masuk',tgl:'2026-05-01',nominal:150000,ket:'Uang saku',by:'Ust. Alda',ts:'2026-05-01T08:00:00'},{id:65,tipe:'keluar',tgl:'2026-05-06',nominal:35000,ket:'Jajan',by:'Ust. Alda',ts:'2026-05-06T10:00:00'}]},
+    {id:'440002',nama:'Lutfia Rahma',kelas:'X A',kamar:'Kamar 13',tgl:'2008-10-02',hp:'081401000002',ortuPin:'1402',rekam:[],pembayaran:bayar('ada-telat'),titipan:[{id:66,tipe:'masuk',tgl:'2026-05-01',nominal:200000,ket:'Uang saku',by:'Ust. Alda',ts:'2026-05-01T08:30:00'}]},
+    {id:'440003',nama:'Maisaroh Ulfa',kelas:'X A',kamar:'Kamar 13',tgl:'2008-03-27',hp:'081401000003',ortuPin:'1403',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    {id:'440004',nama:'Nada Salsabila',kelas:'X A',kamar:'Kamar 13',tgl:'2008-08-18',hp:'081401000004',ortuPin:'1404',rekam:[],pembayaran:bayar('belum'),titipan:[{id:67,tipe:'masuk',tgl:'2026-05-03',nominal:125000,ket:'Titipan',by:'Ust. Alda',ts:'2026-05-03T09:00:00'}]},
+    {id:'440005',nama:'Olivia Zahra',kelas:'X A',kamar:'Kamar 13',tgl:'2008-12-05',hp:'081401000005',ortuPin:'1405',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:68,tipe:'masuk',tgl:'2026-05-01',nominal:100000,ket:'Uang saku',by:'Ust. Alda',ts:'2026-05-01T09:00:00'},{id:69,tipe:'keluar',tgl:'2026-05-14',nominal:30000,ket:'Keperluan',by:'Ust. Alda',ts:'2026-05-14T14:00:00'}]},
+    // Kamar 14 — Ust. Putri (1 SMA B)
+    {id:'450001',nama:'Puspita Dewi',kelas:'X B',kamar:'Kamar 14',tgl:'2008-05-21',hp:'081501000001',ortuPin:'1501',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:70,tipe:'masuk',tgl:'2026-05-01',nominal:175000,ket:'Uang saku',by:'Ust. Putri',ts:'2026-05-01T08:00:00'}]},
+    {id:'450002',nama:'Qurrata Aini',kelas:'X B',kamar:'Kamar 14',tgl:'2008-09-09',hp:'081501000002',ortuPin:'1502',rekam:[],pembayaran:bayar('ada-telat'),titipan:[]},
+    {id:'450003',nama:'Rani Fitriah',kelas:'X B',kamar:'Kamar 14',tgl:'2008-01-16',hp:'081501000003',ortuPin:'1503',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:71,tipe:'masuk',tgl:'2026-05-01',nominal:140000,ket:'Uang saku',by:'Ust. Putri',ts:'2026-05-01T08:30:00'},{id:72,tipe:'keluar',tgl:'2026-05-11',nominal:50000,ket:'Keperluan',by:'Ust. Putri',ts:'2026-05-11T10:00:00'}]},
+    {id:'450004',nama:'Suci Ramadhani',kelas:'X B',kamar:'Kamar 14',tgl:'2008-06-30',hp:'081501000004',ortuPin:'1504',rekam:[],pembayaran:bayar('belum'),titipan:[]},
+    {id:'450005',nama:'Taqiya Husna',kelas:'X B',kamar:'Kamar 14',tgl:'2008-11-22',hp:'081501000005',ortuPin:'1505',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:73,tipe:'masuk',tgl:'2026-05-02',nominal:90000,ket:'Titipan',by:'Ust. Putri',ts:'2026-05-02T09:00:00'}]},
+    // Kamar 15 — Ust. Salwa (2 SMA A)
+    {id:'460001',nama:'Ummu Hani',kelas:'XI A',kamar:'Kamar 15',tgl:'2007-04-13',hp:'081601000001',ortuPin:'1601',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:74,tipe:'masuk',tgl:'2026-05-01',nominal:200000,ket:'Uang saku',by:'Ust. Salwa',ts:'2026-05-01T08:00:00'},{id:75,tipe:'keluar',tgl:'2026-05-07',nominal:55000,ket:'Keperluan',by:'Ust. Salwa',ts:'2026-05-07T10:00:00'}]},
+    {id:'460002',nama:'Vivi Rohmah',kelas:'XI A',kamar:'Kamar 15',tgl:'2007-08-26',hp:'081601000002',ortuPin:'1602',rekam:[],pembayaran:bayar('ada-telat'),titipan:[{id:76,tipe:'masuk',tgl:'2026-05-01',nominal:180000,ket:'Uang saku',by:'Ust. Salwa',ts:'2026-05-01T08:30:00'}]},
+    {id:'460003',nama:'Widad Nabilah',kelas:'XI A',kamar:'Kamar 15',tgl:'2007-12-07',hp:'081601000003',ortuPin:'1603',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    {id:'460004',nama:'Xenia Safira',kelas:'XI A',kamar:'Kamar 15',tgl:'2007-03-19',hp:'081601000004',ortuPin:'1604',rekam:[],pembayaran:bayar('belum'),titipan:[{id:77,tipe:'masuk',tgl:'2026-05-03',nominal:150000,ket:'Titipan',by:'Ust. Salwa',ts:'2026-05-03T09:00:00'}]},
+    {id:'460005',nama:'Yumna Hafsah',kelas:'XI A',kamar:'Kamar 15',tgl:'2007-09-30',hp:'081601000005',ortuPin:'1605',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:78,tipe:'masuk',tgl:'2026-05-01',nominal:160000,ket:'Uang saku',by:'Ust. Salwa',ts:'2026-05-01T09:00:00'},{id:79,tipe:'keluar',tgl:'2026-05-13',nominal:45000,ket:'Jajan',by:'Ust. Salwa',ts:'2026-05-13T14:00:00'}]},
+    // Kamar 16 — Ust. Syafi' (2 SMA B)
+    {id:'470001',nama:'Zainab Khoiriyah',kelas:'XI B',kamar:'Kamar 16',tgl:'2007-06-08',hp:'081701000001',ortuPin:'1701',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:80,tipe:'masuk',tgl:'2026-05-01',nominal:220000,ket:'Uang saku',by:"Ust. Syafi'",ts:'2026-05-01T08:00:00'}]},
+    {id:'470002',nama:'Afifah Muthi',kelas:'XI B',kamar:'Kamar 16',tgl:'2007-10-24',hp:'081701000002',ortuPin:'1702',rekam:[],pembayaran:bayar('ada-telat'),titipan:[]},
+    {id:'470003',nama:'Barakah Ilmi',kelas:'XI B',kamar:'Kamar 16',tgl:'2007-02-11',hp:'081701000003',ortuPin:'1703',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:81,tipe:'masuk',tgl:'2026-05-01',nominal:175000,ket:'Uang saku',by:"Ust. Syafi'",ts:'2026-05-01T08:30:00'},{id:82,tipe:'keluar',tgl:'2026-05-10',nominal:60000,ket:'Keperluan',by:"Ust. Syafi'",ts:'2026-05-10T10:00:00'}]},
+    {id:'470004',nama:'Camelia Husna',kelas:'XI B',kamar:'Kamar 16',tgl:'2007-07-16',hp:'081701000004',ortuPin:'1704',rekam:[],pembayaran:bayar('belum'),titipan:[]},
+    {id:'470005',nama:'Dalilah Shafa',kelas:'XI B',kamar:'Kamar 16',tgl:'2007-11-29',hp:'081701000005',ortuPin:'1705',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:83,tipe:'masuk',tgl:'2026-05-02',nominal:130000,ket:'Titipan',by:"Ust. Syafi'",ts:'2026-05-02T09:00:00'}]},
+    // Kamar 17 — Ust. Aslikh (Tahfidz A)
+    {id:'480001',nama:'Elsa Mardhiyah',kelas:'X A',kamar:'Kamar 17',tgl:'2008-04-05',hp:'081801000001',ortuPin:'1801',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:84,tipe:'masuk',tgl:'2026-05-01',nominal:190000,ket:'Uang saku',by:'Ust. Aslikh',ts:'2026-05-01T08:00:00'},{id:85,tipe:'keluar',tgl:'2026-05-08',nominal:50000,ket:'Keperluan',by:'Ust. Aslikh',ts:'2026-05-08T10:00:00'}]},
+    {id:'480002',nama:'Fadia Rahima',kelas:'XI A',kamar:'Kamar 17',tgl:'2007-08-20',hp:'081801000002',ortuPin:'1802',rekam:[],pembayaran:bayar('ada-telat'),titipan:[]},
+    {id:'480003',nama:'Ghaida Tsuraya',kelas:'X B',kamar:'Kamar 17',tgl:'2008-12-14',hp:'081801000003',ortuPin:'1803',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:86,tipe:'masuk',tgl:'2026-05-01',nominal:160000,ket:'Uang saku',by:'Ust. Aslikh',ts:'2026-05-01T08:30:00'}]},
+    {id:'480004',nama:'Hanifah Nur',kelas:'XI B',kamar:'Kamar 17',tgl:'2007-05-03',hp:'081801000004',ortuPin:'1804',rekam:[],pembayaran:bayar('belum'),titipan:[{id:87,tipe:'masuk',tgl:'2026-05-03',nominal:140000,ket:'Titipan',by:'Ust. Aslikh',ts:'2026-05-03T09:00:00'}]},
+    {id:'480005',nama:'Ilma Wardah',kelas:'X A',kamar:'Kamar 17',tgl:'2008-09-17',hp:'081801000005',ortuPin:'1805',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:88,tipe:'masuk',tgl:'2026-05-01',nominal:110000,ket:'Uang saku',by:'Ust. Aslikh',ts:'2026-05-01T09:00:00'}]},
+    // Kamar 18 — Ust. Dina (Tahfidz B)
+    {id:'490001',nama:'Jasmine Afra',kelas:'XI A',kamar:'Kamar 18',tgl:'2007-01-28',hp:'081901000001',ortuPin:'1901',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:89,tipe:'masuk',tgl:'2026-05-01',nominal:170000,ket:'Uang saku',by:'Ust. Dina',ts:'2026-05-01T08:00:00'},{id:90,tipe:'keluar',tgl:'2026-05-09',nominal:45000,ket:'Jajan',by:'Ust. Dina',ts:'2026-05-09T14:00:00'}]},
+    {id:'490002',nama:'Khalisa Mumtaz',kelas:'X B',kamar:'Kamar 18',tgl:'2008-06-11',hp:'081901000002',ortuPin:'1902',rekam:[],pembayaran:bayar('ada-telat'),titipan:[{id:91,tipe:'masuk',tgl:'2026-05-01',nominal:150000,ket:'Uang saku',by:'Ust. Dina',ts:'2026-05-01T08:30:00'}]},
+    {id:'490003',nama:'Lina Thoyibah',kelas:'XI B',kamar:'Kamar 18',tgl:'2007-10-05',hp:'081901000003',ortuPin:'1903',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[]},
+    {id:'490004',nama:'Muna Kamilah',kelas:'X A',kamar:'Kamar 18',tgl:'2008-03-22',hp:'081901000004',ortuPin:'1904',rekam:[],pembayaran:bayar('belum'),titipan:[{id:92,tipe:'masuk',tgl:'2026-05-04',nominal:120000,ket:'Titipan',by:'Ust. Dina',ts:'2026-05-04T09:00:00'}]},
+    {id:'490005',nama:'Najwa Fairuz',kelas:'XI A',kamar:'Kamar 18',tgl:'2007-07-18',hp:'081901000005',ortuPin:'1905',rekam:[],pembayaran:bayar('lunas-semua'),titipan:[{id:93,tipe:'masuk',tgl:'2026-05-01',nominal:185000,ket:'Uang saku',by:'Ust. Dina',ts:'2026-05-01T09:00:00'},{id:94,tipe:'keluar',tgl:'2026-05-15',nominal:55000,ket:'Keperluan',by:'Ust. Dina',ts:'2026-05-15T10:00:00'}]},
   ];
   return{
     pengurus:[
       {id:'p1',nama:'Admin Utama',username:'admin',password:'pesantren123',role:'admin'},
       {id:'p2',nama:'Ust. Hasan',username:'hasan',password:'hasan123',role:'bendahara'},
       {id:'p3',nama:'Rafi (Kader)',username:'rafi',password:'rafi123',role:'kader'},
-      {id:'p4',nama:'Dina (Kader)',username:'dina',password:'dina123',role:'kader'},
-      {id:'p5',nama:'Ust. Sinta',username:'sinta',password:'sinta123',role:'ustadzah'},
+      {id:'p4',nama:'Ust. Hamid',username:'hamid',password:'hamid123',role:'ustadz'},
+      {id:'p5',nama:'Ust. Firman',username:'firman',password:'firman123',role:'ustadz'},
+      {id:'p6',nama:'Ust. Nafis',username:'nafis',password:'nafis123',role:'ustadzah'},
+      {id:'p7',nama:'Ust. Tia',username:'tia',password:'tia123',role:'ustadzah'},
+      {id:'p8',nama:'Ust. Nabila',username:'nabila',password:'nabila123',role:'ustadzah'},
+      {id:'p9',nama:'Ust. Alda',username:'alda',password:'alda123',role:'ustadzah'},
+      {id:'p10',nama:'Ust. Putri',username:'putri',password:'putri123',role:'ustadzah'},
+      {id:'p11',nama:'Ust. Salwa',username:'salwa',password:'salwa123',role:'ustadzah'},
+      {id:'p12',nama:"Ust. Syafi'",username:'syafi',password:'syafi123',role:'ustadzah'},
+      {id:'p13',nama:'Ust. Aslikh',username:'aslikh',password:'aslikh123',role:'ustadzah'},
+      {id:'p14',nama:'Ust. Dina',username:'dina',password:'dina123',role:'ustadzah'},
     ],
     santri,
-    kamarAssign:{'p5':['Kamar 1','Kamar 2']},
+    kamarAssign:{'p4':['Kamar 6','Kamar 7'],'p5':['Kamar 8','Kamar 9'],'p6':['Kamar 10'],'p7':['Kamar 11'],'p8':['Kamar 12'],'p9':['Kamar 13'],'p10':['Kamar 14'],'p11':['Kamar 15'],'p12':['Kamar 16'],'p13':['Kamar 17'],'p14':['Kamar 18']},
     log:[],sppBulan:null,sppSantriId:null,activeId:null,
   };
 }
@@ -768,6 +876,7 @@ function renderPMenu(){
   if(can('titipan'))h+=`<div class="menu-card" onclick="goTo('screen-titipan')"><div class="menu-card-icon" style="background:var(--purple-bg)"><i class="ti ti-wallet" style="font-size:20px;color:var(--purple-text)"></i></div><div class="menu-card-title">Titipan Uang Saku</div></div>`;
   h+='</div>';
   if(can('kelolaKamar'))h+=`<div class="menu-card menu-card-wide" onclick="goTo('screen-kelola-kamar')" style="margin-bottom:10px"><div class="menu-card-icon" style="background:var(--purple-bg);flex-shrink:0"><i class="ti ti-door" style="font-size:20px;color:var(--purple-text)"></i></div><div><div class="menu-card-title" style="text-align:left">Kelola Kamar</div><div style="font-size:12px;color:var(--text2);margin-top:3px">Assign kamar ke ustadzah</div></div></div>`;
+  if(can('kelolaAkun'))h+=`<div class="menu-card menu-card-wide" onclick="goTo('screen-kelola-akun')" style="margin-bottom:10px"><div class="menu-card-icon" style="background:var(--blue-bg);flex-shrink:0"><i class="ti ti-users-group" style="font-size:20px;color:var(--blue-text)"></i></div><div><div class="menu-card-title" style="text-align:left">Kelola Akun Pengurus</div><div style="font-size:12px;color:var(--text2);margin-top:3px">Tambah, edit, dan hapus akun</div></div></div>`;
   if(can('audit'))h+=`<div class="menu-card menu-card-wide" onclick="goTo('screen-audit-log')" style="margin-bottom:0"><div class="menu-card-icon" style="background:var(--red-bg);flex-shrink:0"><i class="ti ti-history" style="font-size:20px;color:var(--red-text)"></i></div><div><div class="menu-card-title" style="text-align:left">Log aktivitas</div><div style="font-size:12px;color:var(--text2);margin-top:3px">Riwayat semua tindakan pengurus</div></div></div>`;
   document.getElementById('p-menu').innerHTML=h;
 }
@@ -783,6 +892,7 @@ function goTo(id){
   if(id==='screen-spp-dashboard')renderSpp();
   if(id==='screen-titipan')renderTitipan();
   if(id==='screen-kelola-kamar')renderKelolaKamar();
+  if(id==='screen-kelola-akun')renderKelolaAkun();
   if(id==='screen-ortu-login')resetOrtuLogin();
   if(id==='screen-audit-log'){can('audit')?renderAudit():document.getElementById('audit-content').innerHTML=noAccess();}
 }
@@ -1401,6 +1511,67 @@ function getSantriForRole(){
   const kamar=getMyKamar();
   if(!kamar)return db.santri; // admin/kader/bendahara: semua santri
   return db.santri.filter(s=>kamar.includes(s.kamar));
+}
+
+// ─ KELOLA AKUN ───────────────────────────────────────────────────────────
+function renderKelolaAkun(){
+  const db=getDb();
+  const el=document.getElementById('kelola-akun-content');
+  const roleLabel={admin:'Admin',bendahara:'Bendahara',kader:'Kader Kesehatan',ustadzah:'Ustadzah'};
+  const roleBg={admin:'var(--red-bg)',bendahara:'var(--amber-bg)',kader:'var(--g100)',ustadzah:'var(--purple-bg)'};
+  const roleText={admin:'var(--red-text)',bendahara:'var(--amber-text)',kader:'var(--g700)',ustadzah:'var(--purple-text)'};
+
+  el.innerHTML=`
+    <button class="add-btn" onclick="showAddAkun()"><i class="ti ti-plus"></i> Tambah akun baru</button>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)">
+      ${db.pengurus.map(p=>`
+        <div style="display:flex;align-items:center;gap:12px;padding:11px 1.25rem;border-bottom:1px solid var(--border)">
+          <div class="ava ava-sm" style="background:${roleBg[p.role]};color:${roleText[p.role]}">${ini(p.nama)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:600;color:var(--text)">${p.nama}</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px">@${p.username} · <span class="badge" style="background:${roleBg[p.role]};color:${roleText[p.role]};font-size:10px">${roleLabel[p.role]||p.role}</span></div>
+          </div>
+          ${p.id!=='p1'?`<button class="confirm-btn" style="border-color:var(--red);color:var(--red-text)" onclick="hapusAkun('${p.id}','${p.nama}')"><i class="ti ti-trash" style="font-size:12px"></i></button>`:''}
+        </div>`).join('')}
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-top:10px;text-align:center">Password default: nama + 123 (contoh: nafis123)</div>`;
+}
+
+function showAddAkun(){
+  ['ak-nama','ak-username','ak-password'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ak-role').value='ustadzah';
+  document.getElementById('ak-err').textContent='';
+  document.getElementById('m-add-akun').style.display='flex';
+}
+
+function saveAkun(){
+  const nama=document.getElementById('ak-nama').value.trim();
+  const username=document.getElementById('ak-username').value.trim().toLowerCase();
+  const password=document.getElementById('ak-password').value;
+  const role=document.getElementById('ak-role').value;
+  const errEl=document.getElementById('ak-err');
+  if(!nama){errEl.textContent='Nama wajib diisi';return;}
+  if(!username){errEl.textContent='Username wajib diisi';return;}
+  if(password.length<6){errEl.textContent='Password minimal 6 karakter';return;}
+  const db=getDb();
+  if(db.pengurus.find(p=>p.username===username)){errEl.textContent='Username sudah dipakai';return;}
+  const id='p'+Date.now();
+  db.pengurus.push({id,nama,username,password,role});
+  setDb(db);
+  log('Tambah akun',`${nama} (@${username}) · ${role}`,'ti-user-plus','var(--blue-bg)','var(--blue-text)');
+  cm('m-add-akun');
+  renderKelolaAkun();
+}
+
+function hapusAkun(id,nama){
+  if(!confirm(`Hapus akun ${nama}? Tindakan ini tidak bisa dibatalkan.`))return;
+  const db=getDb();
+  db.pengurus=db.pengurus.filter(p=>p.id!==id);
+  // Hapus kamar assign juga
+  if(db.kamarAssign&&db.kamarAssign[id])delete db.kamarAssign[id];
+  setDb(db);
+  log('Hapus akun',`${nama} dihapus`,'ti-user-off','var(--red-bg)','var(--red-text)');
+  renderKelolaAkun();
 }
 
 // ─ KELOLA KAMAR ──────────────────────────────────────────────────────────
