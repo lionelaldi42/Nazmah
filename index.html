@@ -431,7 +431,9 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
         <input type="text" inputmode="numeric" maxlength="1" id="p3" oninput="pm(this,'p4')" onkeydown="pb(event,this,'p2')"/>
         <input type="text" inputmode="numeric" maxlength="1" id="p4" oninput="pm(this,'p5')" onkeydown="pb(event,this,'p3')"/>
         <input type="text" inputmode="numeric" maxlength="1" id="p5" oninput="pm(this,'p6')" onkeydown="pb(event,this,'p4')"/>
-        <input type="text" inputmode="numeric" maxlength="1" id="p6" oninput="pm(this,null)" onkeydown="pb(event,this,'p5')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p6" oninput="pm(this,'p7')" onkeydown="pb(event,this,'p5')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p7" oninput="pm(this,'p8')" onkeydown="pb(event,this,'p6')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p8" oninput="pm(this,null)" onkeydown="pb(event,this,'p7')"/>
       </div>
       <p id="pin-err" style="font-size:13px;color:var(--red);text-align:center;min-height:20px;margin-bottom:12px"></p>
       <button class="btn btn-primary" style="max-width:240px;margin:0 auto" onclick="ortuStep1()">Lanjut</button>
@@ -1281,7 +1283,7 @@ let ortuSantriTemp=null;
 
 function resetOrtuLogin(){
   ortuSantriTemp=null;
-  ['p1','p2','p3','p4','p5','p6'].forEach(id=>document.getElementById(id).value='');
+  ['p1','p2','p3','p4','p5','p6','p7','p8'].forEach(id=>document.getElementById(id).value='');
   ['pp1','pp2','pp3','pp4'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('pin-err').textContent='';
   document.getElementById('pin-err2').textContent='';
@@ -1291,9 +1293,9 @@ function resetOrtuLogin(){
 }
 
 function ortuStep1(){
-  const kode=['p1','p2','p3','p4','p5','p6'].map(id=>document.getElementById(id).value).join('');
+  const kode=['p1','p2','p3','p4','p5','p6','p7','p8'].map(id=>document.getElementById(id).value).join('');
   document.getElementById('pin-err').textContent='';
-  if(kode.length<6){document.getElementById('pin-err').textContent='Masukkan 6 digit kode';return;}
+  if(kode.length<8){document.getElementById('pin-err').textContent='Masukkan 8 digit kode';return;}
   const db=getDb(); const s=db.santri.find(x=>x.id===kode);
   if(!s){document.getElementById('pin-err').textContent='Kode tidak ditemukan';return;}
   ortuSantriTemp=s;
