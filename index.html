@@ -712,7 +712,7 @@ const ROLES={
   ustadzah:{label:'Ustadzah',bg:'var(--purple-bg)',text:'var(--purple-text)',icon:'ti-wallet',menuBg:'var(--purple-bg)'},
   ustadz:{label:'Ustadz',bg:'var(--blue-bg)',text:'var(--blue-text)',icon:'ti-wallet',menuBg:'var(--blue-bg)'},
 };
-const CAN={admin:['santri','kesehatan','spp','audit','addSantri','titipan','kelolaKamar','kelolaAkun'],bendahara:['spp'],kader:['santri','kesehatan'],ustadzah:['santri','titipan'],ustadz:['santri','titipan']};
+const CAN={admin:['santri','kesehatan','spp','audit','addSantri','titipan','kelolaKamar','kelolaAkun'],bendahara:['spp'],kader:['santri','kesehatan'],ustadzah:['santri','titipan','spp-view'],ustadz:['santri','titipan','spp-view']};
 function can(a){return CP&&CAN[CP.role]?.includes(a);}
 
 // ─ DB ─────────────────────────────────────────────────────────────────────
@@ -961,7 +961,7 @@ function renderPMenu(){
   document.getElementById('p-role-badge').innerHTML=`<span class="badge" style="background:${r.bg};color:${r.text}"><i class="ti ${r.icon}" style="font-size:11px;margin-right:3px"></i>${r.label}</span>`;
   let h='<div class="menu-grid">';
   if(can('santri')||can('kesehatan'))h+=`<div class="menu-card" onclick="goTo('screen-santri-list')"><div class="menu-card-icon" style="background:var(--g50)"><i class="ti ti-users" style="font-size:20px;color:var(--g700)"></i></div><div class="menu-card-title">${can('kesehatan')?'Santri & Kesehatan':'Data Santri'}</div></div>`;
-  if(can('spp'))h+=`<div class="menu-card" onclick="goTo('screen-spp-dashboard')"><div class="menu-card-icon" style="background:var(--gold-light)"><i class="ti ti-credit-card" style="font-size:20px;color:var(--gold)"></i></div><div class="menu-card-title">Dashboard SPP</div></div>`;
+  if(can('spp')||can('spp-view'))h+=`<div class="menu-card" onclick="goTo('screen-spp-dashboard')"><div class="menu-card-icon" style="background:var(--gold-light)"><i class="ti ti-credit-card" style="font-size:20px;color:var(--gold)"></i></div><div class="menu-card-title">Dashboard SPP</div></div>`;
   if(can('titipan'))h+=`<div class="menu-card" onclick="goTo('screen-titipan')"><div class="menu-card-icon" style="background:var(--purple-bg)"><i class="ti ti-wallet" style="font-size:20px;color:var(--purple-text)"></i></div><div class="menu-card-title">Titipan Uang Saku</div></div>`;
   h+='</div>';
   if(can('kelolaKamar'))h+=`<div class="menu-card menu-card-wide" onclick="goTo('screen-kelola-kamar')" style="margin-bottom:10px"><div class="menu-card-icon" style="background:var(--purple-bg);flex-shrink:0"><i class="ti ti-door" style="font-size:20px;color:var(--purple-text)"></i></div><div><div class="menu-card-title" style="text-align:left">Kelola Kamar</div><div style="font-size:12px;color:var(--text2);margin-top:3px">Assign kamar ke ustadzah</div></div></div>`;
@@ -1028,7 +1028,7 @@ function renderSantriList(q){
   if(!f.length){el.innerHTML=`<div class="empty"><div class="empty-icon"><i class="ti ti-user-off"></i></div><div class="empty-text">Belum ada data santri</div></div>`;return;}
   el.innerHTML=f.map(s=>{
     const sp=getSpp(s,cbb);
-    const showSpp=can('spp')||can('audit');
+    const showSpp=can('spp')||can('spp-view')||can('audit');
     return`<div class="card" onclick="openSantri('${s.id}')">
       <div class="card-row">
         <div class="ava ava-sm">${ini(s.nama)}</div>
@@ -1057,7 +1057,7 @@ function renderDetail(s){
   const sppNow=getSpp(s,cbb);
   const hasChart=s.rekam.length>=2;
   const showK=can('kesehatan')||can('audit');
-  const showS=can('spp')||can('audit');
+  const showS=can('spp')||can('spp-view')||can('audit');
 
   let tabs='<div class="tabs">';
   if(showK)tabs+=`<button class="tab active" onclick="switchTab(this,'t-k')">Kesehatan</button>`;
@@ -1197,7 +1197,7 @@ function saveKonfirm(){
 
 // ─ SPP DASHBOARD ──────────────────────────────────────────────────────────
 function renderSpp(){
-  if(!can('spp')&&!can('audit')){document.getElementById('spp-content').innerHTML=noAccess();return;}
+  if(!can('spp')&&!can('spp-view')&&!can('audit')){document.getElementById('spp-content').innerHTML=noAccess();return;}
   dc();
   const db=getDb();
   const months=[...new Set(db.santri.flatMap(s=>s.pembayaran?.map(p=>p.bulan)||[]))].sort();
