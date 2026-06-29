@@ -464,20 +464,12 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 <div id="m-lupa-pin" style="display:none" class="modal-overlay">
   <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
     <div class="modal-title">Lupa PIN</div>
-    <div style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.5;background:var(--amber-bg);border-radius:var(--radius-sm);padding:10px 12px;">
-      <i class="ti ti-info-circle" style="font-size:14px;color:var(--amber-text);margin-right:4px"></i>
-      Masukkan nomor HP orang tua yang terdaftar untuk reset PIN.
-    </div>
-    <div class="form-group"><label class="form-label">No. HP terdaftar</label>
-      <input type="tel" id="lupa-pin-hp" placeholder="08xxxxxxxxxx"/>
-    </div>
-    <div class="err-msg" id="lupa-pin-err"></div>
-    <div style="margin-top:4px;font-size:12px;color:var(--text3);margin-bottom:12px">
-      Setelah verifikasi, Anda dapat membuat PIN baru. Setelah Supabase aktif, verifikasi akan dikirim via WhatsApp.
+    <div style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6;background:var(--amber-bg);border-radius:var(--radius-sm);padding:14px 16px;">
+      <i class="ti ti-info-circle" style="font-size:15px;color:var(--amber-text);margin-right:4px"></i>
+      Untuk keamanan, reset PIN hanya dapat dilakukan oleh admin pesantren. Silakan hubungi pengurus untuk mereset PIN Anda. Setelah direset, Anda dapat membuat PIN baru saat login berikutnya.
     </div>
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="cm('m-lupa-pin')">Batal</button>
-      <button class="btn btn-primary" style="margin-top:0" onclick="verifikasiHpLupaPin()">Verifikasi</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="cm('m-lupa-pin')">Mengerti</button>
     </div>
   </div></div>
 </div>
@@ -539,6 +531,19 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="cm('m-ganti-pin')">Batal</button>
       <button class="btn btn-primary" style="margin-top:0" onclick="saveGantiPin()">Simpan</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- Modal reset PIN (admin) -->
+<div id="m-reset-pin" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Reset PIN wali</div>
+    <div id="reset-pin-info" style="font-size:14px;color:var(--text2);margin-bottom:1rem;padding:12px 14px;background:var(--cream2);border-radius:var(--radius-sm);border:1px solid var(--border);font-weight:500"></div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:1.25rem">PIN wali santri ini akan dihapus. Saat wali login berikutnya, mereka akan diminta membuat PIN baru. Lanjutkan?</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-reset-pin')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0;background:var(--red);border-color:var(--red)" onclick="saveResetPin()">Ya, reset PIN</button>
     </div>
   </div></div>
 </div>
@@ -616,6 +621,24 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="cm('m-konfirm-spp')">Batal</button>
       <button class="btn btn-primary" style="margin-top:0" onclick="saveKonfirm()">Konfirmasi lunas</button>
+    </div>
+  </div></div>
+</div>
+
+<div id="m-konfirm-multi" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Lunasi beberapa bulan</div>
+    <div id="km-info" style="font-size:14px;color:var(--text2);margin-bottom:1rem;padding:12px 14px;background:var(--cream2);border-radius:var(--radius-sm);border:1px solid var(--border);font-weight:500"></div>
+    <div class="form-group"><label class="form-label">Pilih bulan yang dilunasi</label>
+      <div id="km-months" style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Tanggal bayar (untuk semua bulan terpilih)</label><input type="date" id="km-tgl"/></div>
+    <div class="form-group"><label class="form-label">Nominal per bulan (Rp)</label><input type="number" id="km-nominal" value="750000" oninput="updKmSummary()"/></div>
+    <div class="form-group"><label class="form-label">Catatan</label><input type="text" id="km-catatan" placeholder="Transfer BRI, cash, dll"/></div>
+    <div id="km-summary" style="font-size:13px;color:var(--text2);margin-bottom:0.75rem;font-weight:600"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-konfirm-multi')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveKonfirmMulti()">Lunasi terpilih</button>
     </div>
   </div></div>
 </div>
@@ -714,7 +737,7 @@ const ROLES={
   ustadzah:{label:'Ustadzah',bg:'var(--purple-bg)',text:'var(--purple-text)',icon:'ti-wallet',menuBg:'var(--purple-bg)'},
   ustadz:{label:'Ustadz',bg:'var(--blue-bg)',text:'var(--blue-text)',icon:'ti-wallet',menuBg:'var(--blue-bg)'},
 };
-const CAN={admin:['santri','kesehatan','spp','audit','addSantri','titipan','kelolaKamar','kelolaAkun'],bendahara:['spp'],kader:['santri','kesehatan'],ustadzah:['santri','titipan','spp-view'],ustadz:['santri','titipan','spp-view']};
+const CAN={admin:['santri','kesehatan','spp','audit','addSantri','titipan','kelolaKamar','kelolaAkun','resetPin'],bendahara:['spp'],kader:['santri','kesehatan'],ustadzah:['santri','titipan','spp-view'],ustadz:['santri','titipan','spp-view']};
 function can(a){return CP&&CAN[CP.role]?.includes(a);}
 
 // ─ DB ─────────────────────────────────────────────────────────────────────
@@ -1076,6 +1099,10 @@ function renderDetail(s){
           <div class="profile-kode">Kode: ${s.id}</div>
         </div>
       </div>
+      ${can('resetPin')?`<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div style="font-size:13px;color:var(--text2)"><i class="ti ti-lock" style="font-size:14px;vertical-align:-2px"></i> PIN wali: <strong style="color:${s.ortuPin?'var(--g700)':'var(--text3)'}">${s.ortuPin?'sudah dibuat':'belum dibuat'}</strong></div>
+        ${s.ortuPin?`<button class="btn btn-ghost" style="margin-top:0;font-size:13px;padding:8px 14px;color:var(--red)" onclick="showResetPin('${s.id}')"><i class="ti ti-rotate" style="font-size:14px"></i> Reset PIN</button>`:''}
+      </div>`:''}
     </div>
     ${tabs}
 
@@ -1104,6 +1131,7 @@ function renderDetail(s){
         <div style="text-align:right">${sBadge(sppNow.status)}${sppNow.status==='belum'&&can('spp')?`<div style="margin-top:8px"><button class="confirm-btn" onclick="showKonfirm('${s.id}','${cbb}')">Konfirmasi</button></div>`:''}</div>
       </div>
       <div class="section-label">Riwayat SPP</div>
+      ${can('spp')?`<button class="btn btn-ghost" style="margin-bottom:0.75rem;width:100%;font-size:13px" onclick="showKonfirmMulti('${s.id}')"><i class="ti ti-checks" style="font-size:15px"></i> Lunasi beberapa bulan sekaligus</button>`:''}
       <div class="pay-list">
         ${[...(s.pembayaran||[])].reverse().map(p=>`<div class="pay-row">
           <div><div class="pay-month">${bl(p.bulan)}</div>${p.tglBayar?`<div class="pay-sub">Bayar ${fd(p.tglBayar)}${p.catatan?' · '+p.catatan:''}</div>`:''}${p.by?`<div class="pay-sub"><i class="ti ti-user-circle" style="font-size:10px"></i> ${p.by}</div>`:''}</div>
@@ -1197,12 +1225,74 @@ function saveKonfirm(){
   else if(as==='screen-detail-santri')renderDetail(s);
 }
 
-// ─ SPP DASHBOARD ──────────────────────────────────────────────────────────
+function showKonfirmMulti(sid){
+  if(!can('spp')){alert('Akses terbatas');return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===sid);
+  if(!s){alert('Santri tidak ditemukan');return;}
+  db.sppSantriId=sid; setDb(db);
+  // daftar bulan belum bayar: Jan 2024 s/d bulan ini
+  const paid=new Set((s.pembayaran||[]).filter(p=>p.status!=='belum').map(p=>p.bulan));
+  const now=cb();const unpaid=[];let y=2024,m=1;
+  while(`${y}-${String(m).padStart(2,'0')}`<=now){const b=`${y}-${String(m).padStart(2,'0')}`;if(!paid.has(b))unpaid.push(b);m++;if(m>12){m=1;y++;}}
+  document.getElementById('km-info').textContent=`${s.nama} · ${unpaid.length} bulan belum lunas`;
+  document.getElementById('km-months').innerHTML=unpaid.length?unpaid.map(b=>`<label class="km-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;cursor:pointer;border-bottom:1px solid var(--border);border-radius:6px"><span style="display:flex;align-items:center;gap:10px"><span class="km-box" style="width:22px;height:22px;border:2px solid var(--g300);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:#fff;line-height:1"><span class="km-check" style="display:none">&#10003;</span></span><span style="font-size:14px">${bl(b)}</span></span><span style="font-size:12px;color:var(--text3)">${rp(SPP)}</span><input type="checkbox" class="km-cb" value="${b}" onchange="toggleKmRow(this)" style="display:none"/></label>`).join(''):'<div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px">Semua bulan sudah lunas 🎉</div>';
+  document.getElementById('km-tgl').value=new Date().toISOString().split('T')[0];
+  document.getElementById('km-nominal').value=SPP;
+  document.getElementById('km-catatan').value='';
+  document.getElementById('km-summary').textContent='';
+  document.getElementById('m-konfirm-multi').style.display='flex';
+}
+function toggleKmRow(cb){
+  const lbl=cb.closest('.km-row');
+  const box=lbl.querySelector('.km-box');
+  const chk=lbl.querySelector('.km-check');
+  if(cb.checked){
+    lbl.style.background='var(--g100)';
+    box.style.background='var(--g500)';
+    box.style.borderColor='var(--g500)';
+    chk.style.display='block';
+  }else{
+    lbl.style.background='';
+    box.style.background='';
+    box.style.borderColor='var(--g300)';
+    chk.style.display='none';
+  }
+  updKmSummary();
+}
+function updKmSummary(){
+  const cbs=[...document.querySelectorAll('.km-cb:checked')];
+  const nom=parseInt(document.getElementById('km-nominal').value)||0;
+  document.getElementById('km-summary').textContent=cbs.length?`${cbs.length} bulan dipilih · total ${rp(cbs.length*nom)}`:'';
+}
+function saveKonfirmMulti(){
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.sppSantriId);
+  if(!s){alert('Santri tidak ditemukan');return;}
+  const bulanSel=[...document.querySelectorAll('.km-cb:checked')].map(c=>c.value);
+  if(!bulanSel.length){alert('Pilih minimal satu bulan');return;}
+  const tgl=document.getElementById('km-tgl').value;
+  if(!tgl){alert('Isi tanggal bayar');return;}
+  const nom=parseInt(document.getElementById('km-nominal').value)||SPP;
+  const cat=document.getElementById('km-catatan').value;
+  if(!s.pembayaran)s.pembayaran=[];
+  bulanSel.forEach(bulan=>{
+    const e={bulan,status:'lunas',tglBayar:tgl,nominal:nom,catatan:cat,by:CP?.nama||'-',ts:new Date().toISOString()};
+    const idx=s.pembayaran.findIndex(p=>p.bulan===bulan);
+    if(idx>=0)s.pembayaran[idx]=e;else s.pembayaran.push(e);
+  });
+  setDb(db);
+  log('Pelunasan SPP borongan',`${s.nama} · ${bulanSel.length} bulan · ${rp(bulanSel.length*nom)}`,'ti-credit-card','var(--g100)','var(--g700)');
+  cm('m-konfirm-multi');
+  const as=document.querySelector('.screen.active')?.id;
+  if(as==='screen-spp-dashboard')renderSpp();
+  else if(as==='screen-detail-santri')renderDetail(s);
+}
 function renderSpp(){
   if(!can('spp')&&!can('spp-view')&&!can('audit')){document.getElementById('spp-content').innerHTML=noAccess();return;}
   dc();
   const db=getDb();
-  const months=[...new Set(db.santri.flatMap(s=>s.pembayaran?.map(p=>p.bulan)||[]))].sort();
+  const months=(()=>{const set=new Set(db.santri.flatMap(s=>s.pembayaran?.map(p=>p.bulan)||[]));const now=cb();let y=2024,m=1;while(`${y}-${String(m).padStart(2,'0')}`<=now){set.add(`${y}-${String(m).padStart(2,'0')}`);m++;if(m>12){m=1;y++;}}return[...set].sort();})();
   const total=db.santri.length;
   const sel=db.sppBulan||cb();
   const stats=months.map(b=>{
@@ -1242,15 +1332,8 @@ function renderSpp(){
       <div class="stat-card" style="background:var(--red-bg);border-color:#F0B0B0"><div class="stat-val" style="color:var(--red-text)">${ss.bl}</div><div class="stat-label" style="color:var(--red-text)">Belum bayar</div></div>
     </div>
     <div class="section-label">Status per santri · ${bl(sel)}</div>
-    <div class="pay-list">
-      ${db.santri.map(s=>{
-        const p=getSpp(s,sel);
-        return`<div class="pay-row">
-          <div><div class="pay-month">${s.nama}</div><div class="pay-sub">${s.kelas}${p.tglBayar?' · '+fd(p.tglBayar):''}</div></div>
-          <div class="pay-right">${p.status!=='belum'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}${p.status==='belum'&&can('spp')?`<button class="confirm-btn" onclick="showKonfirm('${s.id}','${sel}')">Konfirmasi</button>`:''}</div>
-        </div>`;
-      }).join('')}
-    </div>`;
+    <div class="search-wrap"><i class="ti ti-search search-ico"></i><input type="text" id="spp-search" placeholder="Cari nama santri…" oninput="filterSppList(this.value)"/></div>
+    <div class="pay-list" id="spp-pay-list">${sppRows(db.santri,sel)}</div>`;
 
   setTimeout(()=>{
     const labels=months.map(b=>bs(b));
@@ -1260,6 +1343,21 @@ function renderSpp(){
     const cb2=document.getElementById('ch-brkdwn');
     if(cb2)CI['brkdwn']=new Chart(cb2,{type:'bar',data:{labels,datasets:[{label:'Lunas',data:stats.map(s=>s.l),backgroundColor:'#257A43',borderRadius:2,stack:'s'},{label:'Terlambat',data:stats.map(s=>s.t),backgroundColor:'#B86800',borderRadius:2,stack:'s'},{label:'Belum',data:stats.map(s=>s.bl),backgroundColor:'#B83232',borderRadius:2,stack:'s'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:11}},stacked:true},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},stacked:true,max:total}}}});
   },100);
+}
+function sppRows(list,sel){
+  return list.map(s=>{
+    const p=getSpp(s,sel);
+    return`<div class="pay-row">
+      <div><div class="pay-month">${s.nama}</div><div class="pay-sub">${s.kelas}${p.tglBayar?' · '+fd(p.tglBayar):''}</div></div>
+      <div class="pay-right">${p.status!=='belum'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}${p.status==='belum'&&can('spp')?`<button class="confirm-btn" onclick="showKonfirm('${s.id}','${sel}')">Konfirmasi</button>`:''}${can('spp')?`<button class="confirm-btn" style="background:var(--cream2);color:var(--g700);border:1px solid var(--g300)" onclick="showKonfirmMulti('${s.id}')" title="Lunasi beberapa bulan"><i class="ti ti-checks" style="font-size:14px"></i></button>`:''}</div>
+    </div>`;
+  }).join('');
+}
+function filterSppList(q){
+  const db=getDb();const sel=db.sppBulan||cb();
+  const f=db.santri.filter(s=>s.nama.toLowerCase().includes((q||'').toLowerCase()));
+  const el=document.getElementById('spp-pay-list');
+  if(el)el.innerHTML=f.length?sppRows(f,sel):'<div style="text-align:center;padding:1.5rem;color:var(--text3);font-size:13px">Santri tidak ditemukan</div>';
 }
 function updSppBulan(v){const d=getDb();d.sppBulan=v;setDb(d);renderSpp();}
 
@@ -1373,8 +1471,6 @@ function saveGantiPin(){
 }
 
 function showLupaPin(){
-  document.getElementById('lupa-pin-hp').value='';
-  document.getElementById('lupa-pin-err').textContent='';
   document.getElementById('m-lupa-pin').style.display='flex';
 }
 
@@ -1406,6 +1502,27 @@ function showGantiPin(){
   ['ganti-pin-lama','ganti-pin-baru','ganti-pin-konfirm'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('ganti-pin-err').textContent='';
   document.getElementById('m-ganti-pin').style.display='flex';
+}
+
+function showResetPin(sid){
+  if(!can('resetPin')){alert('Akses terbatas');return;}
+  const db=getDb();const s=db.santri.find(x=>x.id===sid);
+  if(!s){alert('Santri tidak ditemukan');return;}
+  db.resetPinTargetId=sid; setDb(db);
+  document.getElementById('reset-pin-info').textContent=`${s.nama} · ${s.kamar}`;
+  document.getElementById('m-reset-pin').style.display='flex';
+}
+function saveResetPin(){
+  if(!can('resetPin')){alert('Akses terbatas');return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.resetPinTargetId);
+  if(!s){alert('Santri tidak ditemukan');return;}
+  s.ortuPin=null; setDb(db);
+  log('Reset PIN wali',`${s.nama} · ${s.kamar}`,'ti-lock-open','var(--red-bg)','var(--red-text)');
+  cm('m-reset-pin');
+  alert(`PIN wali ${s.nama} berhasil direset. Wali akan membuat PIN baru saat login berikutnya.`);
+  const as=document.querySelector('.screen.active')?.id;
+  if(as==='screen-detail-santri')renderDetail(s);
 }
 
 function renderOrtu(s){
