@@ -1616,78 +1616,56 @@ function switchOrtuTab(btn,id){
 }
 
 // ─ MENU HARIAN ────────────────────────────────────────────────────────────
-const LAUK_UTAMA=[
-  {nama:'Ikan pindang',ikon:'🐟'},
-  {nama:'Lele goreng',ikon:'🐟'},
-  {nama:'Ayam kecap',ikon:'🍗'},
-  {nama:'Ikan pindang',ikon:'🐟'},
-  {nama:'Bandeng goreng',ikon:'🐟'},
-  {nama:'Ayam goreng',ikon:'🍗'},
-  {nama:'Lele goreng',ikon:'🐟'},
-  {nama:'Ayam suwir soto',ikon:'🍗'},
-  {nama:'Ikan pindang',ikon:'🐟'},
-  {nama:'Sarden goreng',ikon:'🐠'},
-  {nama:'Ayam kecap',ikon:'🍗'},
-  {nama:'Lele goreng',ikon:'🐟'},
-  {nama:'Bandeng goreng',ikon:'🐟'},
-  {nama:'Ayam goreng',ikon:'🍗'},
-];
-const SAYUR_PAGI=['Sayur asem','Sayur bening','Sop wortel','Cah kangkung','Lodeh','Sayur cambah tahu','Capjay','Sayur asem','Mie kecap kuning','Sop wortel'];
-const SAYUR_SORE=['Cah kangkung','Lodeh','Sayur bening','Sayur asem','Capjay','Sop wortel','Sayur cambah tahu','Terong balado','Sayur asem','Lodeh'];
-const SAYUR_IKON_P=['🍲','🥣','🥕','🥬','🍲','🫛','🥦','🍲','🍜','🥕'];
-const SAYUR_IKON_S=['🥬','🍲','🥣','🍲','🥦','🥕','🫛','🍆','🍲','🍲'];
-const SPECIAL_PAGI={1:{nama:'Fuyunghai',ikon:'🥚'},4:{nama:'Asparagus crab stick tahu',ikon:'🥦'}};
-
-function getDayIndex(){
-  const now=new Date();
-  const start=new Date(now.getFullYear(),0,0);
-  return Math.floor((now-start)/86400000);
+const MENU_HARIAN={
+  1:{pagi:['Nasi Putih','Soto Ayam','Sambel'],sore:['Nasi Putih','FuyungHai','Telur Dadar']},
+  2:{pagi:['Nasi Putih','Sayur Kare Tahu','Naget','Sambel'],sore:['Nasi Putih','Sayur Asem','Ayam Kecap','Telur Dadar','Pindang Goreng Tepung','Krupuk','Sambel']},
+  3:{pagi:['Nasi Putih','Sayur Rawon Tahu','Sosis Bintang','Krupuk','Sambel'],sore:['Nasi Putih','Sayur Lodeh','Ayam Goreng','Telur Dadar','Udang Goreng Tepung','Sambel']},
+  4:{pagi:['Nasi Putih','Telur Dadar','Mie Goreng','Sambel'],sore:['Nasi Putih','Sayur Bening','Ayam Bali','Telur Dadar','Lele Goreng','Sambel']},
+  5:{pagi:['Nasi Putih','Pecel','Tahu Bali','Krupuk'],sore:['Nasi Putih','Sayur Balado Terong','Ayam Bumbu Kuning','Telur Dadar','Pindang Goreng','Sambel']},
+  6:{pagi:['Nasi Putih','Sayur Sup','Tempe Goreng','Bakso','Sambel'],sore:['Nasi Putih','Sayur Sawi Putih + Mie Bihun','Ayam Kentaky','Telur Dadar','Sarden Pindang','Sambel']},
+  0:{pagi:['Nasi Putih','Urap-urap','Tahu Goreng','Scallop'],sore:['Nasi Putih','Sayur Cambah + Tahu','Ayam Goreng','Telur Dadar','Lele Bali','Sambel']},
+};
+const MENU_LAIN={
+  pagi:[['Nasi Putih','Tahu Kecap','Naget','Sambel'],['Nasi Putih','Sayur Lodeh','Naget','Sambel']],
+  sore:[['Nasi Putih','Kotokan Tahu Tempe Teri','Pindang Goreng','Telur Dadar','Ayam Kecap','Sambel'],['Nasi Putih','Sayur Asem','Lele Goreng','Telur Dadar','Ayam Kentaky','Sambel']],
+};
+function ikonMenu(nama){
+  const n=nama.toLowerCase();
+  if(n.includes('nasi'))return'🍚';
+  if(n.includes('ayam'))return'🍗';
+  if(n.includes('lele')||n.includes('pindang')||n.includes('bandeng')||n.includes('ikan')||n.includes('sarden')||n.includes('udang'))return'🐟';
+  if(n.includes('telur')||n.includes('fuyung'))return'🥚';
+  if(n.includes('sambel'))return'🌶️';
+  if(n.includes('krupuk'))return'🫓';
+  if(n.includes('bakso'))return'🍢';
+  if(n.includes('soto')||n.includes('kare')||n.includes('rawon')||n.includes('lodeh')||n.includes('asem')||n.includes('bening')||n.includes('sup')||n.includes('sayur'))return'🍲';
+  if(n.includes('pecel')||n.includes('urap'))return'🥗';
+  if(n.includes('mie'))return'🍜';
+  if(n.includes('tahu')||n.includes('tempe'))return'🟫';
+  if(n.includes('naget')||n.includes('sosis')||n.includes('scallop'))return'🍤';
+  return'🍽️';
 }
-
 function menuHariIniHtml(){
   const now=new Date();
   const dow=now.getDay();
-  const idx=getDayIndex();
   const hariIni=now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'});
+  const m=MENU_HARIAN[dow];
 
-  const lauk=LAUK_UTAMA[idx%LAUK_UTAMA.length];
-  const sayurPagiNama=SAYUR_PAGI[idx%SAYUR_PAGI.length];
-  const sayurPagiIkon=SAYUR_IKON_P[idx%SAYUR_IKON_P.length];
-  const sayurSoreNama=SAYUR_SORE[(idx+5)%SAYUR_SORE.length];
-  const sayurSoreIkon=SAYUR_IKON_S[(idx+5)%SAYUR_IKON_S.length];
-  const specialPagi=SPECIAL_PAGI[dow];
-  const adaKerupuk=[2,4,6].includes(dow);
-
-  function menuRow(ikon,nama){
+  function menuRow(nama){
     return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
-      <div style="font-size:20px;width:32px;text-align:center;flex-shrink:0">${ikon}</div>
+      <div style="font-size:20px;width:32px;text-align:center;flex-shrink:0">${ikonMenu(nama)}</div>
       <div style="font-size:14px;font-weight:500;color:var(--text)">${nama}</div>
     </div>`;
   }
-
   function mealCard(label,ikon,items){
     return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow)">
       <div style="padding:10px 1.25rem;background:var(--cream2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
         <span style="font-size:16px">${ikon}</span>
         <span style="font-size:13px;font-weight:600;color:var(--text)">${label}</span>
       </div>
-      <div style="padding:0 1.25rem">${items.map(i=>menuRow(i.ikon,i.nama)).join('')}</div>
+      <div style="padding:0 1.25rem">${items.map(menuRow).join('')}</div>
     </div>`;
   }
-
-  const pagiItems=[
-    {ikon:'🍚',nama:'Nasi putih'},
-    ...(specialPagi?[{ikon:specialPagi.ikon,nama:specialPagi.nama}]:[{ikon:lauk.ikon,nama:lauk.nama}]),
-    {ikon:sayurPagiIkon,nama:sayurPagiNama},
-    ...(adaKerupuk?[{ikon:'🫓',nama:'Kerupuk'}]:[]),
-  ];
-
-  const soreItems=[
-    {ikon:'🍚',nama:'Nasi putih'},
-    {ikon:lauk.ikon,nama:lauk.nama},
-    {ikon:sayurSoreIkon,nama:sayurSoreNama},
-    ...(adaKerupuk?[{ikon:'🫓',nama:'Kerupuk'}]:[]),
-  ];
 
   return`
     <div style="background:linear-gradient(135deg,var(--g900),var(--g700));border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:12px">
@@ -1697,8 +1675,8 @@ function menuHariIniHtml(){
         <div style="font-family:Fraunces,serif;font-size:17px;font-weight:600;color:#fff;margin-top:3px">${hariIni}</div>
       </div>
     </div>
-    ${mealCard('Makan pagi','🌅',pagiItems)}
-    ${mealCard('Makan sore','🌇',soreItems)}
+    ${mealCard('Makan pagi','🌅',m.pagi)}
+    ${mealCard('Makan sore','🌇',m.sore)}
     <div style="background:var(--g50);border:1px solid var(--g300);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:12px">
       <div style="font-size:12px;font-weight:600;color:var(--g700);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="ti ti-check" style="font-size:13px"></i>Selalu tersedia</div>
       <div style="display:flex;gap:14px;flex-wrap:wrap">
@@ -1706,7 +1684,7 @@ function menuHariIniHtml(){
       </div>
       <div style="font-size:11px;color:var(--text3);margin-top:6px">Alternatif bagi santri dengan alergi atau yang tidak menyukai lauk utama hari ini</div>
     </div>
-    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px">Menu berputar otomatis setiap hari</div>`;
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px">Jadwal menu tetap · Asrama Muzamzamah</div>`;
 }
 // ─ USTADZAH KAMAR FILTER ─────────────────────────────────────────────────
 function getMyKamar(){
