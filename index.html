@@ -1,1 +1,2018 @@
 
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nazmah — Muzamzamah An'amta</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+<style>
+:root{
+  --cream:#FDFAF4;--cream2:#F5F0E6;--cream3:#EDE5D4;
+  --surface:#FFFFFF;
+  --g900:#0D3320;--g700:#1A5C32;--g500:#257A43;--g300:#5DA876;--g100:#E6F2EA;--g50:#F0F9F3;
+  --gold:#B8882A;--gold-light:#FBF3DC;--gold-mid:#E8C870;
+  --text:#1C1410;--text2:#6B5E52;--text3:#A89880;
+  --red:#B83232;--red-bg:#FDF0EF;--red-text:#8C2020;
+  --amber:#B86800;--amber-bg:#FEF3E2;--amber-text:#8F5000;
+  --blue:#1E55B0;--blue-bg:#EEF3FC;--blue-text:#1840A0;
+  --purple:#7C3AED;--purple-bg:#F5F3FF;--purple-text:#5B21B6;
+  --radius:14px;--radius-sm:8px;--radius-xs:5px;
+  --shadow:0 1px 4px rgba(0,0,0,0.07),0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:0 6px 20px rgba(0,0,0,0.08),0 2px 6px rgba(0,0,0,0.05);
+  --shadow-lg:0 16px 40px rgba(0,0,0,0.12);
+  --border:#E8DFD0;--border2:#D4C8B4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;font-size:14px}
+h1,h2,.display{font-family:'Fraunces',serif}
+
+/* Layout */
+.app{max-width:440px;margin:0 auto;padding:0;min-height:100vh;position:relative}
+.screen{display:none;animation:fadeIn 0.2s ease}.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LANDING ─────────────────────────────────────────────────────────── */
+.landing-screen{min-height:100vh;background:#050E07;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+/* Cinematic layered background */
+.l-bg{position:absolute;inset:0}
+.l-bg-base{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,#0D2E16 0%,#050E07 70%)}
+.l-glow-top{position:absolute;top:-10%;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(37,122,67,0.22) 0%,transparent 70%);pointer-events:none}
+.l-glow-gold{position:absolute;top:15%;left:50%;transform:translateX(-50%);width:300px;height:200px;background:radial-gradient(ellipse,rgba(184,136,42,0.12) 0%,transparent 70%);pointer-events:none}
+.l-glow-bottom{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;height:250px;background:radial-gradient(ellipse at 50% 100%,rgba(13,51,32,0.8) 0%,transparent 70%);pointer-events:none}
+/* Stars */
+.l-stars{position:absolute;inset:0;overflow:hidden}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s)}
+@keyframes twinkle{0%,100%{opacity:var(--min-op,0.1)}50%{opacity:var(--max-op,0.6)}}
+/* Geometric pattern */
+.l-pattern{position:absolute;inset:0;opacity:0.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cdefs%3E%3Cstyle%3Eline,polygon,circle%7Bfill:none;stroke:%23fff;stroke-width:0.5%7D%3C/style%3E%3C/defs%3E%3Cpolygon points='60,10 70,30 93,30 75,47 82,70 60,57 38,70 45,47 27,30 50,30'/%3E%3Ccircle cx='60' cy='40' r='18'/%3E%3Cpolygon points='60,22 66,36 82,36 70,45 74,60 60,51 46,60 50,45 38,36 54,36'/%3E%3Cline x1='60' y1='0' x2='60' y2='10'/%3E%3Cline x1='60' y1='70' x2='60' y2='120'/%3E%3Cline x1='0' y1='60' x2='27' y2='30'/%3E%3Cline x1='93' y1='30' x2='120' y2='60'/%3E%3Cpolygon points='0,0 15,0 0,15' opacity='0.4'/%3E%3Cpolygon points='120,0 120,15 105,0' opacity='0.4'/%3E%3Cpolygon points='0,120 15,120 0,105' opacity='0.4'/%3E%3Cpolygon points='120,120 105,120 120,105' opacity='0.4'/%3E%3C/svg%3E");background-size:120px 120px}
+/* Center ornament */
+.l-ornament{position:absolute;top:50%;left:50%;transform:translate(-50%,-65%);width:300px;height:300px;opacity:0.06;pointer-events:none}
+/* Hero text */
+.l-hero{position:absolute;top:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:18vh;z-index:2;text-align:center;padding-inline:2rem}
+.l-eyebrow{font-size:10px;font-weight:600;letter-spacing:0.35em;text-transform:uppercase;color:var(--gold-mid);margin-bottom:16px;opacity:0;animation:fadeUp 0.8s ease 0.2s forwards}
+.l-title{font-family:'Fraunces',serif;font-size:68px;font-weight:700;color:#fff;line-height:0.95;letter-spacing:-0.02em;opacity:0;animation:fadeUp 0.9s ease 0.35s forwards}
+.l-title-italic{font-style:italic;color:var(--gold-mid)}
+.l-divider{display:flex;align-items:center;gap:12px;margin:20px auto;width:200px;opacity:0;animation:fadeUp 0.8s ease 0.5s forwards}
+.l-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(232,200,112,0.4),transparent)}
+.l-divider-diamond{width:6px;height:6px;background:var(--gold-mid);transform:rotate(45deg);flex-shrink:0;opacity:0.6}
+.l-subtitle{font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);line-height:1.6;max-width:260px;opacity:0;animation:fadeUp 0.8s ease 0.6s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+/* Bottom card */
+.landing-card{background:var(--cream);border-radius:28px 28px 0 0;width:100%;max-width:440px;padding:2rem 1.75rem 4rem;position:relative;z-index:3;box-shadow:0 -20px 60px rgba(0,0,0,0.4);animation:slideUp 0.7s cubic-bezier(0.22,1,0.36,1) 0.8s both}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.l-card-handle{width:36px;height:4px;background:var(--border2);border-radius:99px;margin:0 auto 1.5rem}
+.l-card-label{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:14px}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.role-btn{border:1.5px solid var(--border);border-radius:var(--radius);padding:1.25rem 1rem;cursor:pointer;background:var(--surface);text-align:left;transition:all 0.2s;font-family:inherit;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.role-btn::after{content:'';position:absolute;inset:0;background:var(--g900);opacity:0;transition:opacity 0.2s}
+.role-btn:hover{border-color:var(--g500);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.role-btn:hover::after{opacity:0.02}
+.role-btn:active{transform:translateY(0)}
+.role-btn-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+.role-btn-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:4px}
+.role-btn-desc{font-size:12px;color:var(--text2);line-height:1.4;font-weight:400}
+
+/* ── APP SHELL ────────────────────────────────────────────────────────── */
+.app-bar{display:flex;align-items:center;gap:10px;padding:1.25rem 1.25rem 0;margin-bottom:1.25rem}
+.app-bar-title{font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:var(--text);flex:1;line-height:1.2}
+.inner{padding:0 1.25rem 2rem}
+
+.btn-back{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px;font-size:13px;cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:5px;font-family:inherit;transition:all 0.15s;font-weight:500}
+.btn-back:hover{background:var(--cream2);border-color:var(--border2)}
+
+/* ── CARDS ───────────────────────────────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;cursor:pointer;transition:all 0.2s;box-shadow:var(--shadow)}
+.card:hover{border-color:var(--border2);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.card:active{transform:translateY(0)}
+.card-row{display:flex;align-items:center;gap:12px}
+
+/* Avatar */
+.ava{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:'DM Sans',sans-serif;flex-shrink:0}
+.ava-sm{width:40px;height:40px;font-size:13px;background:var(--g100);color:var(--g700)}
+.ava-md{width:52px;height:52px;font-size:16px;background:var(--g100);color:var(--g700)}
+.ava-colored{background:var(--g900);color:var(--gold-mid)}
+
+/* ── BADGES ──────────────────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;letter-spacing:0.01em}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.badge-green{background:var(--g100);color:var(--g700)}.badge-green::before{background:var(--g500)}
+.badge-amber{background:var(--amber-bg);color:var(--amber-text)}.badge-amber::before{background:var(--amber)}
+.badge-red{background:var(--red-bg);color:var(--red-text)}.badge-red::before{background:var(--red)}
+.badge-blue{background:var(--blue-bg);color:var(--blue-text)}.badge-blue::before{background:var(--blue)}
+.badge-gold{background:var(--gold-light);color:var(--gold)}.badge-gold::before{background:var(--gold)}
+
+/* ── METRICS GRID ────────────────────────────────────────────────────── */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(85px,1fr));gap:8px;margin-bottom:1.25rem}
+.metric{background:var(--cream2);border-radius:var(--radius-sm);padding:11px 12px;border:1px solid var(--border)}
+.metric-label{font-size:11px;color:var(--text2);margin-bottom:5px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em}
+.metric-value{font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:var(--text)}
+.metric-unit{font-size:11px;color:var(--text3);font-family:'DM Sans';font-weight:400;margin-left:2px}
+
+/* ── SECTION LABEL ───────────────────────────────────────────────────── */
+.section-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:10px;margin-top:1.5rem;display:flex;align-items:center;gap:6px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── TABS ────────────────────────────────────────────────────────────── */
+.tabs{display:flex;background:var(--cream2);border-radius:var(--radius-sm);padding:3px;margin-bottom:1.5rem;gap:3px;border:1px solid var(--border)}
+.tab{flex:1;padding:8px;font-size:13px;font-weight:500;cursor:pointer;text-align:center;border:none;background:none;color:var(--text2);border-radius:var(--radius-xs);transition:all 0.15s;font-family:'DM Sans',sans-serif}
+.tab.active{background:var(--surface);color:var(--g700);box-shadow:var(--shadow);font-weight:600}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* ── FORMS ───────────────────────────────────────────────────────────── */
+.form-group{margin-bottom:16px}
+.form-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:7px;display:block;text-transform:uppercase;letter-spacing:0.05em}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+input,select,textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);background:var(--surface);transition:all 0.15s;outline:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--g500);box-shadow:0 0 0 3px rgba(37,122,67,0.12)}
+input::placeholder{color:var(--text3)}
+textarea{min-height:70px;resize:vertical}
+
+/* ── BUTTONS ─────────────────────────────────────────────────────────── */
+.btn{border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.18s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-primary{background:var(--g900);color:#fff;border:none;padding:11px 20px;width:100%;margin-top:8px;letter-spacing:0.01em}
+.btn-primary:hover{background:var(--g700);transform:translateY(-1px);box-shadow:0 4px 14px rgba(13,51,32,0.25)}
+.btn-primary:active{transform:none}
+.btn-ghost{background:none;border:1.5px solid var(--border);padding:10px;color:var(--text2)}
+.btn-ghost:hover{background:var(--cream2);border-color:var(--border2)}
+.add-btn{display:flex;align-items:center;gap:7px;background:none;border:1.5px dashed var(--border2);border-radius:var(--radius-sm);padding:9px 14px;font-size:13px;cursor:pointer;color:var(--text2);margin-bottom:1rem;font-family:'DM Sans',sans-serif;font-weight:500;transition:all 0.15s;width:100%;justify-content:center}
+.add-btn:hover{background:var(--g50);border-color:var(--g300);color:var(--g700)}
+.confirm-btn{font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;border:1.5px solid var(--g300);background:var(--g50);cursor:pointer;color:var(--g700);white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.confirm-btn:hover{background:var(--g100);border-color:var(--g500)}
+.btn-logout{display:flex;align-items:center;gap:5px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px;font-size:12px;cursor:pointer;color:var(--text2);font-family:'DM Sans',sans-serif;font-weight:500}
+.btn-logout:hover{background:var(--red-bg);color:var(--red-text);border-color:var(--red)}
+
+/* ── MODAL ───────────────────────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(12,20,15,0.5);display:flex;align-items:flex-end;justify-content:center;z-index:100;backdrop-filter:blur(4px)}
+.modal{background:var(--cream);border-radius:24px 24px 0 0;padding:0;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,0.18)}
+.modal-drag{width:40px;height:4px;background:var(--border2);border-radius:99px;margin:16px auto 0}
+.modal-inner{padding:1.25rem 1.5rem 2.5rem}
+.modal-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin-bottom:1.25rem;color:var(--text)}
+.modal-actions{display:flex;gap:10px;margin-top:1.25rem}
+.modal-actions button{flex:1}
+
+/* ── PENGURUS MENU CARDS ──────────────────────────────────────────────── */
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.menu-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1rem;cursor:pointer;text-align:center;transition:all 0.2s;box-shadow:var(--shadow)}
+.menu-card:hover{border-color:var(--border2);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.menu-card-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 10px}
+.menu-card-title{font-family:'Fraunces',serif;font-size:14px;font-weight:600;color:var(--text)}
+.menu-card-wide{display:flex;align-items:center;gap:14px;text-align:left;padding:1rem 1.25rem}
+
+/* ── PROFILE HEADER ──────────────────────────────────────────────────── */
+.profile-header{background:linear-gradient(135deg,var(--g900) 0%,var(--g700) 100%);border-radius:var(--radius);padding:1.5rem 1.25rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.profile-header::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,0.04);border-radius:50%}
+.profile-header::after{content:'';position:absolute;bottom:-40px;right:20px;width:80px;height:80px;background:rgba(255,255,255,0.03);border-radius:50%}
+.profile-header-content{position:relative;z-index:1;display:flex;align-items:center;gap:14px}
+.profile-name{font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:#fff;line-height:1.2}
+.profile-meta{font-size:12px;color:rgba(255,255,255,0.65);margin-top:3px;font-weight:400}
+.profile-kode{font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px}
+
+/* ── REKAM ITEM ──────────────────────────────────────────────────────── */
+.rekam-list{border-left:2px solid var(--border);margin-left:8px;padding-left:1.25rem}
+.rekam-item{position:relative;padding-bottom:1.25rem}
+.rekam-item::before{content:'';width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--g300);position:absolute;left:-1.55rem;top:3px}
+.rekam-item:last-child{padding-bottom:0}
+.rekam-date{font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:500}
+.rekam-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.rekam-detail{font-size:13px;color:var(--text2);line-height:1.5}
+.rekam-by{font-size:11px;color:var(--text3);margin-top:5px;display:flex;align-items:center;gap:4px}
+
+/* ── SPP COMPONENTS ──────────────────────────────────────────────────── */
+.spp-summary{background:linear-gradient(135deg,var(--g900),var(--g700));border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;position:relative;overflow:hidden}
+.spp-summary::after{content:'';position:absolute;bottom:-20px;right:-20px;width:100px;height:100px;background:rgba(255,255,255,0.04);border-radius:50%}
+.spp-total-label{font-size:12px;color:rgba(255,255,255,0.6);font-weight:500}
+.spp-total-val{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:#fff;margin:4px 0}
+.progress-track{height:6px;background:rgba(255,255,255,0.2);border-radius:99px;overflow:hidden;margin:10px 0}
+.progress-fill{height:100%;border-radius:99px;background:var(--gold-mid);transition:width 0.6s ease}
+.progress-pct{font-size:12px;color:rgba(255,255,255,0.6)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem}
+.stat-card{border-radius:var(--radius-sm);padding:11px 12px;text-align:center;border:1px solid transparent}
+.stat-val{font-family:'Fraunces',serif;font-size:24px;font-weight:700}
+.stat-label{font-size:11px;font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:0.04em}
+.pay-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.pay-row{display:flex;align-items:center;justify-content:space-between;padding:12px 1.25rem;border-bottom:1px solid var(--border)}
+.pay-row:last-child{border-bottom:none}
+.pay-month{font-size:14px;font-weight:500;color:var(--text)}
+.pay-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.pay-right{display:flex;align-items:center;gap:8px}
+.pay-amount{font-size:13px;font-weight:700;color:var(--text);font-family:'Fraunces',serif}
+
+/* ── CHART CARD ──────────────────────────────────────────────────────── */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:12px;box-shadow:var(--shadow)}
+.chart-title{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.chart-wrap{position:relative;height:185px}
+.chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.leg{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);font-weight:500}
+.leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+
+/* ── AUDIT LOG ───────────────────────────────────────────────────────── */
+.audit-list{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.audit-item{display:flex;gap:12px;padding:12px 1.25rem;border-bottom:1px solid var(--border)}
+.audit-item:last-child{border-bottom:none}
+.audit-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.audit-action{font-size:13px;font-weight:600;color:var(--text)}
+.audit-desc{font-size:13px;color:var(--text2);margin-top:2px;line-height:1.4}
+.audit-meta{font-size:11px;color:var(--text3);margin-top:4px;display:flex;align-items:center;gap:6px}
+
+/* ── LOGIN SCREEN ────────────────────────────────────────────────────── */
+.login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;background:var(--cream)}
+.login-icon{width:72px;height:72px;background:var(--g900);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;box-shadow:0 8px 24px rgba(13,51,32,0.25)}
+.login-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;text-align:center;margin-bottom:6px;color:var(--text)}
+.login-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:2rem}
+.login-form{width:100%;max-width:320px}
+.err-msg{font-size:13px;color:var(--red);margin-top:8px;min-height:20px;text-align:center}
+
+/* ── PIN ─────────────────────────────────────────────────────────────── */
+.pin-wrap{display:flex;gap:8px;justify-content:center;margin:1.5rem 0}
+.pin-wrap input{width:42px;height:54px;text-align:center;font-size:20px;font-weight:700;border-radius:var(--radius-sm);padding:0;font-family:'Fraunces',serif}
+
+/* ── SEARCH ──────────────────────────────────────────────────────────── */
+.search-wrap{position:relative;margin-bottom:1rem}
+.search-wrap input{padding-left:38px}
+.search-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none}
+
+/* ── EMPTY STATE ─────────────────────────────────────────────────────── */
+.empty{text-align:center;padding:3rem 1rem}
+.empty-icon{width:56px;height:56px;border-radius:50%;background:var(--cream2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px;color:var(--text3)}
+.empty-text{font-size:14px;color:var(--text3);font-weight:500}
+
+/* ── NO ACCESS ───────────────────────────────────────────────────────── */
+.no-access{text-align:center;padding:3rem 1rem}
+.no-access-icon{width:64px;height:64px;border-radius:50%;background:var(--red-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px;color:var(--red-text)}
+.no-access-title{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px}
+.no-access-sub{font-size:13px;color:var(--text2)}
+
+/* ── USER INFO BAR ───────────────────────────────────────────────────── */
+.user-bar{background:var(--g900);border-radius:var(--radius-sm);padding:10px 14px;margin:0 1.25rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.user-bar-name{font-size:13px;font-weight:600;color:#fff}
+.user-bar-role{font-size:11px;color:rgba(255,255,255,0.55);margin-top:1px}
+
+/* Month select */
+.month-sel{margin-bottom:1rem}
+
+/* ── MISC ────────────────────────────────────────────────────────────── */
+.divider{height:1px;background:var(--border);margin:1rem 0}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══ LANDING ════════════════════════════════════════════════════════════ -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-screen">
+    <!-- Layered background -->
+    <div class="l-bg">
+      <div class="l-bg-base"></div>
+      <div class="l-glow-top"></div>
+      <div class="l-glow-gold"></div>
+      <div class="l-glow-bottom"></div>
+      <div class="l-pattern"></div>
+      <div class="l-stars" id="l-stars"></div>
+    </div>
+    <!-- Center ornament SVG -->
+    <svg class="l-ornament" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="150" cy="150" r="140" stroke="white" stroke-width="0.5"/>
+      <circle cx="150" cy="150" r="110" stroke="white" stroke-width="0.5"/>
+      <circle cx="150" cy="150" r="80" stroke="white" stroke-width="0.5"/>
+      <polygon points="150,10 190,90 280,90 215,145 240,230 150,180 60,230 85,145 20,90 110,90" stroke="white" stroke-width="0.8" fill="none"/>
+      <polygon points="150,50 178,110 245,110 193,150 213,215 150,175 87,215 107,150 55,110 122,110" stroke="white" stroke-width="0.5" fill="none"/>
+      <circle cx="150" cy="150" r="30" stroke="white" stroke-width="0.5"/>
+      <line x1="150" y1="10" x2="150" y2="290" stroke="white" stroke-width="0.3"/>
+      <line x1="10" y1="150" x2="290" y2="150" stroke="white" stroke-width="0.3"/>
+      <line x1="40" y1="40" x2="260" y2="260" stroke="white" stroke-width="0.3"/>
+      <line x1="260" y1="40" x2="40" y2="260" stroke="white" stroke-width="0.3"/>
+    </svg>
+    <!-- Hero text -->
+    <div class="l-hero">
+      <img src="logo.png" alt="Logo" style="width:96px;height:96px;object-fit:contain;margin:0 auto 16px;display:block;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.25))"/>
+      <div class="l-title">Naz<span class="l-title-italic">mah</span></div>
+      <div class="l-divider">
+        <div class="l-divider-line"></div>
+        <div class="l-divider-diamond"></div>
+        <div class="l-divider-line"></div>
+      </div>
+      <div class="l-subtitle">Muzamzamah An'amta<br>Integrated System</div>
+    </div>
+    <!-- Bottom card -->
+    <div class="landing-card">
+      <div class="l-card-handle"></div>
+      <div class="role-grid">
+        <button class="role-btn" onclick="goTo('screen-pengurus-login')">
+          <div style="font-size:36px;margin-bottom:14px">🛡️</div>
+          <div class="role-btn-title">Pengurus</div>
+        </button>
+        <button class="role-btn" onclick="goTo('screen-ortu-login')">
+          <div style="font-size:36px;margin-bottom:14px">🏠</div>
+          <div class="role-btn-title">Orang tua</div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PENGURUS LOGIN ══════════════════════════════════════════════════════ -->
+<div id="screen-pengurus-login" class="screen">
+  <div class="login-screen">
+    <div class="login-icon" style="background:none;padding:0"><img src="logo.png" alt="Logo" style="width:72px;height:72px;object-fit:contain"/></div>
+    <div class="login-title">Nazmah</div>
+    <div class="login-sub">Portal khusus pengurus Nazmah</div>
+    <div class="login-form">
+      <div class="form-group"><input type="text" id="p-username" placeholder="Username" autocomplete="off"/></div>
+      <div class="form-group"><input type="password" id="p-password" placeholder="Password" onkeydown="if(event.key==='Enter')loginPengurus()"/></div>
+      <div class="err-msg" id="p-error"></div>
+      <button class="btn btn-primary" onclick="loginPengurus()">Masuk</button>
+      <div style="margin-top:10px"><button class="btn btn-ghost" style="width:100%" onclick="goTo('screen-landing')">Kembali</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PENGURUS DASHBOARD ═════════════════════════════════════════════════ -->
+<div id="screen-pengurus" class="screen">
+  <div class="app-bar">
+    <div class="app-bar-title" style="display:flex;align-items:center;gap:8px"><img src="logo.png" alt="" style="width:24px;height:24px;object-fit:contain"/> Panel pengurus</div>
+    <button class="btn-logout" onclick="logoutPengurus()"><i class="ti ti-logout" style="font-size:13px"></i> Keluar</button>
+  </div>
+  <div class="user-bar">
+    <div><div class="user-bar-name" id="p-nama-disp"></div><div class="user-bar-role" id="p-role-disp"></div></div>
+    <div id="p-role-badge"></div>
+  </div>
+  <div class="inner"><div id="p-menu"></div></div>
+</div>
+
+<!-- ═══ SANTRI LIST ════════════════════════════════════════════════════════ -->
+<div id="screen-santri-list" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-pengurus')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title">Data santri</div>
+  </div>
+  <div class="inner">
+    <div class="search-wrap"><i class="ti ti-search search-ico"></i><input type="text" placeholder="Cari nama santri…" oninput="renderSantriList(this.value)"/></div>
+    <button class="add-btn" onclick="showAddSantriModal()"><i class="ti ti-plus"></i> Tambah santri baru</button>
+    <div id="santri-list"></div>
+  </div>
+</div>
+
+<!-- ═══ DETAIL SANTRI ══════════════════════════════════════════════════════ -->
+<div id="screen-detail-santri" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-santri-list')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title" id="detail-nav-name"></div>
+  </div>
+  <div class="inner" id="detail-content"></div>
+</div>
+
+<!-- ═══ SPP DASHBOARD ══════════════════════════════════════════════════════ -->
+<div id="screen-spp-dashboard" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-pengurus')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title">Dashboard SPP</div>
+  </div>
+  <div class="inner" id="spp-content"></div>
+</div>
+
+<!-- ═══ AUDIT LOG ══════════════════════════════════════════════════════════ -->
+<div id="screen-audit-log" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-pengurus')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title">Log aktivitas</div>
+  </div>
+  <div class="inner" id="audit-content"></div>
+</div>
+
+<!-- ═══ TITIPAN DASHBOARD ══════════════════════════════════════════════════ -->
+<div id="screen-titipan" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-pengurus')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title">Titipan Uang Saku</div>
+  </div>
+  <div class="inner" id="titipan-content"></div>
+</div>
+
+<!-- ═══ DETAIL TITIPAN SANTRI ══════════════════════════════════════════════ -->
+<div id="screen-titipan-detail" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-titipan')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title" id="titipan-detail-name"></div>
+  </div>
+  <div class="inner" id="titipan-detail-content"></div>
+</div>
+<!-- ═══ KELOLA AKUN ═════════════════════════════════════════════════════════ -->
+<div id="screen-kelola-akun" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-pengurus')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title">Kelola Akun Pengurus</div>
+  </div>
+  <div class="inner" id="kelola-akun-content"></div>
+</div>
+
+<!-- ═══ KELOLA KAMAR ════════════════════════════════════════════════════════ -->
+<div id="screen-kelola-kamar" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-pengurus')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title">Kelola Kamar</div>
+  </div>
+  <div class="inner" id="kelola-kamar-content"></div>
+</div>
+<div id="screen-ortu-login" class="screen">
+  <div class="login-screen">
+    <div class="login-icon" style="background:none;padding:0"><img src="logo.png" alt="Logo" style="width:72px;height:72px;object-fit:contain"/></div>
+    <div class="login-title">Nazmah</div>
+    <div class="login-sub" id="ortu-login-sub">Masukkan kode santri yang tertera di kartu</div>
+
+    <!-- Step 1: Kode santri -->
+    <div id="ortu-step1">
+      <div class="pin-wrap">
+        <input type="text" inputmode="numeric" maxlength="1" id="p1" oninput="pm(this,'p2')" onkeydown="pb(event,this,'')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p2" oninput="pm(this,'p3')" onkeydown="pb(event,this,'p1')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p3" oninput="pm(this,'p4')" onkeydown="pb(event,this,'p2')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p4" oninput="pm(this,'p5')" onkeydown="pb(event,this,'p3')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p5" oninput="pm(this,'p6')" onkeydown="pb(event,this,'p4')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p6" oninput="pm(this,'p7')" onkeydown="pb(event,this,'p5')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p7" oninput="pm(this,'p8')" onkeydown="pb(event,this,'p6')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="p8" oninput="pm(this,null)" onkeydown="pb(event,this,'p7')"/>
+      </div>
+      <p id="pin-err" style="font-size:13px;color:var(--red);text-align:center;min-height:20px;margin-bottom:12px"></p>
+      <button class="btn btn-primary" style="max-width:240px;margin:0 auto" onclick="ortuStep1()">Lanjut</button>
+    </div>
+
+    <!-- Step 2: PIN -->
+    <div id="ortu-step2" style="display:none">
+      <div id="ortu-step2-nama" style="font-family:Fraunces,serif;font-size:18px;font-weight:700;color:var(--g900);margin-bottom:6px;text-align:center"></div>
+      <div class="pin-wrap">
+        <input type="text" inputmode="numeric" maxlength="1" id="pp1" oninput="pm(this,'pp2')" onkeydown="pb(event,this,'')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="pp2" oninput="pm(this,'pp3')" onkeydown="pb(event,this,'pp1')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="pp3" oninput="pm(this,'pp4')" onkeydown="pb(event,this,'pp2')"/>
+        <input type="text" inputmode="numeric" maxlength="1" id="pp4" oninput="pm(this,null)" onkeydown="pb(event,this,'pp3')"/>
+      </div>
+      <p id="pin-err2" style="font-size:13px;color:var(--red);text-align:center;min-height:20px;margin-bottom:12px"></p>
+      <button class="btn btn-primary" style="max-width:240px;margin:0 auto" onclick="ortuStep2()">Masuk</button>
+      <div style="margin-top:10px;text-align:center;display:flex;gap:8px;justify-content:center">
+        <button class="btn btn-ghost" onclick="resetOrtuLogin()" style="font-size:13px">Ganti kode</button>
+        <button class="btn btn-ghost" onclick="showLupaPin()" style="font-size:13px;color:var(--amber-text)">Lupa PIN</button>
+      </div>
+    </div>
+
+    <div style="margin-top:10px;text-align:center"><button class="btn btn-ghost" onclick="goTo('screen-landing')">Kembali</button></div>
+  </div>
+</div>
+
+<!-- Modal lupa PIN -->
+<div id="m-lupa-pin" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Lupa PIN</div>
+    <div style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6;background:var(--amber-bg);border-radius:var(--radius-sm);padding:14px 16px;">
+      <i class="ti ti-info-circle" style="font-size:15px;color:var(--amber-text);margin-right:4px"></i>
+      Untuk keamanan, reset PIN hanya dapat dilakukan oleh admin pesantren. Silakan hubungi pengurus untuk mereset PIN Anda. Setelah direset, Anda dapat membuat PIN baru saat login berikutnya.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" style="margin-top:0" onclick="cm('m-lupa-pin')">Mengerti</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- Modal tambah akun pengurus -->
+<div id="m-add-akun" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Tambah akun pengurus</div>
+    <div class="form-group"><label class="form-label">Nama lengkap</label><input type="text" id="ak-nama" placeholder="Ust. Nafis"/></div>
+    <div class="form-group"><label class="form-label">Username</label><input type="text" id="ak-username" placeholder="nafis" autocomplete="off"/></div>
+    <div class="form-group"><label class="form-label">Password</label><input type="password" id="ak-password" placeholder="Minimal 6 karakter"/></div>
+    <div class="form-group"><label class="form-label">Role</label>
+      <select id="ak-role">
+        <option value="ustadzah">Ustadzah</option>
+        <option value="ustadz">Ustadz</option>
+        <option value="kader">Kader Kesehatan</option>
+        <option value="bendahara">Bendahara</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div class="err-msg" id="ak-err"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-add-akun')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveAkun()">Simpan</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- Modal set PIN baru -->
+<div id="m-set-pin" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Buat PIN</div>
+    <div id="set-pin-desc" style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.5"></div>
+    <div class="form-group"><label class="form-label">PIN baru (4 digit)</label>
+      <input type="password" inputmode="numeric" maxlength="4" id="new-pin1" placeholder="••••"/>
+    </div>
+    <div class="form-group"><label class="form-label">Konfirmasi PIN</label>
+      <input type="password" inputmode="numeric" maxlength="4" id="new-pin2" placeholder="••••"/>
+    </div>
+    <div class="err-msg" id="set-pin-err"></div>
+    <button class="btn btn-primary" onclick="saveNewPin()">Simpan PIN</button>
+  </div></div>
+</div>
+
+<!-- Modal ganti PIN -->
+<div id="m-ganti-pin" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Ganti PIN</div>
+    <div class="form-group"><label class="form-label">PIN lama</label>
+      <input type="password" inputmode="numeric" maxlength="4" id="ganti-pin-lama" placeholder="••••"/>
+    </div>
+    <div class="form-group"><label class="form-label">PIN baru</label>
+      <input type="password" inputmode="numeric" maxlength="4" id="ganti-pin-baru" placeholder="••••"/>
+    </div>
+    <div class="form-group"><label class="form-label">Konfirmasi PIN baru</label>
+      <input type="password" inputmode="numeric" maxlength="4" id="ganti-pin-konfirm" placeholder="••••"/>
+    </div>
+    <div class="err-msg" id="ganti-pin-err"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-ganti-pin')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveGantiPin()">Simpan</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- Modal reset PIN (admin) -->
+<div id="m-reset-pin" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Reset PIN wali</div>
+    <div id="reset-pin-info" style="font-size:14px;color:var(--text2);margin-bottom:1rem;padding:12px 14px;background:var(--cream2);border-radius:var(--radius-sm);border:1px solid var(--border);font-weight:500"></div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:1.25rem">PIN wali santri ini akan dihapus. Saat wali login berikutnya, mereka akan diminta membuat PIN baru. Lanjutkan?</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-reset-pin')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0;background:var(--red);border-color:var(--red)" onclick="saveResetPin()">Ya, reset PIN</button>
+    </div>
+  </div></div>
+</div>
+
+<div id="screen-ortu-dashboard-real" style="display:none"><!-- placeholder --></div>
+
+<!-- ═══ ORTU DASHBOARD ═════════════════════════════════════════════════════ -->
+<div id="screen-ortu-dashboard" class="screen">
+  <div class="app-bar">
+    <button class="btn-back" onclick="goTo('screen-ortu-login')"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div class="app-bar-title" id="ortu-nav-name"></div>
+    <button class="btn-logout" onclick="showGantiPin()" style="font-size:12px"><i class="ti ti-lock" style="font-size:13px"></i> PIN</button>
+  </div>
+  <div class="inner" id="ortu-content"></div>
+</div>
+
+</div><!-- end .app -->
+
+<!-- ═══ MODALS ═════════════════════════════════════════════════════════════ -->
+<div id="m-add-santri" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Tambah santri baru</div>
+    <div class="form-group"><label class="form-label">Nama lengkap</label><input type="text" id="ns-nama" placeholder="Ahmad Fauzi"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Kelas</label>
+        <select id="ns-kelas"><option>VII A</option><option>VII B</option><option>VIII A</option><option>VIII B</option><option>IX A</option><option>IX B</option><option>X A</option><option>X B</option><option>XI A</option><option>XI B</option><option>XII A</option><option>XII B</option><option>Tahfidz A</option><option>Tahfidz B</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Kamar</label><input type="text" id="ns-kamar" placeholder="Kamar 7"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Tanggal lahir</label><input type="date" id="ns-tgl"/></div>
+    <div class="form-group"><label class="form-label">No. HP orang tua</label><input type="tel" id="ns-hp" placeholder="08xxxxxxxxxx"/></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-add-santri')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveSantri()">Simpan</button>
+    </div>
+  </div></div>
+</div>
+
+<div id="m-add-rekam" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Input rekam medis</div>
+    <div class="form-group"><label class="form-label">Tanggal pemeriksaan</label><input type="date" id="rm-tgl"/></div>
+    <div class="form-group"><label class="form-label">Keluhan utama</label><input type="text" id="rm-keluhan" placeholder="Demam, batuk, pusing…"/></div>
+    <div class="form-group"><label class="form-label">Diagnosa</label><input type="text" id="rm-diagnosa" placeholder="ISPA ringan"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Tekanan darah</label><input type="text" id="rm-td" placeholder="120/80"/></div>
+      <div class="form-group"><label class="form-label">Suhu (°C)</label><input type="number" id="rm-suhu" placeholder="37.0" step="0.1"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Gula darah (mg/dL)</label><input type="number" id="rm-gula" placeholder="90"/></div>
+      <div class="form-group"><label class="form-label">Hemoglobin (g/dL)</label><input type="number" id="rm-hb" placeholder="13.5" step="0.1"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">BB (kg)</label><input type="number" id="rm-bb" placeholder="50" step="0.1"/></div>
+      <div class="form-group"><label class="form-label">TB (cm)</label><input type="number" id="rm-tb" placeholder="160"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Obat & tindakan</label><textarea id="rm-obat" placeholder="Paracetamol 3x1…"></textarea></div>
+    <div class="form-group"><label class="form-label">Status</label>
+      <select id="rm-status"><option value="sehat">Sehat</option><option value="sakit-ringan">Sakit ringan</option><option value="perlu-perhatian">Perlu perhatian</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-add-rekam')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveRekam()">Simpan</button>
+    </div>
+  </div></div>
+</div>
+
+<div id="m-konfirm-spp" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Konfirmasi pembayaran SPP</div>
+    <div id="k-info" style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;padding:12px 14px;background:var(--cream2);border-radius:var(--radius-sm);border:1px solid var(--border);font-weight:500"></div>
+    <div class="form-group"><label class="form-label">Tanggal bayar</label><input type="date" id="k-tgl"/></div>
+    <div class="form-group"><label class="form-label">Nominal (Rp)</label><input type="number" id="k-nominal" value="750000"/></div>
+    <div class="form-group"><label class="form-label">Metode bayar</label>
+      <select id="k-metode"><option value="tunai">Tunai</option><option value="transfer">Transfer</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Catatan</label><input type="text" id="k-catatan" placeholder="Transfer BRI, cash, dll"/></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-konfirm-spp')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveKonfirm()">Konfirmasi lunas</button>
+    </div>
+  </div></div>
+</div>
+
+<div id="m-konfirm-multi" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Lunasi beberapa bulan</div>
+    <div id="km-info" style="font-size:14px;color:var(--text2);margin-bottom:1rem;padding:12px 14px;background:var(--cream2);border-radius:var(--radius-sm);border:1px solid var(--border);font-weight:500"></div>
+    <div class="form-group"><label class="form-label">Pilih bulan yang dilunasi</label>
+      <div id="km-months" style="max-height:240px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Tanggal bayar (untuk semua bulan terpilih)</label><input type="date" id="km-tgl"/></div>
+    <div class="form-group"><label class="form-label">Nominal per bulan (Rp)</label><input type="number" id="km-nominal" value="750000" oninput="updKmSummary()"/></div>
+    <div class="form-group"><label class="form-label">Metode bayar</label>
+      <select id="km-metode"><option value="tunai">Tunai</option><option value="transfer">Transfer</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Catatan</label><input type="text" id="km-catatan" placeholder="Transfer BRI, cash, dll"/></div>
+    <div id="km-summary" style="font-size:13px;color:var(--text2);margin-bottom:0.75rem;font-weight:600"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-konfirm-multi')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveKonfirmMulti()">Lunasi terpilih</button>
+    </div>
+  </div></div>
+</div>
+
+<div id="m-titipan-masuk" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Catat titipan masuk</div>
+    <div id="tm-santri-info" style="font-size:14px;color:var(--text2);margin-bottom:1rem;padding:10px 14px;background:var(--surface2);border-radius:var(--radius-sm);font-weight:500"></div>
+    <div class="form-group"><label class="form-label">Tanggal diterima</label><input type="date" id="tm-tgl"/></div>
+    <div class="form-group"><label class="form-label">Nominal (Rp)</label><input type="number" id="tm-nominal" placeholder="50000"/></div>
+    <div class="form-group"><label class="form-label">Keterangan</label><input type="text" id="tm-ket" placeholder="Uang saku bulan ini, dll"/></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-titipan-masuk')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveTitipanMasuk()">Simpan</button>
+    </div>
+  </div></div>
+</div>
+
+<div id="m-titipan-keluar" style="display:none" class="modal-overlay">
+  <div class="modal"><div class="modal-drag"></div><div class="modal-inner">
+    <div class="modal-title">Catat pengeluaran</div>
+    <div id="tk-santri-info" style="font-size:14px;color:var(--text2);margin-bottom:1rem;padding:10px 14px;background:var(--surface2);border-radius:var(--radius-sm);font-weight:500"></div>
+    <div id="tk-saldo-info" style="font-size:13px;color:var(--g700);margin-bottom:1rem;font-weight:600"></div>
+    <div class="form-group"><label class="form-label">Tanggal diambil</label><input type="date" id="tk-tgl"/></div>
+    <div class="form-group"><label class="form-label">Nominal (Rp)</label><input type="number" id="tk-nominal" placeholder="20000"/></div>
+    <div class="form-group"><label class="form-label">Keterangan</label><input type="text" id="tk-ket" placeholder="Uang jajan, keperluan, dll"/></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="cm('m-titipan-keluar')">Batal</button>
+      <button class="btn btn-primary" style="margin-top:0" onclick="saveTitipanKeluar()">Simpan</button>
+    </div>
+  </div></div>
+</div>
+<script>
+// ─ SUPABASE (relational) ──────────────────────────────────────────────────
+const _SB=window.supabase.createClient(
+  'https://potufeavjdjwnwfohoxm.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvdHVmZWF2amRqd253Zm9ob3htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MDAxODIsImV4cCI6MjA5NTk3NjE4Mn0.zZJQx2zzekAvdTpb4q79QsZ0z8UFfI09motJPiGXcBE'
+);
+
+// In-memory DB. getDb/setDb dipertahankan agar seluruh kode UI lama tetap jalan.
+// setDb TIDAK sync ke server; penulisan server dilakukan granular per entitas.
+let DB=null;
+let TOK=null; // token sesi pengurus
+function getDb(){return DB;}
+function setDb(d){DB=d;}
+
+function syncErr(e){console.error('Sync gagal:',e);alert('Gagal menyimpan ke server. Cek koneksi lalu ulangi.');}
+
+// Tulis satu santri (rekam/pembayaran/titipan/profil) — tidak menyentuh PIN.
+
+async function initApp(){
+  const app=document.querySelector('.app');
+  if(app){app.style.opacity='0';app.style.transition='opacity 0.3s';}
+  try{
+    const[sr,pr,mr,lr]=await Promise.all([
+      _SB.from('nazmah_santri').select('id,nama,hp,kelas,kamar,tgl,rekam,pembayaran,titipan,has_pin').order('id'),
+      _SB.from('nazmah_pengurus').select('id,nama,username,role'),
+      _SB.from('nazmah_meta').select('key,value'),
+      _SB.from('nazmah_log').select('*').order('ts',{ascending:false}).limit(200),
+    ]);
+    if(sr.error||pr.error)throw(sr.error||pr.error);
+    const meta={};(mr.data||[]).forEach(r=>meta[r.key]=r.value);
+    DB={
+      santri:(sr.data||[]).map(r=>({id:r.id,nama:r.nama,hp:r.hp,kelas:r.kelas,kamar:r.kamar,tgl:r.tgl,
+        rekam:r.rekam||[],pembayaran:r.pembayaran||[],titipan:r.titipan||[],ortuPin:r.has_pin||null})),
+      pengurus:pr.data||[],
+      kamarAssign:meta.kamarAssign||{},
+      log:(lr.data||[]).map(r=>({id:r.id,by:r.by_nama,role:r.role,action:r.action,detail:r.detail,icon:r.icon,bg:r.bg,ic:r.ic,ts:r.ts})),
+      sppBulan:null,sppSantriId:null,activeId:null,
+    };
+  }catch(e){
+    console.error('Gagal memuat data:',e);
+    alert('Gagal memuat data dari server: '+(e?.message||JSON.stringify(e))+'\n\nPastikan migrasi SQL sudah dijalankan di Supabase.');
+  }
+  // Init stars and show app
+  const c=document.getElementById('l-stars');
+  if(c){
+    for(let i=0;i<60;i++){
+      const s=document.createElement('div');
+      s.className='star';
+      const size=Math.random()<0.3?2:Math.random()<0.6?1.5:1;
+      s.style.cssText=`width:${size}px;height:${size}px;top:${Math.random()*85}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;--min-op:${0.05+Math.random()*0.1};--max-op:${0.3+Math.random()*0.5}`;
+      c.appendChild(s);
+    }
+  }
+  // Auto-login pengurus dari token tersimpan
+  const autoOk=await tryAutoLogin();
+  if(app){app.style.opacity='1';}
+  if(autoOk){renderPMenu();goTo('screen-pengurus');}
+}
+
+const SPP=750000;
+let CP=null; // current pengurus
+
+const ROLES={
+  admin:{label:'Admin',bg:'var(--red-bg)',text:'var(--red-text)',icon:'ti-crown',menuBg:'var(--red-bg)'},
+  bendahara:{label:'Bendahara',bg:'var(--amber-bg)',text:'var(--amber-text)',icon:'ti-credit-card',menuBg:'var(--amber-bg)'},
+  kader:{label:'Kader Kesehatan',bg:'var(--g100)',text:'var(--g700)',icon:'ti-heart-rate-monitor',menuBg:'var(--g50)'},
+  ustadzah:{label:'Ustadzah',bg:'var(--purple-bg)',text:'var(--purple-text)',icon:'ti-wallet',menuBg:'var(--purple-bg)'},
+  ustadz:{label:'Ustadz',bg:'var(--blue-bg)',text:'var(--blue-text)',icon:'ti-wallet',menuBg:'var(--blue-bg)'},
+};
+const CAN={admin:['santri','kesehatan','spp','audit','addSantri','titipan','kelolaKamar','kelolaAkun','resetPin'],bendahara:['spp'],kader:['santri','kesehatan'],ustadzah:['santri','titipan','spp-view'],ustadz:['santri','titipan','spp-view']};
+function can(a){return CP&&CAN[CP.role]?.includes(a);}
+
+// ─ LOG ────────────────────────────────────────────────────────────────────
+function log(action,detail,icon='ti-check',bg='var(--g100)',ic='var(--g700)'){
+  const d=getDb();
+  if(d){if(!d.log)d.log=[];d.log.unshift({id:Date.now(),by:CP?.nama||'-',role:CP?.role||'-',action,detail,icon,bg,ic,ts:new Date().toISOString()});if(d.log.length>200)d.log=d.log.slice(0,200);}
+  if(TOK)_SB.rpc('log_tambah',{tok:TOK,action,detail,icon,bg,ic}).then(({error})=>{if(error)console.warn('log gagal:',error);});
+}
+
+// ─ AUTH ───────────────────────────────────────────────────────────────────
+async function loginPengurus(){
+  const u=document.getElementById('p-username').value.trim();
+  const pw=document.getElementById('p-password').value;
+  const errEl=document.getElementById('p-error');
+  errEl.textContent='';
+  const{data,error}=await _SB.rpc('login_pengurus',{u,pw});
+  if(error){errEl.textContent='Gagal terhubung ke server';console.error(error);return;}
+  if(!data||!data.length){errEl.textContent='Username atau password salah';return;}
+  TOK=data[0].token;
+  try{localStorage.setItem('nazmah-tok',TOK);}catch(e){}
+  CP={id:data[0].id,nama:data[0].nama,role:data[0].role};
+  log('Login',`${CP.nama} masuk ke sistem`,'ti-login','var(--blue-bg)','var(--blue-text)');
+  renderPMenu(); goTo('screen-pengurus');
+}
+
+// Auto-login dari token tersimpan (dipanggil di initApp)
+async function tryAutoLogin(){
+  let t=null;try{t=localStorage.getItem('nazmah-tok');}catch(e){}
+  if(!t)return false;
+  const{data,error}=await _SB.rpc('me',{tok:t});
+  if(error||!data||!data.length){try{localStorage.removeItem('nazmah-tok');}catch(e){}return false;}
+  TOK=t; CP={id:data[0].id,nama:data[0].nama,role:data[0].role};
+  return true;
+}
+function logoutPengurus(){
+  log('Logout',`${CP?.nama} keluar dari sistem`,'ti-logout','var(--cream2)','var(--text2)');
+  if(TOK){_SB.rpc('logout_pengurus',{tok:TOK});}
+  try{localStorage.removeItem('nazmah-tok');}catch(e){}
+  TOK=null; CP=null;
+  document.getElementById('p-username').value='';
+  document.getElementById('p-password').value='';
+  document.getElementById('p-error').textContent='';
+  goTo('screen-landing');
+}
+function renderPMenu(){
+  const r=ROLES[CP.role];
+  document.getElementById('p-nama-disp').textContent=CP.nama;
+  document.getElementById('p-role-disp').textContent=r.label;
+  document.getElementById('p-role-badge').innerHTML=`<span class="badge" style="background:${r.bg};color:${r.text}"><i class="ti ${r.icon}" style="font-size:11px;margin-right:3px"></i>${r.label}</span>`;
+  let h='<div class="menu-grid">';
+  if(can('santri')||can('kesehatan'))h+=`<div class="menu-card" onclick="goTo('screen-santri-list')"><div class="menu-card-icon" style="background:var(--g50)"><i class="ti ti-users" style="font-size:20px;color:var(--g700)"></i></div><div class="menu-card-title">${can('kesehatan')?'Santri & Kesehatan':'Data Santri'}</div></div>`;
+  if(can('spp')||can('spp-view'))h+=`<div class="menu-card" onclick="goTo('screen-spp-dashboard')"><div class="menu-card-icon" style="background:var(--gold-light)"><i class="ti ti-credit-card" style="font-size:20px;color:var(--gold)"></i></div><div class="menu-card-title">Dashboard SPP</div></div>`;
+  if(can('titipan'))h+=`<div class="menu-card" onclick="goTo('screen-titipan')"><div class="menu-card-icon" style="background:var(--purple-bg)"><i class="ti ti-wallet" style="font-size:20px;color:var(--purple-text)"></i></div><div class="menu-card-title">Titipan Uang Saku</div></div>`;
+  h+='</div>';
+  if(can('kelolaKamar'))h+=`<div class="menu-card menu-card-wide" onclick="goTo('screen-kelola-kamar')" style="margin-bottom:10px"><div class="menu-card-icon" style="background:var(--purple-bg);flex-shrink:0"><i class="ti ti-door" style="font-size:20px;color:var(--purple-text)"></i></div><div><div class="menu-card-title" style="text-align:left">Kelola Kamar</div><div style="font-size:12px;color:var(--text2);margin-top:3px">Assign kamar ke ustadzah</div></div></div>`;
+  if(can('kelolaAkun'))h+=`<div class="menu-card menu-card-wide" onclick="goTo('screen-kelola-akun')" style="margin-bottom:10px"><div class="menu-card-icon" style="background:var(--blue-bg);flex-shrink:0"><i class="ti ti-users-group" style="font-size:20px;color:var(--blue-text)"></i></div><div><div class="menu-card-title" style="text-align:left">Kelola Akun Pengurus</div><div style="font-size:12px;color:var(--text2);margin-top:3px">Tambah, edit, dan hapus akun</div></div></div>`;
+  if(can('audit'))h+=`<div class="menu-card menu-card-wide" onclick="goTo('screen-audit-log')" style="margin-bottom:0"><div class="menu-card-icon" style="background:var(--red-bg);flex-shrink:0"><i class="ti ti-history" style="font-size:20px;color:var(--red-text)"></i></div><div><div class="menu-card-title" style="text-align:left">Log aktivitas</div><div style="font-size:12px;color:var(--text2);margin-top:3px">Riwayat semua tindakan pengurus</div></div></div>`;
+  document.getElementById('p-menu').innerHTML=h;
+}
+
+// ─ HELPERS ───────────────────────────────────────────────────────────────
+let CI={};
+function dc(){Object.values(CI).forEach(c=>{try{c.destroy();}catch(e){}});CI={};}
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  dc();
+  if(id==='screen-santri-list')renderSantriList('');
+  if(id==='screen-spp-dashboard')renderSpp();
+  if(id==='screen-titipan')renderTitipan();
+  if(id==='screen-kelola-kamar')renderKelolaKamar();
+  if(id==='screen-kelola-akun')renderKelolaAkun();
+  if(id==='screen-ortu-login')resetOrtuLogin();
+  if(id==='screen-audit-log'){can('audit')?renderAudit():document.getElementById('audit-content').innerHTML=noAccess();}
+}
+function noAccess(){return`<div class="no-access"><div class="no-access-icon"><i class="ti ti-lock"></i></div><div class="no-access-title">Akses terbatas</div><div class="no-access-sub">Fitur ini hanya tersedia untuk Admin.</div></div>`;}
+function ini(n){return n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();}
+function rp(n){return'Rp '+Number(n).toLocaleString('id-ID');}
+function rpS(n){return n>=1000000?'Rp '+(n/1000000).toFixed(1)+' jt':'Rp '+(n/1000).toFixed(0)+' rb';}
+function fd(d){if(!d)return'-';return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});}
+function fds(d){if(!d)return'-';return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short'});}
+function fdt(ts){if(!ts)return'-';const d=new Date(ts);return d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});}
+function bl(b){const[y,m]=b.split('-');return new Date(y,m-1).toLocaleDateString('id-ID',{month:'long',year:'numeric'});}
+function bs(b){const[y,m]=b.split('-');return new Date(y,m-1).toLocaleDateString('id-ID',{month:'short'});}
+function cb(){return new Date().toISOString().slice(0,7);}
+function getSpp(s,b){return s.pembayaran?.find(p=>p.bulan===b)||{bulan:b,status:'belum'};}
+function lastH(s){return s.rekam?.length?s.rekam[0].status:'sehat';}
+function hBadge(s){
+  const map={sehat:['badge-green','Sehat'],'sakit-ringan':['badge-amber','Sakit ringan'],'perlu-perhatian':['badge-red','Perlu perhatian']};
+  const[cls,lbl]=map[s]||map['sehat'];
+  return`<span class="badge ${cls}" style="margin-left:6px">${lbl}</span>`;
+}
+function sBadge(s){
+  if(s==='lunas')return'<span class="badge badge-green">Lunas</span>';
+  if(s==='terlambat')return'<span class="badge badge-amber">Terlambat</span>';
+  return'<span class="badge badge-red">Belum bayar</span>';
+}
+function sBadgeOrtu(s){
+  if(s==='lunas')return'<span class="badge badge-green">Dibayar</span>';
+  return'<span class="badge badge-red">Belum dibayar</span>';
+}
+function rBadge(role){
+  const r=ROLES[role]||{label:role,bg:'var(--cream2)',text:'var(--text2)'};
+  return`<span class="badge" style="background:${r.bg};color:${r.text}">${r.label}</span>`;
+}
+function cm(id){document.getElementById(id).style.display='none';}
+function pm(el,nid){el.value=el.value.replace(/[^0-9]/g,'').slice(-1);if(el.value&&nid)document.getElementById(nid).focus();}
+function pb(e,el,pid){if(e.key==='Backspace'&&!el.value&&pid)document.getElementById(pid).focus();}
+
+// ─ SANTRI LIST ────────────────────────────────────────────────────────────
+function renderSantriList(q){
+  const db=getDb(); const cbb=cb();
+  const all=getSantriForRole();
+  const f=all.filter(s=>s.nama.toLowerCase().includes((q||'').toLowerCase()));
+  const el=document.getElementById('santri-list');
+  if(!f.length){el.innerHTML=`<div class="empty"><div class="empty-icon"><i class="ti ti-user-off"></i></div><div class="empty-text">Belum ada data santri</div></div>`;return;}
+  el.innerHTML=f.map(s=>{
+    const sp=getSpp(s,cbb);
+    const showSpp=can('spp')||can('spp-view')||can('audit');
+    return`<div class="card" onclick="openSantri('${s.id}')">
+      <div class="card-row">
+        <div class="ava ava-sm">${ini(s.nama)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:var(--text);display:flex;align-items:center;flex-wrap:wrap;gap:2px">${s.nama}${hBadge(lastH(s))}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:3px">${s.kelas} · ${s.kamar}${showSpp?' · '+sBadge(sp.status):''}</div>
+        </div>
+        <i class="ti ti-chevron-right" style="color:var(--text3);font-size:16px;flex-shrink:0"></i>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openSantri(id){
+  const db=getDb(); db.activeId=id; setDb(db);
+  const s=db.santri.find(x=>x.id===id);
+  document.getElementById('detail-nav-name').textContent=s.nama;
+  renderDetail(s); goTo('screen-detail-santri');
+}
+
+// ─ DETAIL ─────────────────────────────────────────────────────────────────
+function renderDetail(s){
+  const umur=new Date().getFullYear()-new Date(s.tgl).getFullYear();
+  const sorted=[...s.rekam].sort((a,b)=>new Date(b.tgl)-new Date(a.tgl));
+  const lastRm=sorted[0]; const cbb=cb();
+  const sppNow=getSpp(s,cbb);
+  const hasChart=s.rekam.length>=2;
+  const showK=can('kesehatan')||can('audit');
+  const showS=can('spp')||can('spp-view')||can('audit');
+
+  let tabs='<div class="tabs">';
+  if(showK)tabs+=`<button class="tab active" onclick="switchTab(this,'t-k')">Kesehatan</button>`;
+  if(showS)tabs+=`<button class="tab${!showK?' active':''}" onclick="switchTab(this,'t-s')">Pembayaran SPP</button>`;
+  tabs+='</div>';
+
+  document.getElementById('detail-content').innerHTML=`
+    <div class="profile-header">
+      <div class="profile-header-content">
+        <div class="ava ava-md ava-colored">${ini(s.nama)}</div>
+        <div>
+          <div class="profile-name">${s.nama}</div>
+          <div class="profile-meta">${s.kelas} · ${s.kamar} · ${umur} tahun</div>
+          <div class="profile-kode">Kode: ${s.id}</div>
+        </div>
+      </div>
+      ${can('resetPin')?`<div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div style="font-size:13px;color:var(--text2)"><i class="ti ti-lock" style="font-size:14px;vertical-align:-2px"></i> PIN wali: <strong style="color:${s.ortuPin?'var(--g700)':'var(--text3)'}">${s.ortuPin?'sudah dibuat':'belum dibuat'}</strong></div>
+        ${s.ortuPin?`<button class="btn btn-ghost" style="margin-top:0;font-size:13px;padding:8px 14px;color:var(--red)" onclick="showResetPin('${s.id}')"><i class="ti ti-rotate" style="font-size:14px"></i> Reset PIN</button>`:''}
+      </div>`:''}
+    </div>
+    ${tabs}
+
+    ${showK?`<div id="t-k" class="tab-panel active">
+      ${lastRm?`<div class="metrics">
+        <div class="metric"><div class="metric-label">Tensi</div><div class="metric-value" style="font-size:16px">${lastRm.td||'—'}</div></div>
+        <div class="metric"><div class="metric-label">Hb</div><div class="metric-value">${lastRm.hb||'—'}<span class="metric-unit">g/dL</span></div></div>
+        <div class="metric"><div class="metric-label">Gula</div><div class="metric-value">${lastRm.gula||'—'}<span class="metric-unit">mg/dL</span></div></div>
+        <div class="metric"><div class="metric-label">Kunjungan</div><div class="metric-value">${s.rekam.length}<span class="metric-unit">x</span></div></div>
+      </div>`:''}
+      ${can('kesehatan')||can('audit')?`<button class="add-btn" onclick="showAddRekam()"><i class="ti ti-plus"></i> Tambah rekam medis</button>`:''}
+      ${hasChart?`<div class="chart-card"><div class="chart-title"><i class="ti ti-chart-line" style="font-size:14px;color:var(--g500)"></i> Hemoglobin (g/dL)</div><div class="chart-wrap"><canvas id="ch-hb"></canvas></div></div>`:''}
+      <div class="section-label">Riwayat pemeriksaan</div>
+      ${sorted.length?`<div class="rekam-list">${sorted.map(r=>`<div class="rekam-item">
+        <div class="rekam-date">${fd(r.tgl)} ${hBadge(r.status)}</div>
+        <div class="rekam-title">${r.keluhan}</div>
+        <div class="rekam-detail">Diagnosa: ${r.diagnosa}</div>
+        ${r.obat?`<div class="rekam-detail">Obat: ${r.obat}</div>`:''}
+        ${r.by?`<div class="rekam-by"><i class="ti ti-user-circle" style="font-size:11px"></i>${r.by} · ${fds(r.ts)}</div>`:''}
+      </div>`).join('')}</div>`:'<div class="empty"><div class="empty-icon"><i class="ti ti-clipboard-off"></i></div><div class="empty-text">Belum ada rekam medis</div></div>'}
+    </div>`:''}
+
+    ${showS?`<div id="t-s" class="tab-panel${!showK?' active':''}">
+      <div style="background:var(--cream2);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div><div style="font-size:12px;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:0.04em">SPP bulan ini</div><div style="font-family:Fraunces,serif;font-size:16px;font-weight:600;color:var(--text);margin-top:4px">${bl(cbb)}</div></div>
+        <div style="text-align:right">${sBadge(sppNow.status)}${sppNow.status==='belum'&&can('spp')?`<div style="margin-top:8px"><button class="confirm-btn" onclick="showKonfirm('${s.id}','${cbb}')">Konfirmasi</button></div>`:''}</div>
+      </div>
+      <div class="section-label">Riwayat SPP</div>
+      ${can('spp')?`<button class="btn btn-ghost" style="margin-bottom:0.75rem;width:100%;font-size:13px" onclick="showKonfirmMulti('${s.id}')"><i class="ti ti-checks" style="font-size:15px"></i> Lunasi beberapa bulan sekaligus</button>`:''}
+      <div class="pay-list">
+        ${[...(s.pembayaran||[])].reverse().map(p=>`<div class="pay-row">
+          <div><div class="pay-month">${bl(p.bulan)}</div>${p.tglBayar?`<div class="pay-sub">Bayar ${fd(p.tglBayar)}${p.catatan?' · '+p.catatan:''}</div>`:''}${p.by?`<div class="pay-sub"><i class="ti ti-user-circle" style="font-size:10px"></i> ${p.by}</div>`:''}</div>
+          <div class="pay-right">${p.status!=='belum'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}${p.status==='belum'&&can('spp')?`<button class="confirm-btn" onclick="showKonfirm('${s.id}','${p.bulan}')">Konfirmasi</button>`:''}</div>
+        </div>`).join('')}
+      </div>
+    </div>`:''}`;
+
+  if(hasChart&&showK){
+    setTimeout(()=>{
+      const srt=[...s.rekam].sort((a,b)=>new Date(a.tgl)-new Date(b.tgl));
+      const labels=srt.map(r=>fds(r.tgl));
+      const hb=srt.map(r=>r.hb?parseFloat(r.hb):null);
+      const ctx=document.getElementById('ch-hb');
+      if(ctx&&hb.some(v=>v)){
+        CI['hb']=new Chart(ctx,{type:'line',data:{labels,datasets:[{data:hb,borderColor:'#257A43',backgroundColor:'#257A4315',tension:0.35,pointRadius:5,pointBackgroundColor:'#257A43',fill:true,borderWidth:2.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` Hb: ${c.raw} g/dL`}}},scales:{x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:11},color:'#A89880'}},y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:11},color:'#A89880'}}}}});
+      }
+    },100);
+  }
+}
+
+function switchTab(btn,id){
+  btn.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  ['t-k','t-s'].forEach(x=>{const el=document.getElementById(x);if(el)el.classList.toggle('active',x===id);});
+}
+
+// ─ ADD SANTRI ─────────────────────────────────────────────────────────────
+function showAddSantriModal(){
+  ['ns-nama','ns-kamar','ns-hp'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ns-tgl').value='';
+  document.getElementById('m-add-santri').style.display='flex';
+}
+async function saveSantri(){
+  const nama=document.getElementById('ns-nama').value.trim();
+  if(!nama){alert('Nama wajib diisi');return;}
+  const id=String(Math.floor(10000000+Math.random()*90000000));
+  const kelas=document.getElementById('ns-kelas').value,kamar=document.getElementById('ns-kamar').value,tgl=document.getElementById('ns-tgl').value,hp=document.getElementById('ns-hp').value;
+  const{error}=await _SB.rpc('santri_tambah',{tok:TOK,sid:id,nama,kelas,kamar,tgl,hp});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
+  const db=getDb();
+  db.santri.push({id,nama,kelas,kamar,tgl,hp,rekam:[],pembayaran:[],titipan:[],ortuPin:null}); setDb(db);
+  log('Tambah santri',`${nama} (kode: ${id})`,'ti-user-plus','var(--blue-bg)','var(--blue-text)');
+  cm('m-add-santri'); renderSantriList('');
+}
+
+// ─ ADD REKAM ──────────────────────────────────────────────────────────────
+function showAddRekam(){
+  document.getElementById('rm-tgl').value=new Date().toISOString().split('T')[0];
+  ['rm-keluhan','rm-diagnosa','rm-td','rm-suhu','rm-gula','rm-hb','rm-bb','rm-tb','rm-obat'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('rm-status').value='sehat';
+  document.getElementById('m-add-rekam').style.display='flex';
+}
+async function saveRekam(){
+  const keluhan=document.getElementById('rm-keluhan').value.trim();
+  if(!keluhan){alert('Keluhan wajib diisi');return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.activeId);
+  const e={tgl:document.getElementById('rm-tgl').value,keluhan,diagnosa:document.getElementById('rm-diagnosa').value,td:document.getElementById('rm-td').value,suhu:document.getElementById('rm-suhu').value,gula:document.getElementById('rm-gula').value,hb:document.getElementById('rm-hb').value,bb:document.getElementById('rm-bb').value,tb:document.getElementById('rm-tb').value,obat:document.getElementById('rm-obat').value,status:document.getElementById('rm-status').value};
+  const{error}=await _SB.rpc('rekam_tambah',{tok:TOK,sid:s.id,entry:e});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
+  s.rekam.unshift({...e,by:CP?.nama||'-',ts:new Date().toISOString()}); setDb(db);
+  log('Input rekam medis',`${s.nama}: ${keluhan} — ${e.diagnosa}`,'ti-stethoscope','var(--g100)','var(--g700)');
+  cm('m-add-rekam'); renderDetail(s);
+}
+
+// ─ SPP ────────────────────────────────────────────────────────────────────
+function showKonfirm(sid,bulan){
+  if(!can('spp')){alert('Akses terbatas');return;}
+  const db=getDb(); db.sppSantriId=sid; db.sppBulan=bulan; setDb(db);
+  const s=db.santri.find(x=>x.id===sid);
+  document.getElementById('k-info').textContent=`${s.nama} · SPP ${bl(bulan)}`;
+  document.getElementById('k-tgl').value=new Date().toISOString().split('T')[0];
+  document.getElementById('k-nominal').value=SPP;
+  document.getElementById('k-catatan').value='';
+  document.getElementById('k-metode').value='tunai';
+  document.getElementById('m-konfirm-spp').style.display='flex';
+}
+async function saveKonfirm(){
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.sppSantriId);
+  const bulan=db.sppBulan;
+  const tgl=document.getElementById('k-tgl').value;
+  const nom=parseInt(document.getElementById('k-nominal').value);
+  const cat=document.getElementById('k-catatan').value;
+  const metode=document.getElementById('k-metode').value;
+  const{data,error}=await _SB.rpc('spp_konfirmasi',{tok:TOK,sid:s.id,bulan,tgl,nominal:nom,catatan:cat,metode});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
+  if(!s.pembayaran)s.pembayaran=[];
+  const idx=s.pembayaran.findIndex(p=>p.bulan===bulan);
+  if(idx>=0)s.pembayaran[idx]=data;else s.pembayaran.push(data);
+  setDb(db);
+  log('Konfirmasi SPP',`${s.nama} · ${bl(bulan)} · ${rp(nom)} · ${data.status}`,'ti-credit-card','var(--g100)','var(--g700)');
+  cm('m-konfirm-spp');
+  const as=document.querySelector('.screen.active')?.id;
+  if(as==='screen-spp-dashboard')renderSpp();
+  else if(as==='screen-detail-santri')renderDetail(s);
+}
+
+function showKonfirmMulti(sid){
+  if(!can('spp')){alert('Akses terbatas');return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===sid);
+  if(!s){alert('Santri tidak ditemukan');return;}
+  db.sppSantriId=sid; setDb(db);
+  // daftar bulan belum bayar: Jan 2024 s/d bulan ini
+  const paid=new Set((s.pembayaran||[]).filter(p=>p.status!=='belum').map(p=>p.bulan));
+  const now=cb();const unpaid=[];let y=2024,m=1;
+  while(`${y}-${String(m).padStart(2,'0')}`<=now){const b=`${y}-${String(m).padStart(2,'0')}`;if(!paid.has(b))unpaid.push(b);m++;if(m>12){m=1;y++;}}
+  document.getElementById('km-info').textContent=`${s.nama} · ${unpaid.length} bulan belum lunas`;
+  document.getElementById('km-months').innerHTML=unpaid.length?unpaid.map(b=>`<label class="km-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;cursor:pointer;border-bottom:1px solid var(--border);border-radius:6px"><span style="display:flex;align-items:center;gap:10px"><span class="km-box" style="width:22px;height:22px;border:2px solid var(--g300);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:#fff;line-height:1"><span class="km-check" style="display:none">&#10003;</span></span><span style="font-size:14px">${bl(b)}</span></span><span style="font-size:12px;color:var(--text3)">${rp(SPP)}</span><input type="checkbox" class="km-cb" value="${b}" onchange="toggleKmRow(this)" style="display:none"/></label>`).join(''):'<div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px">Semua bulan sudah lunas 🎉</div>';
+  document.getElementById('km-tgl').value=new Date().toISOString().split('T')[0];
+  document.getElementById('km-nominal').value=SPP;
+  document.getElementById('km-catatan').value='';
+  document.getElementById('km-metode').value='tunai';
+  document.getElementById('km-summary').textContent='';
+  document.getElementById('m-konfirm-multi').style.display='flex';
+}
+function toggleKmRow(cb){
+  const lbl=cb.closest('.km-row');
+  const box=lbl.querySelector('.km-box');
+  const chk=lbl.querySelector('.km-check');
+  if(cb.checked){
+    lbl.style.background='var(--g100)';
+    box.style.background='var(--g500)';
+    box.style.borderColor='var(--g500)';
+    chk.style.display='block';
+  }else{
+    lbl.style.background='';
+    box.style.background='';
+    box.style.borderColor='var(--g300)';
+    chk.style.display='none';
+  }
+  updKmSummary();
+}
+function updKmSummary(){
+  const cbs=[...document.querySelectorAll('.km-cb:checked')];
+  const nom=parseInt(document.getElementById('km-nominal').value)||0;
+  document.getElementById('km-summary').textContent=cbs.length?`${cbs.length} bulan dipilih · total ${rp(cbs.length*nom)}`:'';
+}
+async function saveKonfirmMulti(){
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.sppSantriId);
+  if(!s){alert('Santri tidak ditemukan');return;}
+  const bulanSel=[...document.querySelectorAll('.km-cb:checked')].map(c=>c.value);
+  if(!bulanSel.length){alert('Pilih minimal satu bulan');return;}
+  const tgl=document.getElementById('km-tgl').value;
+  if(!tgl){alert('Isi tanggal bayar');return;}
+  const nom=parseInt(document.getElementById('km-nominal').value)||SPP;
+  const cat=document.getElementById('km-catatan').value;
+  const metode=document.getElementById('km-metode').value;
+  const{error}=await _SB.rpc('spp_konfirmasi_multi',{tok:TOK,sid:s.id,bulan_list:bulanSel,tgl,nominal:nom,catatan:cat,metode});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
+  if(!s.pembayaran)s.pembayaran=[];
+  bulanSel.forEach(bulan=>{
+    const e={bulan,status:'lunas',tglBayar:tgl,nominal:nom,catatan:cat,metode,by:CP?.nama||'-',ts:new Date().toISOString()};
+    const idx=s.pembayaran.findIndex(p=>p.bulan===bulan);
+    if(idx>=0)s.pembayaran[idx]=e;else s.pembayaran.push(e);
+  });
+  setDb(db);
+  log('Pelunasan SPP borongan',`${s.nama} · ${bulanSel.length} bulan · ${rp(bulanSel.length*nom)}`,'ti-credit-card','var(--g100)','var(--g700)');
+  cm('m-konfirm-multi');
+  const as=document.querySelector('.screen.active')?.id;
+  if(as==='screen-spp-dashboard')renderSpp();
+  else if(as==='screen-detail-santri')renderDetail(s);
+}
+function renderSpp(){
+  if(!can('spp')&&!can('spp-view')&&!can('audit')){document.getElementById('spp-content').innerHTML=noAccess();return;}
+  dc();
+  const db=getDb();
+  const months=(()=>{const set=new Set(db.santri.flatMap(s=>s.pembayaran?.map(p=>p.bulan)||[]));const now=cb();let y=2024,m=1;while(`${y}-${String(m).padStart(2,'0')}`<=now){set.add(`${y}-${String(m).padStart(2,'0')}`);m++;if(m>12){m=1;y++;}}return[...set].sort();})();
+  const total=db.santri.length;
+  const sel=db.sppBulan||cb();
+  const stats=months.map(b=>{
+    let l=0,t=0,bl2=0;
+    db.santri.forEach(s=>{const p=getSpp(s,b);if(p.status==='lunas')l++;else if(p.status==='terlambat')t++;else bl2++;});
+    return{b,l,t,bl:bl2,tot:(l+t)*SPP};
+  });
+  const ss=stats.find(s=>s.b===sel)||stats[stats.length-1];
+  const pct=Math.round((ss.l+ss.t)/total*100);
+
+  document.getElementById('spp-content').innerHTML=`
+    <div class="chart-card">
+      <div class="chart-title"><i class="ti ti-chart-bar" style="font-size:14px;color:var(--g500)"></i> Akumulasi SPP per bulan</div>
+      <div class="chart-wrap"><canvas id="ch-akum"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title"><i class="ti ti-layout-columns" style="font-size:14px;color:var(--gold)"></i> Breakdown status</div>
+      <div class="chart-legend">
+        <div class="leg"><div class="leg-dot" style="background:#257A43"></div>Lunas</div>
+        <div class="leg"><div class="leg-dot" style="background:#B86800"></div>Terlambat</div>
+        <div class="leg"><div class="leg-dot" style="background:#B83232"></div>Belum</div>
+      </div>
+      <div class="chart-wrap"><canvas id="ch-brkdwn"></canvas></div>
+    </div>
+    <div class="month-sel"><select onchange="updSppBulan(this.value)" style="width:100%">${months.map(b=>`<option value="${b}" ${b===sel?'selected':''}>${bl(b)}</option>`).join('')}</select></div>
+    <div class="spp-summary">
+      <div style="position:relative;z-index:1">
+        <div class="spp-total-label">${bl(sel)} — total terkumpul</div>
+        <div class="spp-total-val">${rp(ss.tot)}</div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="progress-pct">${pct}% dari target ${rp(total*SPP)}</div>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card" style="background:var(--g100);border-color:var(--g300)"><div class="stat-val" style="color:var(--g700)">${ss.l}</div><div class="stat-label" style="color:var(--g700)">Lunas</div></div>
+      <div class="stat-card" style="background:var(--amber-bg);border-color:#E8C870"><div class="stat-val" style="color:var(--amber-text)">${ss.t}</div><div class="stat-label" style="color:var(--amber-text)">Terlambat</div></div>
+      <div class="stat-card" style="background:var(--red-bg);border-color:#F0B0B0"><div class="stat-val" style="color:var(--red-text)">${ss.bl}</div><div class="stat-label" style="color:var(--red-text)">Belum bayar</div></div>
+    </div>
+    ${rekapKamarHtml(db,sel)}
+    <div class="section-label">Status per santri · ${bl(sel)}</div>
+    <div class="search-wrap"><i class="ti ti-search search-ico"></i><input type="text" id="spp-search" placeholder="Cari nama santri…" oninput="filterSppList(this.value)"/></div>
+    <div class="pay-list" id="spp-pay-list">${sppRows(db.santri,sel)}</div>`;
+
+  setTimeout(()=>{
+    const labels=months.map(b=>bs(b));
+    const gc='rgba(0,0,0,0.04)';const tc='#A89880';
+    const ca=document.getElementById('ch-akum');
+    if(ca)CI['akum']=new Chart(ca,{type:'bar',data:{labels,datasets:[{data:stats.map(s=>s.tot),backgroundColor:stats.map(s=>s.b===sel?'#257A43':'#257A4340'),borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+rp(c.raw)}}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>rpS(v)}}}}});
+    const cb2=document.getElementById('ch-brkdwn');
+    if(cb2)CI['brkdwn']=new Chart(cb2,{type:'bar',data:{labels,datasets:[{label:'Lunas',data:stats.map(s=>s.l),backgroundColor:'#257A43',borderRadius:2,stack:'s'},{label:'Terlambat',data:stats.map(s=>s.t),backgroundColor:'#B86800',borderRadius:2,stack:'s'},{label:'Belum',data:stats.map(s=>s.bl),backgroundColor:'#B83232',borderRadius:2,stack:'s'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:11}},stacked:true},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},stacked:true,max:total}}}});
+  },100);
+}
+function rekapKamarHtml(db,sel){
+  const map={};
+  db.santri.forEach(s=>{
+    const k=s.kamar||'-';
+    if(!map[k])map[k]={total:0,tunai:0,transfer:0,tunaiN:0,transferN:0,belumN:0,belum:0};
+    map[k].total++;
+    const p=getSpp(s,sel);
+    if(p.status==='belum'){map[k].belumN++;map[k].belum+=SPP;return;}
+    const nom=p.nominal||0;
+    if(p.metode==='transfer'){map[k].transfer+=nom;map[k].transferN++;}
+    else{map[k].tunai+=nom;map[k].tunaiN++;}
+  });
+  const kamar=Object.keys(map).sort();
+  if(!kamar.length)return'';
+  let gTot=0,totT=0,totTf=0,totTn=0,totTfn=0,totBn=0;
+  const rows=kamar.map(k=>{
+    const m=map[k];const bayarN=m.tunaiN+m.transferN;
+    gTot+=m.total;totT+=m.tunai;totTf+=m.transfer;totTn+=m.tunaiN;totTfn+=m.transferN;totBn+=m.belumN;
+    return`<tr>
+      <td style="padding:8px 10px;font-size:13px;border-bottom:1px solid var(--border)">${k}</td>
+      <td style="padding:8px 10px;font-size:13px;text-align:right;border-bottom:1px solid var(--border);color:var(--text2)">${bayarN}/${m.total}</td>
+      <td style="padding:8px 10px;font-size:13px;text-align:right;border-bottom:1px solid var(--border)">${m.tunaiN}<span style="color:var(--text3);font-size:11px"> · ${rpS(m.tunai)}</span></td>
+      <td style="padding:8px 10px;font-size:13px;text-align:right;border-bottom:1px solid var(--border)">${m.transferN}<span style="color:var(--text3);font-size:11px"> · ${rpS(m.transfer)}</span></td>
+      <td style="padding:8px 10px;font-size:13px;text-align:right;border-bottom:1px solid var(--border);color:${m.belumN?'var(--red-text)':'var(--text3)'}">${m.belumN}</td>
+    </tr>`;
+  }).join('');
+  return`
+    <div class="section-label">Rekap per kamar · ${bl(sel)}</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--cream2)">
+          <th style="padding:8px 10px;font-size:11px;text-align:left;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em">Kamar</th>
+          <th style="padding:8px 10px;font-size:11px;text-align:right;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em">Bayar</th>
+          <th style="padding:8px 10px;font-size:11px;text-align:right;color:var(--g700);text-transform:uppercase;letter-spacing:0.04em">Tunai</th>
+          <th style="padding:8px 10px;font-size:11px;text-align:right;color:var(--blue-text);text-transform:uppercase;letter-spacing:0.04em">Transfer</th>
+          <th style="padding:8px 10px;font-size:11px;text-align:right;color:var(--red-text);text-transform:uppercase;letter-spacing:0.04em">Belum</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr style="background:var(--cream2);font-weight:700">
+          <td style="padding:8px 10px;font-size:13px">Total</td>
+          <td style="padding:8px 10px;font-size:13px;text-align:right;color:var(--text2)">${totTn+totTfn}/${gTot}</td>
+          <td style="padding:8px 10px;font-size:13px;text-align:right;color:var(--g700)">${totTn} · ${rpS(totT)}</td>
+          <td style="padding:8px 10px;font-size:13px;text-align:right;color:var(--blue-text)">${totTfn} · ${rpS(totTf)}</td>
+          <td style="padding:8px 10px;font-size:13px;text-align:right;color:var(--red-text)">${totBn}</td>
+        </tr></tfoot>
+      </table>
+    </div>`;
+}
+function sppRows(list,sel){
+  return list.map(s=>{
+    const p=getSpp(s,sel);
+    return`<div class="pay-row">
+      <div><div class="pay-month">${s.nama}</div><div class="pay-sub">${s.kelas}${p.tglBayar?' · '+fd(p.tglBayar):''}</div></div>
+      <div class="pay-right">${p.status!=='belum'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}${p.status==='belum'&&can('spp')?`<button class="confirm-btn" onclick="showKonfirm('${s.id}','${sel}')">Konfirmasi</button>`:''}${can('spp')?`<button class="confirm-btn" style="background:var(--cream2);color:var(--g700);border:1px solid var(--g300)" onclick="showKonfirmMulti('${s.id}')" title="Lunasi beberapa bulan"><i class="ti ti-checks" style="font-size:14px"></i></button>`:''}</div>
+    </div>`;
+  }).join('');
+}
+function filterSppList(q){
+  const db=getDb();const sel=db.sppBulan||cb();
+  const f=db.santri.filter(s=>s.nama.toLowerCase().includes((q||'').toLowerCase()));
+  const el=document.getElementById('spp-pay-list');
+  if(el)el.innerHTML=f.length?sppRows(f,sel):'<div style="text-align:center;padding:1.5rem;color:var(--text3);font-size:13px">Santri tidak ditemukan</div>';
+}
+function updSppBulan(v){const d=getDb();d.sppBulan=v;setDb(d);renderSpp();}
+
+// ─ AUDIT ──────────────────────────────────────────────────────────────────
+function renderAudit(){
+  const db=getDb(); const logs=db.log||[];
+  const el=document.getElementById('audit-content');
+  if(!logs.length){el.innerHTML=`<div class="empty"><div class="empty-icon"><i class="ti ti-history"></i></div><div class="empty-text">Belum ada aktivitas tercatat</div></div>`;return;}
+  el.innerHTML=`<div class="audit-list">${logs.map(l=>`<div class="audit-item">
+    <div class="audit-icon" style="background:${l.bg}"><i class="ti ${l.icon}" style="color:${l.ic}"></i></div>
+    <div style="flex:1;min-width:0">
+      <div class="audit-action">${l.action}</div>
+      <div class="audit-desc">${l.detail}</div>
+      <div class="audit-meta"><i class="ti ti-user-circle" style="font-size:11px"></i>${l.by} ${rBadge(l.role)} · ${fdt(l.ts)}</div>
+    </div>
+  </div>`).join('')}</div>`;
+}
+
+// ─ ORTU ───────────────────────────────────────────────────────────────────
+let ortuSantriTemp=null;
+
+function resetOrtuLogin(){
+  ortuSantriTemp=null;
+  ['p1','p2','p3','p4','p5','p6','p7','p8'].forEach(id=>document.getElementById(id).value='');
+  ['pp1','pp2','pp3','pp4'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pin-err').textContent='';
+  document.getElementById('pin-err2').textContent='';
+  document.getElementById('ortu-step1').style.display='block';
+  document.getElementById('ortu-step2').style.display='none';
+  document.getElementById('ortu-login-sub').textContent='Masukkan kode santri yang tertera di kartu';
+}
+
+function ortuStep1(){
+  const kode=['p1','p2','p3','p4','p5','p6','p7','p8'].map(id=>document.getElementById(id).value).join('');
+  document.getElementById('pin-err').textContent='';
+  if(kode.length<8){document.getElementById('pin-err').textContent='Masukkan 8 digit kode';return;}
+  const db=getDb(); const s=db.santri.find(x=>x.id===kode);
+  if(!s){document.getElementById('pin-err').textContent='Kode tidak ditemukan';return;}
+  ortuSantriTemp=s;
+  // Cek apakah sudah punya PIN
+  if(!s.ortuPin){
+    // PIN belum ada — tampilkan form buat PIN
+    document.getElementById('set-pin-desc').textContent=`Halo, ini pertama kali Anda masuk untuk ${s.nama}. Buat PIN 4 digit untuk keamanan akun.`;
+    document.getElementById('new-pin1').value='';
+    document.getElementById('new-pin2').value='';
+    document.getElementById('set-pin-err').textContent='';
+    document.getElementById('m-set-pin').style.display='flex';
+  } else {
+    // Sudah punya PIN — minta PIN
+    document.getElementById('ortu-step2-nama').textContent=s.nama;
+    document.getElementById('ortu-login-sub').textContent='Masukkan PIN 4 digit Anda';
+    document.getElementById('ortu-step1').style.display='none';
+    document.getElementById('ortu-step2').style.display='block';
+    ['pp1','pp2','pp3','pp4'].forEach(id=>document.getElementById(id).value='');
+    setTimeout(()=>document.getElementById('pp1').focus(),100);
+  }
+}
+
+async function saveNewPin(){
+  const p1=document.getElementById('new-pin1').value;
+  const p2=document.getElementById('new-pin2').value;
+  const errEl=document.getElementById('set-pin-err');
+  if(p1.length<4){errEl.textContent='PIN harus 4 digit';return;}
+  if(!/^\d{4}$/.test(p1)){errEl.textContent='PIN hanya boleh angka';return;}
+  if(p1!==p2){errEl.textContent='Konfirmasi PIN tidak cocok';return;}
+  const{data,error}=await _SB.rpc('set_pin',{sid:ortuSantriTemp.id,newpin:p1});
+  if(error||!data){errEl.textContent='Gagal menyimpan PIN. Coba lagi.';console.error(error);return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===ortuSantriTemp.id);
+  s.ortuPin=true; db.activeId=s.id; setDb(db);
+  cm('m-set-pin');
+  document.getElementById('ortu-nav-name').textContent=s.nama;
+  renderOrtu(s); goTo('screen-ortu-dashboard');
+}
+
+async function ortuStep2(){
+  const pin=['pp1','pp2','pp3','pp4'].map(id=>document.getElementById(id).value).join('');
+  document.getElementById('pin-err2').textContent='';
+  if(pin.length<4){document.getElementById('pin-err2').textContent='Masukkan 4 digit PIN';return;}
+  const{data,error}=await _SB.rpc('verify_pin',{sid:ortuSantriTemp.id,pin});
+  if(error){document.getElementById('pin-err2').textContent='Gagal terhubung ke server';console.error(error);return;}
+  if(!data){
+    document.getElementById('pin-err2').textContent='PIN salah';
+    ['pp1','pp2','pp3','pp4'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pp1').focus();
+    return;
+  }
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===ortuSantriTemp.id);
+  db.activeId=s.id; setDb(db);
+  document.getElementById('ortu-nav-name').textContent=s.nama;
+  renderOrtu(s); goTo('screen-ortu-dashboard');
+}
+
+function loginOrtu(){
+  // Legacy, redirect ke step1
+  ortuStep1();
+}
+
+async function saveGantiPin(){
+  const lama=document.getElementById('ganti-pin-lama').value;
+  const baru=document.getElementById('ganti-pin-baru').value;
+  const konfirm=document.getElementById('ganti-pin-konfirm').value;
+  const errEl=document.getElementById('ganti-pin-err');
+  if(baru.length<4||!/^\d{4}$/.test(baru)){errEl.textContent='PIN baru harus 4 digit angka';return;}
+  if(baru!==konfirm){errEl.textContent='Konfirmasi tidak cocok';return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.activeId);
+  const{data,error}=await _SB.rpc('change_pin',{sid:s.id,oldpin:lama,newpin:baru});
+  if(error){errEl.textContent='Gagal terhubung ke server';console.error(error);return;}
+  if(!data){errEl.textContent='PIN lama tidak sesuai';return;}
+  cm('m-ganti-pin');
+  alert('PIN berhasil diubah.');
+}
+
+function showLupaPin(){
+  document.getElementById('m-lupa-pin').style.display='flex';
+}
+
+
+function showGantiPin(){
+  ['ganti-pin-lama','ganti-pin-baru','ganti-pin-konfirm'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ganti-pin-err').textContent='';
+  document.getElementById('m-ganti-pin').style.display='flex';
+}
+
+function showResetPin(sid){
+  if(!can('resetPin')){alert('Akses terbatas');return;}
+  const db=getDb();const s=db.santri.find(x=>x.id===sid);
+  if(!s){alert('Santri tidak ditemukan');return;}
+  db.resetPinTargetId=sid; setDb(db);
+  document.getElementById('reset-pin-info').textContent=`${s.nama} · ${s.kamar}`;
+  document.getElementById('m-reset-pin').style.display='flex';
+}
+async function saveResetPin(){
+  if(!can('resetPin')){alert('Akses terbatas');return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.resetPinTargetId);
+  if(!s){alert('Santri tidak ditemukan');return;}
+  const{data,error}=await _SB.rpc('reset_pin',{tok:TOK,sid:s.id});
+  if(error||!data){alert('Gagal mereset PIN. Coba lagi.');console.error(error);return;}
+  s.ortuPin=null; setDb(db);
+  log('Reset PIN wali',`${s.nama} · ${s.kamar}`,'ti-lock-open','var(--red-bg)','var(--red-text)');
+  cm('m-reset-pin');
+  alert(`PIN wali ${s.nama} berhasil direset. Wali akan membuat PIN baru saat login berikutnya.`);
+  const as=document.querySelector('.screen.active')?.id;
+  if(as==='screen-detail-santri')renderDetail(s);
+}
+
+function renderOrtu(s){
+  const umur=new Date().getFullYear()-new Date(s.tgl).getFullYear();
+  const sorted=[...s.rekam].sort((a,b)=>new Date(b.tgl)-new Date(a.tgl));
+  const lastRm=sorted[0]; const cbb=cb();
+  const sppNow=getSpp(s,cbb);
+  document.getElementById('ortu-content').innerHTML=`
+    <div class="profile-header">
+      <div class="profile-header-content">
+        <div class="ava ava-md ava-colored">${ini(s.nama)}</div>
+        <div>
+          <div class="profile-name">${s.nama}</div>
+          <div class="profile-meta">${s.kelas} · ${s.kamar} · ${umur} tahun</div>
+        </div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchOrtuTab(this,'ot-k')">Kesehatan</button>
+      <button class="tab" onclick="switchOrtuTab(this,'ot-s')">SPP</button>
+      <button class="tab" onclick="switchOrtuTab(this,'ot-t')">Titipan</button>
+      <button class="tab" onclick="switchOrtuTab(this,'ot-m')">Menu</button>
+      <button class="tab" onclick="switchOrtuTab(this,'ot-j')">Jadwal</button>
+    </div>
+    <div id="ot-k" class="tab-panel active">
+      ${lastRm?`<div class="metrics">
+        <div class="metric"><div class="metric-label">Tensi</div><div class="metric-value" style="font-size:16px">${lastRm.td||'—'}</div></div>
+        <div class="metric"><div class="metric-label">Hb</div><div class="metric-value">${lastRm.hb||'—'}<span class="metric-unit">g/dL</span></div></div>
+        <div class="metric"><div class="metric-label">Gula</div><div class="metric-value">${lastRm.gula||'—'}<span class="metric-unit">mg/dL</span></div></div>
+      </div>`:''}
+      <div class="section-label">Riwayat pemeriksaan</div>
+      ${sorted.length?`<div class="rekam-list">${sorted.map(r=>`<div class="rekam-item">
+        <div class="rekam-date">${fd(r.tgl)} ${hBadge(r.status)}</div>
+        <div class="rekam-title">${r.keluhan}</div>
+        <div class="rekam-detail">Diagnosa: ${r.diagnosa}</div>
+      </div>`).join('')}</div>`:'<div class="empty"><div class="empty-icon"><i class="ti ti-clipboard-off"></i></div><div class="empty-text">Belum ada data kesehatan</div></div>'}
+    </div>
+    <div id="ot-s" class="tab-panel">
+      <div style="background:linear-gradient(135deg,var(--g900),var(--g700));border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden">
+        <div style="position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:12px;color:rgba(255,255,255,0.6);font-weight:500;text-transform:uppercase;letter-spacing:0.04em">SPP bulan ini</div><div style="font-family:Fraunces,serif;font-size:18px;font-weight:600;color:#fff;margin-top:4px">${bl(cbb)}</div><div style="font-family:Fraunces,serif;font-size:24px;font-weight:700;color:var(--gold-mid);margin-top:4px">${rp(SPP)}</div></div>
+          <div>${sBadgeOrtu(sppNow.status)}</div>
+        </div>
+      </div>
+      <div class="section-label">Riwayat pembayaran</div>
+      <div class="pay-list">
+        ${[...(s.pembayaran||[])].reverse().map(p=>`<div class="pay-row">
+          <div><div class="pay-month">${bl(p.bulan)}</div>${p.tglBayar?`<div class="pay-sub">Bayar ${fd(p.tglBayar)}</div>`:''}</div>
+          <div class="pay-right">${p.status==='lunas'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadgeOrtu(p.status)}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div id="ot-m" class="tab-panel">${menuHariIniHtml()}</div>
+    <div id="ot-j" class="tab-panel">${jadwalHariIniHtml(s.kelas)}</div>
+    <div id="ot-t" class="tab-panel">${ortuTitipanHtml(s)}</div>`;
+}
+
+function ortuTitipanHtml(s){
+  const titipan=(s.titipan||[]).slice().sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  const saldo=getSaldo(s);
+  const saldoColor=saldo>0?'var(--g700)':saldo===0?'var(--text3)':'var(--red-text)';
+  return`
+    <div style="background:linear-gradient(135deg,var(--purple-text),var(--purple));border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem">
+      <div style="font-size:12px;color:rgba(255,255,255,0.6);font-weight:500;text-transform:uppercase;letter-spacing:0.05em">Saldo titipan</div>
+      <div style="font-family:Fraunces,serif;font-size:32px;font-weight:700;color:#fff;margin:6px 0">${rp(saldo)}</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.6)">${titipan.length} transaksi tercatat</div>
+    </div>
+    <div class="section-label">Riwayat transaksi</div>
+    ${titipan.length?`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+      ${titipan.map(t=>{
+        const masuk=t.tipe==='masuk';
+        return`<div style="display:flex;align-items:center;gap:12px;padding:11px 1.25rem;border-bottom:1px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:50%;background:${masuk?'var(--g100)':'var(--red-bg)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="ti ${masuk?'ti-arrow-down':'ti-arrow-up'}" style="font-size:14px;color:${masuk?'var(--g700)':'var(--red-text)'}"></i>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;color:var(--text)">${t.ket||'-'}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px">${fd(t.tgl)}</div>
+          </div>
+          <div style="font-family:Fraunces,serif;font-size:15px;font-weight:700;color:${masuk?'var(--g700)':'var(--red-text)'};flex-shrink:0">${masuk?'+':'-'}${rp(t.nominal)}</div>
+        </div>`;
+      }).join('')}
+    </div>`:'<div class="empty"><div class="empty-icon"><i class="ti ti-wallet-off"></i></div><div class="empty-text">Belum ada transaksi titipan</div></div>'}`;
+}
+
+function switchOrtuTab(btn,id){
+  btn.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  ['ot-k','ot-s','ot-t','ot-m','ot-j'].forEach(x=>{const el=document.getElementById(x);if(el)el.classList.toggle('active',x===id);});
+}
+
+// ─ MENU HARIAN ────────────────────────────────────────────────────────────
+const MENU_HARIAN={
+  1:{pagi:['Nasi Putih','Soto Ayam','Sambel'],sore:['Nasi Putih','FuyungHai','Telur Dadar']},
+  2:{pagi:['Nasi Putih','Sayur Kare Tahu','Naget','Sambel'],sore:['Nasi Putih','Sayur Asem','Ayam Kecap','Telur Dadar','Pindang Goreng Tepung','Krupuk','Sambel']},
+  3:{pagi:['Nasi Putih','Sayur Rawon Tahu','Sosis Bintang','Krupuk','Sambel'],sore:['Nasi Putih','Sayur Lodeh','Ayam Goreng','Telur Dadar','Udang Goreng Tepung','Sambel']},
+  4:{pagi:['Nasi Putih','Telur Dadar','Mie Goreng','Sambel'],sore:['Nasi Putih','Sayur Bening','Ayam Bali','Telur Dadar','Lele Goreng','Sambel']},
+  5:{pagi:['Nasi Putih','Pecel','Tahu Bali','Krupuk'],sore:['Nasi Putih','Sayur Balado Terong','Ayam Bumbu Kuning','Telur Dadar','Pindang Goreng','Sambel']},
+  6:{pagi:['Nasi Putih','Sayur Sup','Tempe Goreng','Bakso','Sambel'],sore:['Nasi Putih','Sayur Sawi Putih + Mie Bihun','Ayam Kentaky','Telur Dadar','Sarden Pindang','Sambel']},
+  0:{pagi:['Nasi Putih','Urap-urap','Tahu Goreng','Scallop'],sore:['Nasi Putih','Sayur Cambah + Tahu','Ayam Goreng','Telur Dadar','Lele Bali','Sambel']},
+};
+const MENU_LAIN={
+  pagi:[['Nasi Putih','Tahu Kecap','Naget','Sambel'],['Nasi Putih','Sayur Lodeh','Naget','Sambel']],
+  sore:[['Nasi Putih','Kotokan Tahu Tempe Teri','Pindang Goreng','Telur Dadar','Ayam Kecap','Sambel'],['Nasi Putih','Sayur Asem','Lele Goreng','Telur Dadar','Ayam Kentaky','Sambel']],
+};
+function ikonMenu(nama){
+  const n=nama.toLowerCase();
+  if(n.includes('nasi'))return'🍚';
+  if(n.includes('ayam'))return'🍗';
+  if(n.includes('lele')||n.includes('pindang')||n.includes('bandeng')||n.includes('ikan')||n.includes('sarden')||n.includes('udang'))return'🐟';
+  if(n.includes('telur')||n.includes('fuyung'))return'🥚';
+  if(n.includes('sambel'))return'🌶️';
+  if(n.includes('krupuk'))return'🫓';
+  if(n.includes('bakso'))return'🍢';
+  if(n.includes('soto')||n.includes('kare')||n.includes('rawon')||n.includes('lodeh')||n.includes('asem')||n.includes('bening')||n.includes('sup')||n.includes('sayur'))return'🍲';
+  if(n.includes('pecel')||n.includes('urap'))return'🥗';
+  if(n.includes('mie'))return'🍜';
+  if(n.includes('tahu')||n.includes('tempe'))return'🟫';
+  if(n.includes('naget')||n.includes('sosis')||n.includes('scallop'))return'🍤';
+  return'🍽️';
+}
+function menuHariIniHtml(){
+  const now=new Date();
+  const dow=now.getDay();
+  const hariIni=now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'});
+  const m=MENU_HARIAN[dow];
+
+  function menuRow(nama){
+    return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:20px;width:32px;text-align:center;flex-shrink:0">${ikonMenu(nama)}</div>
+      <div style="font-size:14px;font-weight:500;color:var(--text)">${nama}</div>
+    </div>`;
+  }
+  function mealCard(label,ikon,items){
+    return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow)">
+      <div style="padding:10px 1.25rem;background:var(--cream2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+        <span style="font-size:16px">${ikon}</span>
+        <span style="font-size:13px;font-weight:600;color:var(--text)">${label}</span>
+      </div>
+      <div style="padding:0 1.25rem">${items.map(menuRow).join('')}</div>
+    </div>`;
+  }
+
+  return`
+    <div style="background:linear-gradient(135deg,var(--g900),var(--g700));border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:12px">
+      <div style="font-size:28px">🍽️</div>
+      <div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.55);font-weight:500;text-transform:uppercase;letter-spacing:0.05em">Menu hari ini</div>
+        <div style="font-family:Fraunces,serif;font-size:17px;font-weight:600;color:#fff;margin-top:3px">${hariIni}</div>
+      </div>
+    </div>
+    ${mealCard('Makan pagi','🌅',m.pagi)}
+    ${mealCard('Makan sore','🌇',m.sore)}
+    <div style="background:var(--g50);border:1px solid var(--g300);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:600;color:var(--g700);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="ti ti-check" style="font-size:13px"></i>Selalu tersedia</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text)"><span>🥚</span> Telur</div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px">Alternatif bagi santri dengan alergi atau yang tidak menyukai lauk utama hari ini</div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px">Jadwal menu tetap · Asrama Muzamzamah</div>`;
+}
+// ─ USTADZAH KAMAR FILTER ─────────────────────────────────────────────────
+function getMyKamar(){
+  if(!CP||CP.role!=='ustadzah')return null; // null = all
+  const db=getDb();
+  return(db.kamarAssign||{})[CP.id]||[];
+}
+
+function getSantriForRole(){
+  const db=getDb();
+  const kamar=getMyKamar();
+  if(!kamar)return db.santri; // admin/kader/bendahara: semua santri
+  return db.santri.filter(s=>kamar.includes(s.kamar));
+}
+
+// ─ KELOLA AKUN ───────────────────────────────────────────────────────────
+function renderKelolaAkun(){
+  const db=getDb();
+  const el=document.getElementById('kelola-akun-content');
+  const roleLabel={admin:'Admin',bendahara:'Bendahara',kader:'Kader Kesehatan',ustadzah:'Ustadzah'};
+  const roleBg={admin:'var(--red-bg)',bendahara:'var(--amber-bg)',kader:'var(--g100)',ustadzah:'var(--purple-bg)'};
+  const roleText={admin:'var(--red-text)',bendahara:'var(--amber-text)',kader:'var(--g700)',ustadzah:'var(--purple-text)'};
+
+  el.innerHTML=`
+    <button class="add-btn" onclick="showAddAkun()"><i class="ti ti-plus"></i> Tambah akun baru</button>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)">
+      ${db.pengurus.map(p=>`
+        <div style="display:flex;align-items:center;gap:12px;padding:11px 1.25rem;border-bottom:1px solid var(--border)">
+          <div class="ava ava-sm" style="background:${roleBg[p.role]};color:${roleText[p.role]}">${ini(p.nama)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:600;color:var(--text)">${p.nama}</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px">@${p.username} · <span class="badge" style="background:${roleBg[p.role]};color:${roleText[p.role]};font-size:10px">${roleLabel[p.role]||p.role}</span></div>
+          </div>
+          ${p.id!=='p1'?`<button class="confirm-btn" style="border-color:var(--red);color:var(--red-text)" onclick="hapusAkun('${p.id}','${p.nama}')"><i class="ti ti-trash" style="font-size:12px"></i></button>`:''}
+        </div>`).join('')}
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-top:10px;text-align:center">Password default: nama + 123 (contoh: nafis123)</div>`;
+}
+
+function showAddAkun(){
+  ['ak-nama','ak-username','ak-password'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ak-role').value='ustadzah';
+  document.getElementById('ak-err').textContent='';
+  document.getElementById('m-add-akun').style.display='flex';
+}
+
+async function saveAkun(){
+  const nama=document.getElementById('ak-nama').value.trim();
+  const username=document.getElementById('ak-username').value.trim().toLowerCase();
+  const password=document.getElementById('ak-password').value;
+  const role=document.getElementById('ak-role').value;
+  const errEl=document.getElementById('ak-err');
+  if(!nama){errEl.textContent='Nama wajib diisi';return;}
+  if(!username){errEl.textContent='Username wajib diisi';return;}
+  if(password.length<6){errEl.textContent='Password minimal 6 karakter';return;}
+  const db=getDb();
+  if(db.pengurus.find(p=>p.username===username)){errEl.textContent='Username sudah dipakai';return;}
+  const id='p'+Date.now();
+  const{data,error}=await _SB.rpc('add_pengurus',{tok:TOK,pid:id,pnama:nama,puser:username,ppw:password,prole:role});
+  if(error||!data){errEl.textContent='Gagal menyimpan (username mungkin sudah dipakai)';console.error(error);return;}
+  db.pengurus.push({id,nama,username,role});
+  setDb(db);
+  log('Tambah akun',`${nama} (@${username}) · ${role}`,'ti-user-plus','var(--blue-bg)','var(--blue-text)');
+  cm('m-add-akun');
+  renderKelolaAkun();
+}
+
+async function hapusAkun(id,nama){
+  if(!confirm(`Hapus akun ${nama}? Tindakan ini tidak bisa dibatalkan.`))return;
+  const{error}=await _SB.rpc('del_pengurus',{tok:TOK,pid:id});
+  if(error){alert('Gagal menghapus: '+(error.message||'akses ditolak'));console.error(error);return;}
+  const db=getDb();
+  db.pengurus=db.pengurus.filter(p=>p.id!==id);
+  if(db.kamarAssign&&db.kamarAssign[id]){delete db.kamarAssign[id];_SB.rpc('set_kamar_assign',{tok:TOK,val:db.kamarAssign});}
+  setDb(db);
+  log('Hapus akun',`${nama} dihapus`,'ti-user-off','var(--red-bg)','var(--red-text)');
+  renderKelolaAkun();
+}
+
+// ─ KELOLA KAMAR ──────────────────────────────────────────────────────────
+function renderKelolaKamar(){
+  const db=getDb();
+  const kamarList=[...new Set(db.santri.map(s=>s.kamar))].sort();
+  const assign=db.kamarAssign||{};
+  const ustadzahList=db.pengurus.filter(p=>p.role==='ustadzah');
+
+  const el=document.getElementById('kelola-kamar-content');
+  el.innerHTML=`
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:1.5rem;font-size:13px;color:var(--text2)">
+      Assign setiap kamar ke ustadzah yang bertanggung jawab. Ustadzah hanya bisa kelola titipan santri dari kamarnya.
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)">
+      ${kamarList.map(kamar=>{
+        const assignedId=Object.keys(assign).find(uid=>assign[uid]?.includes(kamar));
+        const assignedUst=assignedId?db.pengurus.find(p=>p.id===assignedId):null;
+        const santriCount=db.santri.filter(s=>s.kamar===kamar).length;
+        return`<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 1.25rem;border-bottom:1px solid var(--border)">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text)">${kamar}</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px">${santriCount} santri</div>
+          </div>
+          <select onchange="assignKamar('${kamar}',this.value)" style="width:auto;min-width:130px;font-size:13px;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--border)">
+            <option value="">— Belum diassign —</option>
+            ${ustadzahList.map(u=>`<option value="${u.id}" ${assignedId===u.id?'selected':''}>${u.nama}</option>`).join('')}
+          </select>
+        </div>`;
+      }).join('')}
+    </div>
+    ${ustadzahList.length===0?`<div class="empty"><div class="empty-icon"><i class="ti ti-user-off"></i></div><div class="empty-text">Belum ada akun ustadzah</div></div>`:''}`;
+}
+
+function assignKamar(kamar,ustadzahId){
+  const db=getDb();
+  if(!db.kamarAssign)db.kamarAssign={};
+
+  // Remove kamar dari assign lama
+  Object.keys(db.kamarAssign).forEach(uid=>{
+    db.kamarAssign[uid]=(db.kamarAssign[uid]||[]).filter(k=>k!==kamar);
+  });
+
+  // Assign ke ustadzah baru kalau dipilih
+  if(ustadzahId){
+    if(!db.kamarAssign[ustadzahId])db.kamarAssign[ustadzahId]=[];
+    db.kamarAssign[ustadzahId].push(kamar);
+    const ust=db.pengurus.find(p=>p.id===ustadzahId);
+    log('Assign kamar',`${kamar} → ${ust?.nama}`,'ti-door','var(--purple-bg)','var(--purple-text)');
+  } else {
+    log('Unassign kamar',`${kamar} dilepas dari ustadzah`,'ti-door','var(--surface2)','var(--text2)');
+  }
+  setDb(db);
+  _SB.rpc('set_kamar_assign',{tok:TOK,val:db.kamarAssign}).then(({error})=>{if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);}});
+}
+
+// ─ TITIPAN ────────────────────────────────────────────────────────────────
+function getSaldo(s){
+  const t=s.titipan||[];
+  return t.reduce((acc,e)=>e.tipe==='masuk'?acc+e.nominal:acc-e.nominal,0);
+}
+
+function renderTitipan(){
+  const db=getDb();
+  const santri=getSantriForRole();
+  const el=document.getElementById('titipan-content');
+  const total=santri.reduce((a,s)=>a+getSaldo(s),0);
+  const adaSaldo=santri.filter(s=>getSaldo(s)>0);
+  const kamar=getMyKamar();
+  const kamarInfo=kamar&&kamar.length?`<div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:4px">Kamar tanggung jawab: ${kamar.join(', ')}</div>`:'';
+
+  el.innerHTML=`
+    <div style="background:linear-gradient(135deg,var(--purple-text),var(--purple));border-radius:var(--radius);padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden">
+      <div style="position:relative;z-index:1">
+        <div style="font-size:12px;color:rgba(255,255,255,0.6);font-weight:500;text-transform:uppercase;letter-spacing:0.05em">Total titipan aktif</div>
+        <div style="font-family:Fraunces,serif;font-size:28px;font-weight:700;color:#fff;margin:6px 0">${rp(total)}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.65)">${adaSaldo.length} santri memiliki saldo titipan</div>
+        ${kamarInfo}
+      </div>
+    </div>
+    <div class="search-wrap" style="margin-bottom:1rem">
+      <i class="ti ti-search search-ico"></i>
+      <input type="text" placeholder="Cari nama santri…" oninput="renderTitipanList(this.value)"/>
+    </div>
+    <div id="titipan-list"></div>`;
+  renderTitipanList('');
+}
+
+function renderTitipanList(q){
+  const santri=getSantriForRole();
+  const filtered=santri.filter(s=>s.nama.toLowerCase().includes((q||'').toLowerCase()));
+  const el=document.getElementById('titipan-list');
+  el.innerHTML=filtered.map(s=>{
+    const saldo=getSaldo(s);
+    const saldoColor=saldo>0?'var(--g700)':saldo===0?'var(--text3)':'var(--red-text)';
+    return`<div class="card" onclick="openTitipan('${s.id}')">
+      <div class="card-row">
+        <div class="ava ava-sm">${ini(s.nama)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:600;color:var(--text)">${s.nama}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">${s.kelas} · ${s.kamar}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-family:Fraunces,serif;font-size:15px;font-weight:700;color:${saldoColor}">${rp(saldo)}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:1px">saldo</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openTitipan(id){
+  const db=getDb(); db.activeId=id; setDb(db);
+  const s=db.santri.find(x=>x.id===id);
+  document.getElementById('titipan-detail-name').textContent=s.nama;
+  renderTitipanDetail(s);
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('screen-titipan-detail').classList.add('active');
+}
+
+function renderTitipanDetail(s){
+  const titipan=(s.titipan||[]).slice().sort((a,b)=>new Date(b.ts)-new Date(a.ts));
+  const saldo=getSaldo(s);
+  const saldoColor=saldo>0?'var(--g700)':saldo===0?'var(--text3)':'var(--red-text)';
+
+  document.getElementById('titipan-detail-content').innerHTML=`
+    <div class="profile-header">
+      <div class="profile-header-content">
+        <div class="ava ava-md ava-colored">${ini(s.nama)}</div>
+        <div>
+          <div class="profile-name">${s.nama}</div>
+          <div class="profile-meta">${s.kelas} · ${s.kamar}</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow)">
+      <div>
+        <div style="font-size:12px;color:var(--text2);font-weight:500;text-transform:uppercase;letter-spacing:0.05em">Saldo titipan</div>
+        <div style="font-family:Fraunces,serif;font-size:28px;font-weight:700;color:${saldoColor};margin-top:4px">${rp(saldo)}</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" style="padding:8px 14px;font-size:13px;border-color:var(--red);color:var(--red-text)" onclick="showTitipanKeluar('${s.id}')"><i class="ti ti-minus"></i> Keluar</button>
+        <button class="btn btn-primary" style="width:auto;margin-top:0;padding:8px 14px;font-size:13px;background:var(--purple-text)" onclick="showTitipanMasuk('${s.id}')"><i class="ti ti-plus"></i> Masuk</button>
+      </div>
+    </div>
+    <div class="section-label">Riwayat transaksi</div>
+    ${titipan.length?`<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+      ${titipan.map(t=>{
+        const masuk=t.tipe==='masuk';
+        return`<div style="display:flex;align-items:center;gap:12px;padding:11px 1.25rem;border-bottom:1px solid var(--border)">
+          <div style="width:32px;height:32px;border-radius:50%;background:${masuk?'var(--g100)':'var(--red-bg)'};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="ti ${masuk?'ti-arrow-down':'ti-arrow-up'}" style="font-size:14px;color:${masuk?'var(--g700)':'var(--red-text)'}"></i>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;color:var(--text)">${t.ket||'-'}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px">${fd(t.tgl)} · ${t.by}</div>
+          </div>
+          <div style="font-family:Fraunces,serif;font-size:15px;font-weight:700;color:${masuk?'var(--g700)':'var(--red-text)'};flex-shrink:0">${masuk?'+':'-'}${rp(t.nominal)}</div>
+        </div>`;
+      }).join('')}
+    </div>`:'<div class="empty"><div class="empty-icon"><i class="ti ti-wallet-off"></i></div><div class="empty-text">Belum ada transaksi</div></div>'}`;
+}
+
+function showTitipanMasuk(id){
+  const db=getDb(); db.activeId=id; setDb(db);
+  const s=db.santri.find(x=>x.id===id);
+  document.getElementById('tm-santri-info').textContent=`${s.nama} · ${s.kelas}`;
+  document.getElementById('tm-tgl').value=new Date().toISOString().split('T')[0];
+  document.getElementById('tm-nominal').value='';
+  document.getElementById('tm-ket').value='';
+  document.getElementById('m-titipan-masuk').style.display='flex';
+}
+
+async function saveTitipanMasuk(){
+  const nominal=parseInt(document.getElementById('tm-nominal').value);
+  if(!nominal||nominal<=0){alert('Nominal tidak valid');return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.activeId);
+  const tgl=document.getElementById('tm-tgl').value,ket=document.getElementById('tm-ket').value;
+  const{error}=await _SB.rpc('titipan_catat',{tok:TOK,sid:s.id,tipe:'masuk',tgl,nominal,ket});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
+  if(!s.titipan)s.titipan=[];
+  s.titipan.push({id:Date.now(),tipe:'masuk',tgl,nominal,ket,by:CP?.nama||'-',ts:new Date().toISOString()}); setDb(db);
+  log('Titipan masuk',`${s.nama}: +${rp(nominal)} · ${ket}`,'ti-arrow-down','var(--purple-bg)','var(--purple-text)');
+  cm('m-titipan-masuk'); renderTitipanDetail(s);
+}
+
+function showTitipanKeluar(id){
+  const db=getDb(); db.activeId=id; setDb(db);
+  const s=db.santri.find(x=>x.id===id);
+  const saldo=getSaldo(s);
+  document.getElementById('tk-santri-info').textContent=`${s.nama} · ${s.kelas}`;
+  document.getElementById('tk-saldo-info').textContent=`Saldo tersedia: ${rp(saldo)}`;
+  document.getElementById('tk-tgl').value=new Date().toISOString().split('T')[0];
+  document.getElementById('tk-nominal').value='';
+  document.getElementById('tk-ket').value='';
+  document.getElementById('m-titipan-keluar').style.display='flex';
+}
+
+async function saveTitipanKeluar(){
+  const nominal=parseInt(document.getElementById('tk-nominal').value);
+  if(!nominal||nominal<=0){alert('Nominal tidak valid');return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.activeId);
+  const saldo=getSaldo(s);
+  if(nominal>saldo){alert(`Nominal melebihi saldo (${rp(saldo)})`);return;}
+  const tgl=document.getElementById('tk-tgl').value,ket=document.getElementById('tk-ket').value;
+  const{error}=await _SB.rpc('titipan_catat',{tok:TOK,sid:s.id,tipe:'keluar',tgl,nominal,ket});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
+  if(!s.titipan)s.titipan=[];
+  s.titipan.push({id:Date.now(),tipe:'keluar',tgl,nominal,ket,by:CP?.nama||'-',ts:new Date().toISOString()}); setDb(db);
+  log('Titipan keluar',`${s.nama}: -${rp(nominal)} · ${ket}`,'ti-arrow-up','var(--purple-bg)','var(--purple-text)');
+  cm('m-titipan-keluar'); renderTitipanDetail(s);
+}
+
+// ─ JADWAL NGAJI ───────────────────────────────────────────────────────────
+const BANDONGAN={
+  0:{kitab:'Bulughul Marom',jenis:'Bandongan'},
+  1:{kitab:'Fathul Qorib',jenis:'Bandongan'},
+  2:{kitab:'Bayan Fi Ulumil Quran',jenis:'Bandongan'},
+  3:{kitab:'Sorogan',jenis:'Sorogan'},
+  4:{kitab:'Nashoihul Ibad',jenis:'Bandongan'},
+  5:null,
+  6:{kitab:'Bulughul Marom',jenis:'Bandongan'},
+};
+
+const QURAN_MALAM={
+  6:{materi:'Qiro\'ah'},
+  0:{materi:'Tajwid & Ghorib'},
+  1:{materi:'Imla\''},
+  2:{materi:'Hafalan'},
+  3:{materi:'Tilawah Al-Quran'},
+  4:{materi:'Tilawah Al-Quran'},
+  5:{materi:'Tilawah Al-Quran'},
+};
+
+// Ustadzah pengampu ngaji Al-Quran ba'da Isya, per kelas
+const QURAN_USTADZAH={
+  '1SMP':'Us. Nafis',
+  '2SMPA':'Us. Tia',
+  '2SMPB':'Us. Nabila',
+  '1SMAA':'Us. Alda',
+  '1SMAB':'Us. Putri',
+  '2SMAA':'Us. Salwa',
+  '2SMAB':'Us. Syafi\'',
+  'TAHFIDZA':'Us. Aslikh',
+  'TAHFIDZB':'Us. Dina',
+};
+
+// Pemetaan kelas santri -> grup ngaji Quran (lebih detail: 1 SMA dipisah A/B, ada Tahfidz)
+function getQuranGroup(kelas){
+  if(!kelas||kelas==='-')return null;
+  if(kelas.startsWith('VII'))return '1SMP';
+  if(kelas.startsWith('VIII A')||kelas==='VIII A')return '2SMPA';
+  if(kelas.startsWith('VIII B')||kelas==='VIII B')return '2SMPB';
+  if(kelas.startsWith('X A')||kelas==='X A')return '1SMAA';
+  if(kelas.startsWith('X B')||kelas==='X B')return '1SMAB';
+  if(kelas==='XI A')return '2SMAA';
+  if(kelas==='XI B')return '2SMAB';
+  if(kelas==='Tahfidz A'||kelas==='TAHFIDZ A')return 'TAHFIDZA';
+  if(kelas==='Tahfidz B'||kelas==='TAHFIDZ B')return 'TAHFIDZB';
+  return null;
+}
+
+// Diniyah: {kelas_group: {hari: {kitab, ustadz, tempat}}}
+// Hari: 6=Sabtu, 0=Ahad, 1=Senin, 2=Selasa
+const DINIYAH={
+  '1SMP':{
+    6:{kitab:'Aqidatul Awam',ustadz:'Us. Syafik',tempat:'Depan Kantor'},
+    0:{kitab:'Shorof',ustadz:'Us. Putri',tempat:'Depan Kantor'},
+    1:{kitab:'Bahasa Arab',ustadz:'Us. Nafis',tempat:'Depan Kantor'},
+    2:{kitab:'Fiqih',ustadz:'Us. Nafis',tempat:'Depan Kantor'},
+  },
+  '2SMPA':{
+    6:{kitab:'Fiqih',ustadz:'Us. Syafi\'i',tempat:'DU 3'},
+    0:{kitab:'Shorof',ustadz:'Us. Nabila',tempat:'DU 3'},
+    1:{kitab:'Aqidatul Awam',ustadz:'Us. Sibli',tempat:'DU 3'},
+    2:{kitab:'Jurumiyah',ustadz:'Us. Tya',tempat:'DU 3'},
+  },
+  '2SMPB':{
+    6:{kitab:'Fiqih',ustadz:'Us. Syamsuri',tempat:'Depan Audit'},
+    0:{kitab:'Shorof',ustadz:'Us. Dina',tempat:'Depan Audit'},
+    1:{kitab:'Aqidatul Awam',ustadz:'Us. Nabila',tempat:'Depan Audit'},
+    2:{kitab:'Jurumiyah',ustadz:'Us. Salwa',tempat:'Depan Audit'},
+  },
+  '3SMP':{
+    6:{kitab:'Akhlaqul Banat',ustadz:'Us. Tya',tempat:'Audit'},
+    0:{kitab:'Akhlaqul Banat',ustadz:'Us. Salwa',tempat:'Audit'},
+    1:{kitab:'Akhlaqul Banat',ustadz:'Us. Alda',tempat:'Audit'},
+    2:{kitab:'Akhlaqul Banat',ustadz:'Us. Putri',tempat:'Audit'},
+  },
+  '1SMA':{
+    6:{kitab:'Shorof',ustadz:'Us. Sibli',tempat:'DU 3'},
+    0:{kitab:'Fiqih',ustadz:'Us. Syafi\'i',tempat:'DU 3'},
+    1:{kitab:'Tauhid',ustadz:'Us. Syafi\'i',tempat:'DU 3'},
+    2:{kitab:'Imrithi',ustadz:'Us. Alda',tempat:'DU 3'},
+  },
+  '2SMAA':{
+    6:{kitab:'Jawahirul Maknun',ustadz:'Us. Syarif',tempat:'DU 3'},
+    0:{kitab:'Ta\'lim Muta\'allim',ustadz:'Us. Sibli',tempat:'DU 3'},
+    1:{kitab:'Imrithi',ustadz:'Us. Agus',tempat:'DU 3'},
+    2:{kitab:'Shorof',ustadz:'Us. Syahudi',tempat:'DU 3'},
+  },
+  '2SMAB':{
+    6:{kitab:'Ta\'lim Muta\'allim',ustadz:'Us. Agus',tempat:'DU 3'},
+    0:{kitab:'Jawahirul Maknun',ustadz:'Us. Syarif',tempat:'DU 3'},
+    1:{kitab:'Shorof',ustadz:'Us. Syahudi',tempat:'DU 3'},
+    2:{kitab:'Imrithi',ustadz:'Us. Syarif',tempat:'DU 3'},
+  },
+};
+
+function getKelasGroup(kelas){
+  if(kelas.startsWith('VII')) return '1SMP';
+  if(kelas.startsWith('VIII A')||kelas==='VIII A') return '2SMPA';
+  if(kelas.startsWith('VIII B')||kelas==='VIII B') return '2SMPB';
+  if(kelas.startsWith('IX')) return '3SMP';
+  if(kelas.startsWith('X')) return '1SMA';
+  if(kelas==='XI A') return '2SMAA';
+  if(kelas==='XI B') return '2SMAB';
+  return null;
+}
+
+function jadwalHariIniHtml(kelas){
+  const now=new Date();
+  const dow=now.getDay();
+  const hariIni=now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'});
+  const hariNama=['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][dow];
+
+  const bandongan=BANDONGAN[dow];
+  const kelasGroup=getKelasGroup(kelas);
+  const diniyah=kelasGroup&&DINIYAH[kelasGroup]?DINIYAH[kelasGroup][dow]:null;
+
+  function jadwalCard(icon,title,rows,color='var(--g50)',borderColor='var(--g300)'){
+    return`<div style="background:${color};border:1px solid ${borderColor};border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:18px">${icon}</span>
+        <span style="font-size:13px;font-weight:700;color:var(--g900)">${title}</span>
+      </div>
+      ${rows.map(r=>`<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-top:1px solid ${borderColor}">
+        <div style="font-size:12px;color:var(--text2);font-weight:500">${r.label}</div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);text-align:right;max-width:60%">${r.value}</div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  let html=`
+    <div style="background:linear-gradient(135deg,var(--g900),var(--g700));border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:12px">
+      <div style="font-size:28px">📖</div>
+      <div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.55);font-weight:500;text-transform:uppercase;letter-spacing:0.05em">Jadwal ngaji hari ini</div>
+        <div style="font-family:Fraunces,serif;font-size:17px;font-weight:600;color:#fff;margin-top:3px">${hariIni}</div>
+      </div>
+    </div>`;
+
+  // Bandongan
+  if(dow===5){
+    html+=`<div style="background:var(--cream2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;text-align:center;margin-bottom:10px">
+      <div style="font-size:20px;margin-bottom:8px">🌙</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text)">Jumat — Libur Diniyah</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px">Ngaji Al-Quran tetap berlangsung setelah Maghrib</div>
+    </div>`;
+  } else {
+    if(bandongan){
+      html+=jadwalCard('🕌',"Ba'da Subuh",[
+        {label:'Kitab',value:bandongan.kitab},
+        {label:'Waktu',value:"Ba'da Subuh"},
+      ]);
+    }
+    if(diniyah){
+      html+=jadwalCard('🎓','Diniyah — Ba\'da Maghrib',[
+        {label:'Kitab',value:diniyah.kitab},
+        {label:'Ustadz/Ustadzah',value:diniyah.ustadz},
+        {label:'Tempat',value:diniyah.tempat},
+        {label:'Waktu',value:"Ba'da Maghrib"},
+      ],'var(--gold-light)','#E8C870');
+    } else if(![0,1,2,6].includes(dow)){
+      html+=`<div style="background:var(--cream2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;text-align:center">
+        <div style="font-size:13px;color:var(--text2)">Tidak ada jadwal diniyah hari ini</div>
+      </div>`;
+    }
+  }
+
+  // Ngaji Quran — every night ba'da Isya
+  const quranMalam=QURAN_MALAM[dow];
+  const quranGroup=getQuranGroup(kelas);
+  const quranUst=quranGroup?QURAN_USTADZAH[quranGroup]:null;
+  html+=jadwalCard('✨','Ngaji Al-Quran — Ba\'da Isya',[
+    {label:'Materi',value:quranMalam.materi},
+    ...(quranUst?[{label:'Ustadzah',value:quranUst}]:[]),
+    {label:'Waktu',value:"Ba'da Isya"},
+  ],'var(--blue-bg)','#BFDBFE');
+
+  html+=`<div style="font-size:11px;color:var(--text3);text-align:center;margin-top:4px">Jadwal tetap · Tahun Ajaran 2025/2026</div>`;
+  return html;
+}
+// ─ INIT ───────────────────────────────────────────────────────────────────
+initApp();
+</script>
+</body>
+</html>
