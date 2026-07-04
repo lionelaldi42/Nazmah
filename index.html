@@ -1171,39 +1171,42 @@ function renderSpp(){
 function rekapKamarHtml(db,sel){
   const map={};
   db.santri.forEach(s=>{
-    const p=getSpp(s,sel);
-    if(p.status==='belum')return;
     const k=s.kamar||'-';
-    if(!map[k])map[k]={tunai:0,transfer:0,tunaiN:0,transferN:0};
+    if(!map[k])map[k]={tunai:0,transfer:0,tunaiN:0,transferN:0,belumN:0,belum:0};
+    const p=getSpp(s,sel);
+    if(p.status==='belum'){map[k].belumN++;map[k].belum+=SPP;return;}
     const nom=p.nominal||0;
     if(p.metode==='transfer'){map[k].transfer+=nom;map[k].transferN++;}
-    else{map[k].tunai+=nom;map[k].tunaiN++;} // default lama tanpa metode dihitung tunai
+    else{map[k].tunai+=nom;map[k].tunaiN++;}
   });
   const kamar=Object.keys(map).sort();
   if(!kamar.length)return'';
-  let totT=0,totTf=0,totTn=0,totTfn=0;
+  let totT=0,totTf=0,totTn=0,totTfn=0,totBn=0,totB=0;
   const rows=kamar.map(k=>{
-    const m=map[k];totT+=m.tunai;totTf+=m.transfer;totTn+=m.tunaiN;totTfn+=m.transferN;
+    const m=map[k];totT+=m.tunai;totTf+=m.transfer;totTn+=m.tunaiN;totTfn+=m.transferN;totBn+=m.belumN;totB+=m.belum;
     return`<tr>
       <td style="padding:8px 10px;font-size:13px;border-bottom:1px solid var(--border)">${k}</td>
       <td style="padding:8px 10px;font-size:13px;text-align:right;border-bottom:1px solid var(--border)">${m.tunaiN}<span style="color:var(--text3);font-size:11px"> · ${rpS(m.tunai)}</span></td>
       <td style="padding:8px 10px;font-size:13px;text-align:right;border-bottom:1px solid var(--border)">${m.transferN}<span style="color:var(--text3);font-size:11px"> · ${rpS(m.transfer)}</span></td>
+      <td style="padding:8px 10px;font-size:13px;text-align:right;border-bottom:1px solid var(--border);color:${m.belumN?'var(--red-text)':'var(--text3)'}">${m.belumN}</td>
     </tr>`;
   }).join('');
   return`
-    <div class="section-label">Rekap metode bayar per kamar · ${bl(sel)}</div>
+    <div class="section-label">Rekap per kamar · ${bl(sel)}</div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px">
       <table style="width:100%;border-collapse:collapse">
         <thead><tr style="background:var(--cream2)">
           <th style="padding:8px 10px;font-size:11px;text-align:left;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em">Kamar</th>
           <th style="padding:8px 10px;font-size:11px;text-align:right;color:var(--g700);text-transform:uppercase;letter-spacing:0.04em">Tunai</th>
           <th style="padding:8px 10px;font-size:11px;text-align:right;color:var(--blue-text);text-transform:uppercase;letter-spacing:0.04em">Transfer</th>
+          <th style="padding:8px 10px;font-size:11px;text-align:right;color:var(--red-text);text-transform:uppercase;letter-spacing:0.04em">Belum</th>
         </tr></thead>
         <tbody>${rows}</tbody>
         <tfoot><tr style="background:var(--cream2);font-weight:700">
           <td style="padding:8px 10px;font-size:13px">Total</td>
           <td style="padding:8px 10px;font-size:13px;text-align:right;color:var(--g700)">${totTn} · ${rpS(totT)}</td>
           <td style="padding:8px 10px;font-size:13px;text-align:right;color:var(--blue-text)">${totTfn} · ${rpS(totTf)}</td>
+          <td style="padding:8px 10px;font-size:13px;text-align:right;color:var(--red-text)">${totBn}</td>
         </tr></tfoot>
       </table>
     </div>`;
