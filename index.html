@@ -618,6 +618,9 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     <div id="k-info" style="font-size:14px;color:var(--text2);margin-bottom:1.25rem;padding:12px 14px;background:var(--cream2);border-radius:var(--radius-sm);border:1px solid var(--border);font-weight:500"></div>
     <div class="form-group"><label class="form-label">Tanggal bayar</label><input type="date" id="k-tgl"/></div>
     <div class="form-group"><label class="form-label">Nominal (Rp)</label><input type="number" id="k-nominal" value="750000"/></div>
+    <div class="form-group"><label class="form-label">Metode bayar</label>
+      <select id="k-metode"><option value="tunai">Tunai</option><option value="transfer">Transfer</option></select>
+    </div>
     <div class="form-group"><label class="form-label">Catatan</label><input type="text" id="k-catatan" placeholder="Transfer BRI, cash, dll"/></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="cm('m-konfirm-spp')">Batal</button>
@@ -635,6 +638,9 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     </div>
     <div class="form-group"><label class="form-label">Tanggal bayar (untuk semua bulan terpilih)</label><input type="date" id="km-tgl"/></div>
     <div class="form-group"><label class="form-label">Nominal per bulan (Rp)</label><input type="number" id="km-nominal" value="750000" oninput="updKmSummary()"/></div>
+    <div class="form-group"><label class="form-label">Metode bayar</label>
+      <select id="km-metode"><option value="tunai">Tunai</option><option value="transfer">Transfer</option></select>
+    </div>
     <div class="form-group"><label class="form-label">Catatan</label><input type="text" id="km-catatan" placeholder="Transfer BRI, cash, dll"/></div>
     <div id="km-summary" style="font-size:13px;color:var(--text2);margin-bottom:0.75rem;font-weight:600"></div>
     <div class="modal-actions">
@@ -682,30 +688,13 @@ const _SB=window.supabase.createClient(
 // In-memory DB. getDb/setDb dipertahankan agar seluruh kode UI lama tetap jalan.
 // setDb TIDAK sync ke server; penulisan server dilakukan granular per entitas.
 let DB=null;
+let TOK=null; // token sesi pengurus
 function getDb(){return DB;}
 function setDb(d){DB=d;}
 
 function syncErr(e){console.error('Sync gagal:',e);alert('Gagal menyimpan ke server. Cek koneksi lalu ulangi.');}
 
 // Tulis satu santri (rekam/pembayaran/titipan/profil) — tidak menyentuh PIN.
-async function syncSantri(s){
-  const{error}=await _SB.from('nazmah_santri').update({
-    nama:s.nama,hp:s.hp||'',kelas:s.kelas||'-',kamar:s.kamar||'',tgl:s.tgl||'',
-    rekam:s.rekam||[],pembayaran:s.pembayaran||[],titipan:s.titipan||[],
-    updated_at:new Date().toISOString()
-  }).eq('id',s.id);
-  if(error)syncErr(error);
-}
-async function insertSantri(s){
-  const{error}=await _SB.from('nazmah_santri').insert({
-    id:s.id,nama:s.nama,hp:s.hp||'',kelas:s.kelas||'-',kamar:s.kamar||'',tgl:s.tgl||'',
-    rekam:[],pembayaran:[],titipan:[]});
-  if(error)syncErr(error);
-}
-async function syncMeta(key,value){
-  const{error}=await _SB.from('nazmah_meta').upsert({key,value});
-  if(error)syncErr(error);
-}
 
 async function initApp(){
   const app=document.querySelector('.app');
@@ -729,7 +718,7 @@ async function initApp(){
     };
   }catch(e){
     console.error('Gagal memuat data:',e);
-    alert('Gagal memuat data dari server. Muat ulang halaman.');
+    alert('Gagal memuat data dari server: '+(e?.message||JSON.stringify(e))+'\n\nPastikan migrasi SQL sudah dijalankan di Supabase.');
   }
   // Init stars and show app
   const c=document.getElementById('l-stars');
@@ -742,7 +731,10 @@ async function initApp(){
       c.appendChild(s);
     }
   }
+  // Auto-login pengurus dari token tersimpan
+  const autoOk=await tryAutoLogin();
   if(app){app.style.opacity='1';}
+  if(autoOk){renderPMenu();goTo('screen-pengurus');}
 }
 
 const SPP=750000;
@@ -761,11 +753,8 @@ function can(a){return CP&&CAN[CP.role]?.includes(a);}
 // ─ LOG ────────────────────────────────────────────────────────────────────
 function log(action,detail,icon='ti-check',bg='var(--g100)',ic='var(--g700)'){
   const d=getDb();
-  if(!d.log)d.log=[];
-  const entry={id:Date.now(),by:CP?.nama||'-',role:CP?.role||'-',action,detail,icon,bg,ic,ts:new Date().toISOString()};
-  d.log.unshift(entry);
-  if(d.log.length>200)d.log=d.log.slice(0,200);
-  _SB.from('nazmah_log').insert({by_nama:entry.by,role:entry.role,action,detail,icon,bg,ic}).then(({error})=>{if(error)console.warn('log sync gagal:',error);});
+  if(d){if(!d.log)d.log=[];d.log.unshift({id:Date.now(),by:CP?.nama||'-',role:CP?.role||'-',action,detail,icon,bg,ic,ts:new Date().toISOString()});if(d.log.length>200)d.log=d.log.slice(0,200);}
+  if(TOK)_SB.rpc('log_tambah',{tok:TOK,action,detail,icon,bg,ic}).then(({error})=>{if(error)console.warn('log gagal:',error);});
 }
 
 // ─ AUTH ───────────────────────────────────────────────────────────────────
@@ -777,13 +766,27 @@ async function loginPengurus(){
   const{data,error}=await _SB.rpc('login_pengurus',{u,pw});
   if(error){errEl.textContent='Gagal terhubung ke server';console.error(error);return;}
   if(!data||!data.length){errEl.textContent='Username atau password salah';return;}
-  CP=data[0];
+  TOK=data[0].token;
+  try{localStorage.setItem('nazmah-tok',TOK);}catch(e){}
+  CP={id:data[0].id,nama:data[0].nama,role:data[0].role};
   log('Login',`${CP.nama} masuk ke sistem`,'ti-login','var(--blue-bg)','var(--blue-text)');
   renderPMenu(); goTo('screen-pengurus');
 }
+
+// Auto-login dari token tersimpan (dipanggil di initApp)
+async function tryAutoLogin(){
+  let t=null;try{t=localStorage.getItem('nazmah-tok');}catch(e){}
+  if(!t)return false;
+  const{data,error}=await _SB.rpc('me',{tok:t});
+  if(error||!data||!data.length){try{localStorage.removeItem('nazmah-tok');}catch(e){}return false;}
+  TOK=t; CP={id:data[0].id,nama:data[0].nama,role:data[0].role};
+  return true;
+}
 function logoutPengurus(){
   log('Logout',`${CP?.nama} keluar dari sistem`,'ti-logout','var(--cream2)','var(--text2)');
-  CP=null;
+  if(TOK){_SB.rpc('logout_pengurus',{tok:TOK});}
+  try{localStorage.removeItem('nazmah-tok');}catch(e){}
+  TOK=null; CP=null;
   document.getElementById('p-username').value='';
   document.getElementById('p-password').value='';
   document.getElementById('p-error').textContent='';
@@ -975,14 +978,15 @@ function showAddSantriModal(){
   document.getElementById('ns-tgl').value='';
   document.getElementById('m-add-santri').style.display='flex';
 }
-function saveSantri(){
+async function saveSantri(){
   const nama=document.getElementById('ns-nama').value.trim();
   if(!nama){alert('Nama wajib diisi');return;}
   const id=String(Math.floor(10000000+Math.random()*90000000));
+  const kelas=document.getElementById('ns-kelas').value,kamar=document.getElementById('ns-kamar').value,tgl=document.getElementById('ns-tgl').value,hp=document.getElementById('ns-hp').value;
+  const{error}=await _SB.rpc('santri_tambah',{tok:TOK,sid:id,nama,kelas,kamar,tgl,hp});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
   const db=getDb();
-  const s={id,nama,kelas:document.getElementById('ns-kelas').value,kamar:document.getElementById('ns-kamar').value,tgl:document.getElementById('ns-tgl').value,hp:document.getElementById('ns-hp').value,rekam:[],pembayaran:[],titipan:[],ortuPin:null};
-  db.santri.push(s); setDb(db);
-  insertSantri(s);
+  db.santri.push({id,nama,kelas,kamar,tgl,hp,rekam:[],pembayaran:[],titipan:[],ortuPin:null}); setDb(db);
   log('Tambah santri',`${nama} (kode: ${id})`,'ti-user-plus','var(--blue-bg)','var(--blue-text)');
   cm('m-add-santri'); renderSantriList('');
 }
@@ -994,13 +998,15 @@ function showAddRekam(){
   document.getElementById('rm-status').value='sehat';
   document.getElementById('m-add-rekam').style.display='flex';
 }
-function saveRekam(){
+async function saveRekam(){
   const keluhan=document.getElementById('rm-keluhan').value.trim();
   if(!keluhan){alert('Keluhan wajib diisi');return;}
   const db=getDb();
   const s=db.santri.find(x=>x.id===db.activeId);
-  const e={tgl:document.getElementById('rm-tgl').value,keluhan,diagnosa:document.getElementById('rm-diagnosa').value,td:document.getElementById('rm-td').value,suhu:document.getElementById('rm-suhu').value,gula:document.getElementById('rm-gula').value,hb:document.getElementById('rm-hb').value,bb:document.getElementById('rm-bb').value,tb:document.getElementById('rm-tb').value,obat:document.getElementById('rm-obat').value,status:document.getElementById('rm-status').value,by:CP?.nama||'-',ts:new Date().toISOString()};
-  s.rekam.unshift(e); setDb(db); syncSantri(s);
+  const e={tgl:document.getElementById('rm-tgl').value,keluhan,diagnosa:document.getElementById('rm-diagnosa').value,td:document.getElementById('rm-td').value,suhu:document.getElementById('rm-suhu').value,gula:document.getElementById('rm-gula').value,hb:document.getElementById('rm-hb').value,bb:document.getElementById('rm-bb').value,tb:document.getElementById('rm-tb').value,obat:document.getElementById('rm-obat').value,status:document.getElementById('rm-status').value};
+  const{error}=await _SB.rpc('rekam_tambah',{tok:TOK,sid:s.id,entry:e});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
+  s.rekam.unshift({...e,by:CP?.nama||'-',ts:new Date().toISOString()}); setDb(db);
   log('Input rekam medis',`${s.nama}: ${keluhan} — ${e.diagnosa}`,'ti-stethoscope','var(--g100)','var(--g700)');
   cm('m-add-rekam'); renderDetail(s);
 }
@@ -1014,22 +1020,24 @@ function showKonfirm(sid,bulan){
   document.getElementById('k-tgl').value=new Date().toISOString().split('T')[0];
   document.getElementById('k-nominal').value=SPP;
   document.getElementById('k-catatan').value='';
+  document.getElementById('k-metode').value='tunai';
   document.getElementById('m-konfirm-spp').style.display='flex';
 }
-function saveKonfirm(){
+async function saveKonfirm(){
   const db=getDb();
   const s=db.santri.find(x=>x.id===db.sppSantriId);
   const bulan=db.sppBulan;
   const tgl=document.getElementById('k-tgl').value;
-  const nom=document.getElementById('k-nominal').value;
+  const nom=parseInt(document.getElementById('k-nominal').value);
   const cat=document.getElementById('k-catatan').value;
-  const status=tgl<=bulan+'-10'?'lunas':'terlambat';
+  const metode=document.getElementById('k-metode').value;
+  const{data,error}=await _SB.rpc('spp_konfirmasi',{tok:TOK,sid:s.id,bulan,tgl,nominal:nom,catatan:cat,metode});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
   if(!s.pembayaran)s.pembayaran=[];
   const idx=s.pembayaran.findIndex(p=>p.bulan===bulan);
-  const e={bulan,status,tglBayar:tgl,nominal:parseInt(nom),catatan:cat,by:CP?.nama||'-',ts:new Date().toISOString()};
-  if(idx>=0)s.pembayaran[idx]=e;else s.pembayaran.push(e);
-  setDb(db); syncSantri(s);
-  log('Konfirmasi SPP',`${s.nama} · ${bl(bulan)} · ${rp(nom)} · ${status}`,'ti-credit-card','var(--g100)','var(--g700)');
+  if(idx>=0)s.pembayaran[idx]=data;else s.pembayaran.push(data);
+  setDb(db);
+  log('Konfirmasi SPP',`${s.nama} · ${bl(bulan)} · ${rp(nom)} · ${data.status}`,'ti-credit-card','var(--g100)','var(--g700)');
   cm('m-konfirm-spp');
   const as=document.querySelector('.screen.active')?.id;
   if(as==='screen-spp-dashboard')renderSpp();
@@ -1051,6 +1059,7 @@ function showKonfirmMulti(sid){
   document.getElementById('km-tgl').value=new Date().toISOString().split('T')[0];
   document.getElementById('km-nominal').value=SPP;
   document.getElementById('km-catatan').value='';
+  document.getElementById('km-metode').value='tunai';
   document.getElementById('km-summary').textContent='';
   document.getElementById('m-konfirm-multi').style.display='flex';
 }
@@ -1076,7 +1085,7 @@ function updKmSummary(){
   const nom=parseInt(document.getElementById('km-nominal').value)||0;
   document.getElementById('km-summary').textContent=cbs.length?`${cbs.length} bulan dipilih · total ${rp(cbs.length*nom)}`:'';
 }
-function saveKonfirmMulti(){
+async function saveKonfirmMulti(){
   const db=getDb();
   const s=db.santri.find(x=>x.id===db.sppSantriId);
   if(!s){alert('Santri tidak ditemukan');return;}
@@ -1086,13 +1095,16 @@ function saveKonfirmMulti(){
   if(!tgl){alert('Isi tanggal bayar');return;}
   const nom=parseInt(document.getElementById('km-nominal').value)||SPP;
   const cat=document.getElementById('km-catatan').value;
+  const metode=document.getElementById('km-metode').value;
+  const{error}=await _SB.rpc('spp_konfirmasi_multi',{tok:TOK,sid:s.id,bulan_list:bulanSel,tgl,nominal:nom,catatan:cat,metode});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
   if(!s.pembayaran)s.pembayaran=[];
   bulanSel.forEach(bulan=>{
-    const e={bulan,status:'lunas',tglBayar:tgl,nominal:nom,catatan:cat,by:CP?.nama||'-',ts:new Date().toISOString()};
+    const e={bulan,status:'lunas',tglBayar:tgl,nominal:nom,catatan:cat,metode,by:CP?.nama||'-',ts:new Date().toISOString()};
     const idx=s.pembayaran.findIndex(p=>p.bulan===bulan);
     if(idx>=0)s.pembayaran[idx]=e;else s.pembayaran.push(e);
   });
-  setDb(db); syncSantri(s);
+  setDb(db);
   log('Pelunasan SPP borongan',`${s.nama} · ${bulanSel.length} bulan · ${rp(bulanSel.length*nom)}`,'ti-credit-card','var(--g100)','var(--g700)');
   cm('m-konfirm-multi');
   const as=document.querySelector('.screen.active')?.id;
@@ -1142,6 +1154,7 @@ function renderSpp(){
       <div class="stat-card" style="background:var(--amber-bg);border-color:#E8C870"><div class="stat-val" style="color:var(--amber-text)">${ss.t}</div><div class="stat-label" style="color:var(--amber-text)">Terlambat</div></div>
       <div class="stat-card" style="background:var(--red-bg);border-color:#F0B0B0"><div class="stat-val" style="color:var(--red-text)">${ss.bl}</div><div class="stat-label" style="color:var(--red-text)">Belum bayar</div></div>
     </div>
+    ${rekapKamarHtml(db,sel)}
     <div class="section-label">Status per santri · ${bl(sel)}</div>
     <div class="search-wrap"><i class="ti ti-search search-ico"></i><input type="text" id="spp-search" placeholder="Cari nama santri…" oninput="filterSppList(this.value)"/></div>
     <div class="pay-list" id="spp-pay-list">${sppRows(db.santri,sel)}</div>`;
@@ -1154,6 +1167,46 @@ function renderSpp(){
     const cb2=document.getElementById('ch-brkdwn');
     if(cb2)CI['brkdwn']=new Chart(cb2,{type:'bar',data:{labels,datasets:[{label:'Lunas',data:stats.map(s=>s.l),backgroundColor:'#257A43',borderRadius:2,stack:'s'},{label:'Terlambat',data:stats.map(s=>s.t),backgroundColor:'#B86800',borderRadius:2,stack:'s'},{label:'Belum',data:stats.map(s=>s.bl),backgroundColor:'#B83232',borderRadius:2,stack:'s'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc},ticks:{color:tc,font:{size:11}},stacked:true},y:{grid:{color:gc},ticks:{color:tc,font:{size:11}},stacked:true,max:total}}}});
   },100);
+}
+function rekapKamarHtml(db,sel){
+  const map={};
+  db.santri.forEach(s=>{
+    const p=getSpp(s,sel);
+    if(p.status==='belum')return;
+    const k=s.kamar||'-';
+    if(!map[k])map[k]={tunai:0,transfer:0,tunaiN:0,transferN:0};
+    const nom=p.nominal||0;
+    if(p.metode==='transfer'){map[k].transfer+=nom;map[k].transferN++;}
+    else{map[k].tunai+=nom;map[k].tunaiN++;} // default lama tanpa metode dihitung tunai
+  });
+  const kamar=Object.keys(map).sort();
+  if(!kamar.length)return'';
+  let totT=0,totTf=0,totTn=0,totTfn=0;
+  const rows=kamar.map(k=>{
+    const m=map[k];totT+=m.tunai;totTf+=m.transfer;totTn+=m.tunaiN;totTfn+=m.transferN;
+    return`<tr>
+      <td style="padding:8px 10px;font-size:13px;border-bottom:1px solid var(--border)">${k}</td>
+      <td style="padding:8px 10px;font-size:13px;text-align:right;border-bottom:1px solid var(--border)">${m.tunaiN}<span style="color:var(--text3);font-size:11px"> · ${rpS(m.tunai)}</span></td>
+      <td style="padding:8px 10px;font-size:13px;text-align:right;border-bottom:1px solid var(--border)">${m.transferN}<span style="color:var(--text3);font-size:11px"> · ${rpS(m.transfer)}</span></td>
+    </tr>`;
+  }).join('');
+  return`
+    <div class="section-label">Rekap metode bayar per kamar · ${bl(sel)}</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:12px">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--cream2)">
+          <th style="padding:8px 10px;font-size:11px;text-align:left;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em">Kamar</th>
+          <th style="padding:8px 10px;font-size:11px;text-align:right;color:var(--g700);text-transform:uppercase;letter-spacing:0.04em">Tunai</th>
+          <th style="padding:8px 10px;font-size:11px;text-align:right;color:var(--blue-text);text-transform:uppercase;letter-spacing:0.04em">Transfer</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr style="background:var(--cream2);font-weight:700">
+          <td style="padding:8px 10px;font-size:13px">Total</td>
+          <td style="padding:8px 10px;font-size:13px;text-align:right;color:var(--g700)">${totTn} · ${rpS(totT)}</td>
+          <td style="padding:8px 10px;font-size:13px;text-align:right;color:var(--blue-text)">${totTfn} · ${rpS(totTf)}</td>
+        </tr></tfoot>
+      </table>
+    </div>`;
 }
 function sppRows(list,sel){
   return list.map(s=>{
@@ -1308,7 +1361,7 @@ async function saveResetPin(){
   const db=getDb();
   const s=db.santri.find(x=>x.id===db.resetPinTargetId);
   if(!s){alert('Santri tidak ditemukan');return;}
-  const{data,error}=await _SB.rpc('reset_pin',{sid:s.id});
+  const{data,error}=await _SB.rpc('reset_pin',{tok:TOK,sid:s.id});
   if(error||!data){alert('Gagal mereset PIN. Coba lagi.');console.error(error);return;}
   s.ortuPin=null; setDb(db);
   log('Reset PIN wali',`${s.nama} · ${s.kamar}`,'ti-lock-open','var(--red-bg)','var(--red-text)');
@@ -1535,7 +1588,7 @@ async function saveAkun(){
   const db=getDb();
   if(db.pengurus.find(p=>p.username===username)){errEl.textContent='Username sudah dipakai';return;}
   const id='p'+Date.now();
-  const{data,error}=await _SB.rpc('add_pengurus',{pid:id,pnama:nama,puser:username,ppw:password,prole:role});
+  const{data,error}=await _SB.rpc('add_pengurus',{tok:TOK,pid:id,pnama:nama,puser:username,ppw:password,prole:role});
   if(error||!data){errEl.textContent='Gagal menyimpan (username mungkin sudah dipakai)';console.error(error);return;}
   db.pengurus.push({id,nama,username,role});
   setDb(db);
@@ -1546,11 +1599,11 @@ async function saveAkun(){
 
 async function hapusAkun(id,nama){
   if(!confirm(`Hapus akun ${nama}? Tindakan ini tidak bisa dibatalkan.`))return;
-  const{error}=await _SB.from('nazmah_pengurus').delete().eq('id',id);
-  if(error){alert('Gagal menghapus akun.');console.error(error);return;}
+  const{error}=await _SB.rpc('del_pengurus',{tok:TOK,pid:id});
+  if(error){alert('Gagal menghapus: '+(error.message||'akses ditolak'));console.error(error);return;}
   const db=getDb();
   db.pengurus=db.pengurus.filter(p=>p.id!==id);
-  if(db.kamarAssign&&db.kamarAssign[id]){delete db.kamarAssign[id];syncMeta('kamarAssign',db.kamarAssign);}
+  if(db.kamarAssign&&db.kamarAssign[id]){delete db.kamarAssign[id];_SB.rpc('set_kamar_assign',{tok:TOK,val:db.kamarAssign});}
   setDb(db);
   log('Hapus akun',`${nama} dihapus`,'ti-user-off','var(--red-bg)','var(--red-text)');
   renderKelolaAkun();
@@ -1607,7 +1660,7 @@ function assignKamar(kamar,ustadzahId){
     log('Unassign kamar',`${kamar} dilepas dari ustadzah`,'ti-door','var(--surface2)','var(--text2)');
   }
   setDb(db);
-  syncMeta('kamarAssign',db.kamarAssign);
+  _SB.rpc('set_kamar_assign',{tok:TOK,val:db.kamarAssign}).then(({error})=>{if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);}});
 }
 
 // ─ TITIPAN ────────────────────────────────────────────────────────────────
@@ -1727,15 +1780,17 @@ function showTitipanMasuk(id){
   document.getElementById('m-titipan-masuk').style.display='flex';
 }
 
-function saveTitipanMasuk(){
+async function saveTitipanMasuk(){
   const nominal=parseInt(document.getElementById('tm-nominal').value);
   if(!nominal||nominal<=0){alert('Nominal tidak valid');return;}
   const db=getDb();
   const s=db.santri.find(x=>x.id===db.activeId);
+  const tgl=document.getElementById('tm-tgl').value,ket=document.getElementById('tm-ket').value;
+  const{error}=await _SB.rpc('titipan_catat',{tok:TOK,sid:s.id,tipe:'masuk',tgl,nominal,ket});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
   if(!s.titipan)s.titipan=[];
-  const e={id:Date.now(),tipe:'masuk',tgl:document.getElementById('tm-tgl').value,nominal,ket:document.getElementById('tm-ket').value,by:CP?.nama||'-',ts:new Date().toISOString()};
-  s.titipan.push(e); setDb(db); syncSantri(s);
-  log('Titipan masuk',`${s.nama}: +${rp(nominal)} · ${e.ket}`,'ti-arrow-down','var(--purple-bg)','var(--purple-text)');
+  s.titipan.push({id:Date.now(),tipe:'masuk',tgl,nominal,ket,by:CP?.nama||'-',ts:new Date().toISOString()}); setDb(db);
+  log('Titipan masuk',`${s.nama}: +${rp(nominal)} · ${ket}`,'ti-arrow-down','var(--purple-bg)','var(--purple-text)');
   cm('m-titipan-masuk'); renderTitipanDetail(s);
 }
 
@@ -1751,17 +1806,19 @@ function showTitipanKeluar(id){
   document.getElementById('m-titipan-keluar').style.display='flex';
 }
 
-function saveTitipanKeluar(){
+async function saveTitipanKeluar(){
   const nominal=parseInt(document.getElementById('tk-nominal').value);
   if(!nominal||nominal<=0){alert('Nominal tidak valid');return;}
   const db=getDb();
   const s=db.santri.find(x=>x.id===db.activeId);
   const saldo=getSaldo(s);
   if(nominal>saldo){alert(`Nominal melebihi saldo (${rp(saldo)})`);return;}
+  const tgl=document.getElementById('tk-tgl').value,ket=document.getElementById('tk-ket').value;
+  const{error}=await _SB.rpc('titipan_catat',{tok:TOK,sid:s.id,tipe:'keluar',tgl,nominal,ket});
+  if(error){alert('Gagal menyimpan: '+(error.message||'akses ditolak'));console.error(error);return;}
   if(!s.titipan)s.titipan=[];
-  const e={id:Date.now(),tipe:'keluar',tgl:document.getElementById('tk-tgl').value,nominal,ket:document.getElementById('tk-ket').value,by:CP?.nama||'-',ts:new Date().toISOString()};
-  s.titipan.push(e); setDb(db); syncSantri(s);
-  log('Titipan keluar',`${s.nama}: -${rp(nominal)} · ${e.ket}`,'ti-arrow-up','var(--purple-bg)','var(--purple-text)');
+  s.titipan.push({id:Date.now(),tipe:'keluar',tgl,nominal,ket,by:CP?.nama||'-',ts:new Date().toISOString()}); setDb(db);
+  log('Titipan keluar',`${s.nama}: -${rp(nominal)} · ${ket}`,'ti-arrow-up','var(--purple-bg)','var(--purple-text)');
   cm('m-titipan-keluar'); renderTitipanDetail(s);
 }
 
