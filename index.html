@@ -1216,13 +1216,36 @@ function rekapKamarHtml(db,sel){
       </table>
     </div>`;
 }
-function sppRows(list,sel){
-  return list.map(s=>{
-    const p=getSpp(s,sel);
-    return`<div class="pay-row">
-      <div><div class="pay-month">${s.nama}</div><div class="pay-sub">${s.kelas}${p.tglBayar?' · '+fd(p.tglBayar):''}</div></div>
+function nunggakSejak(s){
+  // bulan tertunggak paling lama: Jan 2024 s/d bulan ini yang statusnya 'belum'
+  const paid=new Set((s.pembayaran||[]).filter(p=>p.status!=='belum').map(p=>p.bulan));
+  const now=cb();let y=2024,m=1;
+  while(`${y}-${String(m).padStart(2,'0')}`<=now){
+    const b=`${y}-${String(m).padStart(2,'0')}`;
+    if(!paid.has(b))return b;
+    m++;if(m>12){m=1;y++;}
+  }
+  return null;
+}
+function sppRowOne(s,sel){
+  const p=getSpp(s,sel);
+  const nunggak=p.status==='belum'?nunggakSejak(s):null;
+  const sub=`${s.kamar||'-'}${p.tglBayar?' · '+fd(p.tglBayar):''}${nunggak?` · <span style="color:var(--red-text)">nunggak sejak ${bl(nunggak)}</span>`:''}`;
+  return`<div class="pay-row">
+      <div><div class="pay-month">${s.nama}</div><div class="pay-sub">${sub}</div></div>
       <div class="pay-right">${p.status!=='belum'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}${p.status==='belum'&&can('spp')?`<button class="confirm-btn" onclick="showKonfirm('${s.id}','${sel}')">Konfirmasi</button>`:''}${can('spp')?`<button class="confirm-btn" style="background:var(--cream2);color:var(--g700);border:1px solid var(--g300)" onclick="showKonfirmMulti('${s.id}')" title="Lunasi beberapa bulan"><i class="ti ti-checks" style="font-size:14px"></i></button>`:''}</div>
     </div>`;
+}
+function sppRows(list,sel){
+  // kelompokkan per kamar
+  const byKamar={};
+  list.forEach(s=>{const k=s.kamar||'-';(byKamar[k]=byKamar[k]||[]).push(s);});
+  const kamar=Object.keys(byKamar).sort();
+  return kamar.map(k=>{
+    const belumN=byKamar[k].filter(s=>getSpp(s,sel).status==='belum').length;
+    return`<div style="padding:7px 1.25rem;background:var(--cream2);font-size:12px;font-weight:600;color:var(--text2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between">
+      <span>${k}</span><span style="color:${belumN?'var(--red-text)':'var(--g700)'}">${belumN?belumN+' belum':'lunas semua'}</span>
+    </div>${byKamar[k].map(s=>sppRowOne(s,sel)).join('')}`;
   }).join('');
 }
 function filterSppList(q){
