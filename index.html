@@ -644,7 +644,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     <div class="form-group"><label class="form-label">Catatan</label><input type="text" id="km-catatan" placeholder="Transfer BRI, cash, dll"/></div>
     <div id="km-summary" style="font-size:13px;color:var(--text2);margin-bottom:0.75rem;font-weight:600"></div>
     <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="cm('m-konfirm-multi')">Batal</button>
+      <button class="btn btn-ghost" onclick="closeKonfirmMulti()">Tutup</button>
       <button class="btn btn-primary" style="margin-top:0" onclick="saveKonfirmMulti()">Lunasi terpilih</button>
     </div>
   </div></div>
@@ -1065,18 +1065,28 @@ function showKonfirmMulti(sid){
   const s=db.santri.find(x=>x.id===sid);
   if(!s){alert('Santri tidak ditemukan');return;}
   db.sppSantriId=sid; setDb(db);
-  // daftar bulan belum bayar: Jan 2024 s/d bulan ini
-  const paid=new Set((s.pembayaran||[]).filter(p=>p.status!=='belum').map(p=>p.bulan));
-  const now=cb();const unpaid=[];let y=2024,m=1;
-  while(`${y}-${String(m).padStart(2,'0')}`<=now){const b=`${y}-${String(m).padStart(2,'0')}`;if(!paid.has(b))unpaid.push(b);m++;if(m>12){m=1;y++;}}
-  document.getElementById('km-info').textContent=`${s.nama} · ${unpaid.length} bulan belum lunas`;
-  document.getElementById('km-months').innerHTML=unpaid.length?unpaid.map(b=>`<label class="km-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;cursor:pointer;border-bottom:1px solid var(--border);border-radius:6px"><span style="display:flex;align-items:center;gap:10px"><span class="km-box" style="width:22px;height:22px;border:2px solid var(--g300);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:#fff;line-height:1"><span class="km-check" style="display:none">&#10003;</span></span><span style="font-size:14px">${bl(b)}</span></span><span style="font-size:12px;color:var(--text3)">${rp(SPP)}</span><input type="checkbox" class="km-cb" value="${b}" onchange="toggleKmRow(this)" style="display:none"/></label>`).join(''):'<div style="text-align:center;padding:1rem;color:var(--text3);font-size:13px">Semua bulan sudah lunas 🎉</div>';
+  renderKmMonths(s);
   document.getElementById('km-tgl').value=new Date().toISOString().split('T')[0];
   document.getElementById('km-nominal').value=SPP;
   document.getElementById('km-catatan').value='';
   document.getElementById('km-metode').value='tunai';
   document.getElementById('km-summary').textContent='';
   document.getElementById('m-konfirm-multi').style.display='flex';
+}
+// Tampilkan SEMUA bulan Jan 2024 s/d bulan ini. Bulan lunas ditandai permanen (tercentang, tidak bisa dipilih ulang).
+function renderKmMonths(s){
+  const paid=new Set((s.pembayaran||[]).filter(p=>p.status!=='belum').map(p=>p.bulan));
+  const now=cb();const all=[];let y=2024,m=1;
+  while(`${y}-${String(m).padStart(2,'0')}`<=now){all.push(`${y}-${String(m).padStart(2,'0')}`);m++;if(m>12){m=1;y++;}}
+  const belumN=all.filter(b=>!paid.has(b)).length;
+  document.getElementById('km-info').textContent=`${s.nama} · ${belumN} bulan belum lunas dari ${all.length} bulan`;
+  document.getElementById('km-months').innerHTML=all.map(b=>{
+    const lunas=paid.has(b);
+    if(lunas){
+      return`<label class="km-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-bottom:1px solid var(--border);border-radius:6px;opacity:0.7;background:var(--g50)"><span style="display:flex;align-items:center;gap:10px"><span class="km-box" style="width:22px;height:22px;border:2px solid var(--g500);background:var(--g500);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:#fff;line-height:1">&#10003;</span><span style="font-size:14px">${bl(b)}</span></span><span style="font-size:11px;color:var(--g700);font-weight:600">lunas</span></label>`;
+    }
+    return`<label class="km-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;cursor:pointer;border-bottom:1px solid var(--border);border-radius:6px"><span style="display:flex;align-items:center;gap:10px"><span class="km-box" style="width:22px;height:22px;border:2px solid var(--g300);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:#fff;line-height:1"><span class="km-check" style="display:none">&#10003;</span></span><span style="font-size:14px">${bl(b)}</span></span><span style="font-size:12px;color:var(--text3)">${rp(SPP)}</span><input type="checkbox" class="km-cb" value="${b}" onchange="toggleKmRow(this)" style="display:none"/></label>`;
+  }).join('');
 }
 function toggleKmRow(cb){
   const lbl=cb.closest('.km-row');
@@ -1121,10 +1131,17 @@ async function saveKonfirmMulti(){
   });
   setDb(db);
   log('Pelunasan SPP borongan',`${s.nama} · ${bulanSel.length} bulan · ${rp(bulanSel.length*nom)}`,'ti-credit-card','var(--g100)','var(--g700)');
+  // Modal tetap terbuka: bulan yang baru dilunasi langsung tampil sebagai 'lunas', tidak hilang
+  renderKmMonths(s);
+  document.getElementById('km-summary').textContent=`${bulanSel.length} bulan berhasil dilunasi`;
+}
+function closeKonfirmMulti(){
   cm('m-konfirm-multi');
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===db.sppSantriId);
   const as=document.querySelector('.screen.active')?.id;
   if(as==='screen-spp-dashboard')renderSpp();
-  else if(as==='screen-detail-santri')renderDetail(s);
+  else if(as==='screen-detail-santri'&&s)renderDetail(s);
 }
 function renderSpp(){
   if(!can('spp')&&!can('spp-view')&&!can('audit')){document.getElementById('spp-content').innerHTML=noAccess();return;}
