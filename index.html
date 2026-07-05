@@ -948,7 +948,7 @@ function renderDetail(s){
       <div class="pay-list">
         ${[...(s.pembayaran||[])].reverse().map(p=>`<div class="pay-row">
           <div><div class="pay-month">${bl(p.bulan)}</div>${p.tglBayar?`<div class="pay-sub">Bayar ${fd(p.tglBayar)}${p.catatan?' · '+p.catatan:''}</div>`:''}${p.by?`<div class="pay-sub"><i class="ti ti-user-circle" style="font-size:10px"></i> ${p.by}</div>`:''}</div>
-          <div class="pay-right">${p.status!=='belum'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}${p.status==='belum'&&can('spp')?`<button class="confirm-btn" onclick="showKonfirm('${s.id}','${p.bulan}')">Konfirmasi</button>`:''}</div>
+          <div class="pay-right">${p.status!=='belum'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}${p.status==='belum'&&can('spp')?`<button class="confirm-btn" onclick="showKonfirm('${s.id}','${p.bulan}')">Konfirmasi</button>`:''}${p.status!=='belum'&&can('spp')?`<button class="confirm-btn" style="background:var(--cream2);color:var(--text2);border-color:var(--border2)" onclick="showKonfirm('${s.id}','${p.bulan}')" title="Edit"><i class="ti ti-pencil" style="font-size:13px"></i></button><button class="confirm-btn" style="background:var(--red-bg);color:var(--red-text);border-color:var(--red)" onclick="batalSpp('${s.id}','${p.bulan}')" title="Batal"><i class="ti ti-x" style="font-size:13px"></i></button>`:''}</div>
         </div>`).join('')}
       </div>
     </div>`:''}`;
@@ -1016,12 +1016,27 @@ function showKonfirm(sid,bulan){
   if(!can('spp')){alert('Akses terbatas');return;}
   const db=getDb(); db.sppSantriId=sid; db.sppBulan=bulan; setDb(db);
   const s=db.santri.find(x=>x.id===sid);
-  document.getElementById('k-info').textContent=`${s.nama} · SPP ${bl(bulan)}`;
-  document.getElementById('k-tgl').value=new Date().toISOString().split('T')[0];
-  document.getElementById('k-nominal').value=SPP;
-  document.getElementById('k-catatan').value='';
-  document.getElementById('k-metode').value='tunai';
+  const existing=(s.pembayaran||[]).find(p=>p.bulan===bulan&&p.status!=='belum');
+  document.getElementById('k-info').textContent=`${s.nama} · SPP ${bl(bulan)}${existing?' · (edit)':''}`;
+  document.getElementById('k-tgl').value=existing?.tglBayar||new Date().toISOString().split('T')[0];
+  document.getElementById('k-nominal').value=existing?.nominal||SPP;
+  document.getElementById('k-catatan').value=existing?.catatan||'';
+  document.getElementById('k-metode').value=existing?.metode||'tunai';
   document.getElementById('m-konfirm-spp').style.display='flex';
+}
+async function batalSpp(sid,bulan){
+  if(!can('spp')){alert('Akses terbatas');return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===sid);
+  if(!confirm(`Batalkan pembayaran ${s.nama} bulan ${bl(bulan)}? Bulan ini akan kembali berstatus belum bayar.`))return;
+  const{error}=await _SB.rpc('spp_batal',{tok:TOK,sid,bulan});
+  if(error){alert('Gagal membatalkan: '+(error.message||'akses ditolak'));console.error(error);return;}
+  s.pembayaran=(s.pembayaran||[]).filter(p=>p.bulan!==bulan);
+  setDb(db);
+  log('Batal SPP',`${s.nama} · ${bl(bulan)} dibatalkan`,'ti-x','var(--red-bg)','var(--red-text)');
+  const as=document.querySelector('.screen.active')?.id;
+  if(as==='screen-spp-dashboard')renderSpp();
+  else if(as==='screen-detail-santri')renderDetail(s);
 }
 async function saveKonfirm(){
   const db=getDb();
@@ -1233,7 +1248,7 @@ function sppRowOne(s,sel){
   const sub=`${s.kamar||'-'}${p.tglBayar?' · '+fd(p.tglBayar):''}${nunggak?` · <span style="color:var(--red-text)">nunggak sejak ${bl(nunggak)}</span>`:''}`;
   return`<div class="pay-row">
       <div><div class="pay-month">${s.nama}</div><div class="pay-sub">${sub}</div></div>
-      <div class="pay-right">${p.status!=='belum'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}${p.status==='belum'&&can('spp')?`<button class="confirm-btn" onclick="showKonfirm('${s.id}','${sel}')">Konfirmasi</button>`:''}${can('spp')?`<button class="confirm-btn" style="background:var(--cream2);color:var(--g700);border:1px solid var(--g300)" onclick="showKonfirmMulti('${s.id}')" title="Lunasi beberapa bulan"><i class="ti ti-checks" style="font-size:14px"></i></button>`:''}</div>
+      <div class="pay-right">${p.status!=='belum'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}${p.status==='belum'&&can('spp')?`<button class="confirm-btn" onclick="showKonfirm('${s.id}','${sel}')">Konfirmasi</button>`:''}${p.status!=='belum'&&can('spp')?`<button class="confirm-btn" style="background:var(--cream2);color:var(--text2);border-color:var(--border2)" onclick="showKonfirm('${s.id}','${sel}')" title="Edit"><i class="ti ti-pencil" style="font-size:13px"></i></button><button class="confirm-btn" style="background:var(--red-bg);color:var(--red-text);border-color:var(--red)" onclick="batalSpp('${s.id}','${sel}')" title="Batal"><i class="ti ti-x" style="font-size:13px"></i></button>`:''}${p.status==='belum'&&can('spp')?`<button class="confirm-btn" style="background:var(--cream2);color:var(--g700);border:1px solid var(--g300)" onclick="showKonfirmMulti('${s.id}')" title="Lunasi beberapa bulan"><i class="ti ti-checks" style="font-size:14px"></i></button>`:''}</div>
     </div>`;
 }
 function sppRows(list,sel){
