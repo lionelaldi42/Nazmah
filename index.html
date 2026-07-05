@@ -706,7 +706,7 @@ async function initApp(){
       _SB.from('nazmah_santri').select('id,nama,hp,kelas,kamar,tgl,rekam,pembayaran,titipan,has_pin').order('id'),
       _SB.from('nazmah_pengurus').select('id,nama,username,role'),
       _SB.from('nazmah_meta').select('key,value'),
-      _SB.from('nazmah_log').select('*').order('ts',{ascending:false}).limit(200),
+      _SB.from('nazmah_log').select('*').gte('ts',new Date(Date.now()-30*86400000).toISOString()).order('ts',{ascending:false}).limit(2000),
     ]);
     if(sr.error||pr.error)throw(sr.error||pr.error);
     const meta={};(mr.data||[]).forEach(r=>meta[r.key]=r.value);
@@ -1295,15 +1295,23 @@ function renderAudit(){
   const db=getDb(); const logs=db.log||[];
   const el=document.getElementById('audit-content');
   if(!logs.length){el.innerHTML=`<div class="empty"><div class="empty-icon"><i class="ti ti-history"></i></div><div class="empty-text">Belum ada aktivitas tercatat</div></div>`;return;}
-  el.innerHTML=`<div class="audit-list">${logs.map(l=>`<div class="audit-item">
+  const days=[...new Set(logs.map(l=>l.ts.slice(0,10)))].sort().reverse();
+  if(!db.auditDay||!days.includes(db.auditDay))db.auditDay=days[0];
+  const sel=db.auditDay;
+  const fdd=d=>new Date(d+'T00:00:00').toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const shown=logs.filter(l=>l.ts.slice(0,10)===sel);
+  el.innerHTML=`
+    <div class="month-sel"><select onchange="updAuditDay(this.value)" style="width:100%">${days.map(d=>`<option value="${d}" ${d===sel?'selected':''}>${fdd(d)}</option>`).join('')}</select></div>
+    ${shown.length?`<div class="audit-list">${shown.map(l=>`<div class="audit-item">
     <div class="audit-icon" style="background:${l.bg}"><i class="ti ${l.icon}" style="color:${l.ic}"></i></div>
     <div style="flex:1;min-width:0">
       <div class="audit-action">${l.action}</div>
       <div class="audit-desc">${l.detail}</div>
       <div class="audit-meta"><i class="ti ti-user-circle" style="font-size:11px"></i>${l.by} ${rBadge(l.role)} · ${fdt(l.ts)}</div>
     </div>
-  </div>`).join('')}</div>`;
+  </div>`).join('')}</div>`:'<div class="empty"><div class="empty-icon"><i class="ti ti-history"></i></div><div class="empty-text">Tidak ada aktivitas pada hari ini</div></div>'}`;
 }
+function updAuditDay(v){const d=getDb();d.auditDay=v;setDb(d);renderAudit();}
 
 // ─ ORTU ───────────────────────────────────────────────────────────────────
 let ortuSantriTemp=null;
