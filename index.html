@@ -1085,10 +1085,23 @@ function renderKmMonths(s){
   document.getElementById('km-months').innerHTML=all.map(b=>{
     const lunas=paid.has(b);
     if(lunas){
-      return`<label class="km-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-bottom:1px solid var(--border);border-radius:6px;opacity:0.7;background:var(--g50)"><span style="display:flex;align-items:center;gap:10px"><span class="km-box" style="width:22px;height:22px;border:2px solid var(--g500);background:var(--g500);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:#fff;line-height:1">&#10003;</span><span style="font-size:14px">${bl(b)}</span></span><span style="font-size:11px;color:var(--g700);font-weight:600">lunas</span></label>`;
+      return`<div class="km-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-bottom:1px solid var(--border);border-radius:6px;background:var(--g50)"><span style="display:flex;align-items:center;gap:10px"><span class="km-box" style="width:22px;height:22px;border:2px solid var(--g500);background:var(--g500);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:#fff;line-height:1">&#10003;</span><span style="font-size:14px">${bl(b)}</span></span><button class="confirm-btn" style="background:var(--red-bg);color:var(--red-text);border-color:var(--red)" onclick="batalSppFromMulti('${s.id}','${b}')" title="Batalkan"><i class="ti ti-x" style="font-size:13px"></i></button></div>`;
     }
     return`<label class="km-row" style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;cursor:pointer;border-bottom:1px solid var(--border);border-radius:6px"><span style="display:flex;align-items:center;gap:10px"><span class="km-box" style="width:22px;height:22px;border:2px solid var(--g300);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:700;color:#fff;line-height:1"><span class="km-check" style="display:none">&#10003;</span></span><span style="font-size:14px">${bl(b)}</span></span><span style="font-size:12px;color:var(--text3)">${rp(SPP)}</span><input type="checkbox" class="km-cb" value="${b}" onchange="toggleKmRow(this)" style="display:none"/></label>`;
   }).join('');
+}
+async function batalSppFromMulti(sid,bulan){
+  if(!can('spp')){alert('Akses terbatas');return;}
+  const db=getDb();
+  const s=db.santri.find(x=>x.id===sid);
+  if(!confirm(`Batalkan pembayaran ${s.nama} bulan ${bl(bulan)}? Bulan ini akan kembali berstatus belum bayar.`))return;
+  const{error}=await _SB.rpc('spp_batal',{tok:TOK,sid,bulan});
+  if(error){alert('Gagal membatalkan: '+(error.message||'akses ditolak'));console.error(error);return;}
+  s.pembayaran=(s.pembayaran||[]).filter(p=>p.bulan!==bulan);
+  setDb(db);
+  log('Batal SPP',`${s.nama} · ${bl(bulan)} dibatalkan`,'ti-x','var(--red-bg)','var(--red-text)');
+  renderKmMonths(s);
+  document.getElementById('km-summary').textContent=`${bl(bulan)} dibatalkan`;
 }
 function toggleKmRow(cb){
   const lbl=cb.closest('.km-row');
