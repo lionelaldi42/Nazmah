@@ -1078,7 +1078,7 @@ function showKonfirmMulti(sid){
 // Tampilkan SEMUA bulan Jan 2024 s/d bulan ini. Bulan lunas ditandai permanen (tercentang, tidak bisa dipilih ulang).
 function renderKmMonths(s){
   const paid=new Set((s.pembayaran||[]).filter(p=>p.status!=='belum').map(p=>p.bulan));
-  const now=cb();const all=[];let y=2024,m=1;
+  const now=cb();const all=[];let y=2024,m=7;
   while(`${y}-${String(m).padStart(2,'0')}`<=now){all.push(`${y}-${String(m).padStart(2,'0')}`);m++;if(m>12){m=1;y++;}}
   const belumN=all.filter(b=>!paid.has(b)).length;
   document.getElementById('km-info').textContent=`${s.nama} · ${belumN} bulan belum lunas dari ${all.length} bulan`;
@@ -1162,7 +1162,7 @@ function renderSpp(){
   if(!can('spp')&&!can('spp-view')&&!can('audit')){document.getElementById('spp-content').innerHTML=noAccess();return;}
   dc();
   const db=getDb();
-  const months=(()=>{const set=new Set(db.santri.flatMap(s=>s.pembayaran?.map(p=>p.bulan)||[]));const now=cb();let y=2024,m=1;while(`${y}-${String(m).padStart(2,'0')}`<=now){set.add(`${y}-${String(m).padStart(2,'0')}`);m++;if(m>12){m=1;y++;}}return[...set].sort();})();
+  const months=(()=>{const set=new Set(db.santri.flatMap(s=>s.pembayaran?.map(p=>p.bulan)||[]));const now=cb();let y=2024,m=7;while(`${y}-${String(m).padStart(2,'0')}`<=now){set.add(`${y}-${String(m).padStart(2,'0')}`);m++;if(m>12){m=1;y++;}}return[...set].sort();})();
   const total=db.santri.length;
   const sel=db.sppBulan||cb();
   const stats=months.map(b=>{
@@ -1266,7 +1266,7 @@ function rekapKamarHtml(db,sel){
 function nunggakSejak(s){
   // bulan tertunggak paling lama: Jan 2024 s/d bulan ini yang statusnya 'belum'
   const paid=new Set((s.pembayaran||[]).filter(p=>p.status!=='belum').map(p=>p.bulan));
-  const now=cb();let y=2024,m=1;
+  const now=cb();let y=2024,m=7;
   while(`${y}-${String(m).padStart(2,'0')}`<=now){
     const b=`${y}-${String(m).padStart(2,'0')}`;
     if(!paid.has(b))return b;
