@@ -703,7 +703,7 @@ async function initApp(){
   if(app){app.style.opacity='0';app.style.transition='opacity 0.3s';}
   try{
     const[sr,pr,mr,lr]=await Promise.all([
-      _SB.from('nazmah_santri').select('id,nama,hp,kelas,kamar,tgl,rekam,pembayaran,titipan,has_pin').order('id'),
+      _SB.from('nazmah_santri').select('id,nama,hp,kelas,kamar,tgl,rekam,pembayaran,titipan,has_pin,mulai_tagih').order('id'),
       _SB.from('nazmah_pengurus').select('id,nama,username,role'),
       _SB.from('nazmah_meta').select('key,value'),
       _SB.from('nazmah_log').select('*').gte('ts',new Date(Date.now()-30*86400000).toISOString()).order('ts',{ascending:false}).limit(2000),
@@ -712,7 +712,7 @@ async function initApp(){
     const meta={};(mr.data||[]).forEach(r=>meta[r.key]=r.value);
     DB={
       santri:(sr.data||[]).map(r=>({id:r.id,nama:r.nama,hp:r.hp,kelas:r.kelas,kamar:r.kamar,tgl:r.tgl,
-        rekam:r.rekam||[],pembayaran:r.pembayaran||[],titipan:r.titipan||[],ortuPin:r.has_pin||null})),
+        rekam:r.rekam||[],pembayaran:r.pembayaran||[],titipan:r.titipan||[],ortuPin:r.has_pin||null,mulaiTagih:r.mulai_tagih||'2024-07'})),
       pengurus:pr.data||[],
       kamarAssign:meta.kamarAssign||{},
       log:(lr.data||[]).map(r=>({id:r.id,by:r.by_nama,role:r.role,action:r.action,detail:r.detail,icon:r.icon,bg:r.bg,ic:r.ic,ts:r.ts})),
@@ -835,7 +835,7 @@ function fdt(ts){if(!ts)return'-';const d=new Date(ts);return d.toLocaleDateStri
 function bl(b){const[y,m]=b.split('-');return new Date(y,m-1).toLocaleDateString('id-ID',{month:'long',year:'numeric'});}
 function bs(b){const[y,m]=b.split('-');return new Date(y,m-1).toLocaleDateString('id-ID',{month:'short'});}
 function cb(){return new Date().toISOString().slice(0,7);}
-function getSpp(s,b){return s.pembayaran?.find(p=>p.bulan===b)||{bulan:b,status:'belum'};}
+function getSpp(s,b){const e=s.pembayaran?.find(p=>p.bulan===b);if(e)return e;const start=s.mulaiTagih||'2024-07';return{bulan:b,status:b<start?'belum-tagih':'belum'};}
 function lastH(s){return s.rekam?.length?s.rekam[0].status:'sehat';}
 function hBadge(s){
   const map={sehat:['badge-green','Sehat'],'sakit-ringan':['badge-amber','Sakit ringan'],'perlu-perhatian':['badge-red','Perlu perhatian']};
@@ -845,10 +845,12 @@ function hBadge(s){
 function sBadge(s){
   if(s==='lunas')return'<span class="badge badge-green">Lunas</span>';
   if(s==='terlambat')return'<span class="badge badge-amber">Terlambat</span>';
+  if(s==='belum-tagih')return'<span class="badge" style="background:var(--cream2);color:var(--text3)">Belum ditagih</span>';
   return'<span class="badge badge-red">Belum bayar</span>';
 }
 function sBadgeOrtu(s){
   if(s==='lunas')return'<span class="badge badge-green">Dibayar</span>';
+  if(s==='belum-tagih')return'<span class="badge" style="background:var(--cream2);color:var(--text3)">Belum ditagih</span>';
   return'<span class="badge badge-red">Belum dibayar</span>';
 }
 function rBadge(role){
@@ -1078,7 +1080,8 @@ function showKonfirmMulti(sid){
 // Tampilkan SEMUA bulan Jan 2024 s/d bulan ini. Bulan lunas ditandai permanen (tercentang, tidak bisa dipilih ulang).
 function renderKmMonths(s){
   const paid=new Set((s.pembayaran||[]).filter(p=>p.status!=='belum').map(p=>p.bulan));
-  const now=cb();const all=[];let y=2024,m=7;
+  const start=s.mulaiTagih||'2024-07';const now=cb();const all=[];
+  let y=parseInt(start.slice(0,4)),m=parseInt(start.slice(5,7));
   while(`${y}-${String(m).padStart(2,'0')}`<=now){all.push(`${y}-${String(m).padStart(2,'0')}`);m++;if(m>12){m=1;y++;}}
   const belumN=all.filter(b=>!paid.has(b)).length;
   document.getElementById('km-info').textContent=`${s.nama} · ${belumN} bulan belum lunas dari ${all.length} bulan`;
@@ -1162,16 +1165,16 @@ function renderSpp(){
   if(!can('spp')&&!can('spp-view')&&!can('audit')){document.getElementById('spp-content').innerHTML=noAccess();return;}
   dc();
   const db=getDb();
-  const months=(()=>{const set=new Set(db.santri.flatMap(s=>s.pembayaran?.map(p=>p.bulan)||[]));const now=cb();let y=2024,m=7;while(`${y}-${String(m).padStart(2,'0')}`<=now){set.add(`${y}-${String(m).padStart(2,'0')}`);m++;if(m>12){m=1;y++;}}return[...set].sort();})();
+  const months=(()=>{const set=new Set(db.santri.flatMap(s=>s.pembayaran?.map(p=>p.bulan)||[]));const starts=db.santri.map(s=>s.mulaiTagih||'2024-07');const earliest=starts.length?starts.sort()[0]:'2024-07';const now=cb();let y=parseInt(earliest.slice(0,4)),m=parseInt(earliest.slice(5,7));while(`${y}-${String(m).padStart(2,'0')}`<=now){set.add(`${y}-${String(m).padStart(2,'0')}`);m++;if(m>12){m=1;y++;}}return[...set].sort();})();
   const total=db.santri.length;
   const sel=db.sppBulan||cb();
   const stats=months.map(b=>{
-    let l=0,t=0,bl2=0;
-    db.santri.forEach(s=>{const p=getSpp(s,b);if(p.status==='lunas')l++;else if(p.status==='terlambat')t++;else bl2++;});
-    return{b,l,t,bl:bl2,tot:(l+t)*SPP};
+    let l=0,t=0,bl2=0,tagih=0;
+    db.santri.forEach(s=>{const p=getSpp(s,b);if(p.status==='belum-tagih')return;tagih++;if(p.status==='lunas')l++;else if(p.status==='terlambat')t++;else bl2++;});
+    return{b,l,t,bl:bl2,tagih,tot:(l+t)*SPP};
   });
   const ss=stats.find(s=>s.b===sel)||stats[stats.length-1];
-  const pct=Math.round((ss.l+ss.t)/total*100);
+  const pct=ss.tagih?Math.round((ss.l+ss.t)/ss.tagih*100):0;
 
   document.getElementById('spp-content').innerHTML=`
     <div class="chart-card">
@@ -1193,7 +1196,7 @@ function renderSpp(){
         <div class="spp-total-label">${bl(sel)} — total terkumpul</div>
         <div class="spp-total-val">${rp(ss.tot)}</div>
         <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
-        <div class="progress-pct">${pct}% dari target ${rp(total*SPP)}</div>
+        <div class="progress-pct">${pct}% dari target ${rp(ss.tagih*SPP)}</div>
       </div>
     </div>
     <div class="stat-grid">
@@ -1264,9 +1267,10 @@ function rekapKamarHtml(db,sel){
     </div>`;
 }
 function nunggakSejak(s){
-  // bulan tertunggak paling lama: Jan 2024 s/d bulan ini yang statusnya 'belum'
+  // bulan tertunggak paling lama sejak mulai tagih santri s/d bulan ini yang statusnya 'belum'
   const paid=new Set((s.pembayaran||[]).filter(p=>p.status!=='belum').map(p=>p.bulan));
-  const now=cb();let y=2024,m=7;
+  const start=s.mulaiTagih||'2024-07';const now=cb();
+  let y=parseInt(start.slice(0,4)),m=parseInt(start.slice(5,7));
   while(`${y}-${String(m).padStart(2,'0')}`<=now){
     const b=`${y}-${String(m).padStart(2,'0')}`;
     if(!paid.has(b))return b;
@@ -1277,10 +1281,11 @@ function nunggakSejak(s){
 function sppRowOne(s,sel){
   const p=getSpp(s,sel);
   const nunggak=p.status==='belum'?nunggakSejak(s):null;
+  const bayar=p.status==='lunas'||p.status==='terlambat';
   const sub=`${s.kamar||'-'}${p.tglBayar?' · '+fd(p.tglBayar):''}${nunggak?` · <span style="color:var(--red-text)">nunggak sejak ${bl(nunggak)}</span>`:''}`;
   return`<div class="pay-row">
       <div><div class="pay-month">${s.nama}</div><div class="pay-sub">${sub}</div></div>
-      <div class="pay-right">${p.status!=='belum'?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}${p.status!=='belum'&&can('spp')?`<button class="confirm-btn" style="background:var(--cream2);color:var(--text2);border-color:var(--border2)" onclick="showKonfirm('${s.id}','${sel}')" title="Edit"><i class="ti ti-pencil" style="font-size:13px"></i></button><button class="confirm-btn" style="background:var(--red-bg);color:var(--red-text);border-color:var(--red)" onclick="batalSpp('${s.id}','${sel}')" title="Batal"><i class="ti ti-x" style="font-size:13px"></i></button>`:''}${can('spp')?`<button class="confirm-btn" onclick="showKonfirmMulti('${s.id}')" title="Lunasi bulan"><i class="ti ti-checks" style="font-size:14px;margin-right:3px"></i>Lunasi</button>`:''}</div>
+      <div class="pay-right">${bayar?`<div class="pay-amount">${rp(p.nominal)}</div>`:''}${sBadge(p.status)}${bayar&&can('spp')?`<button class="confirm-btn" style="background:var(--cream2);color:var(--text2);border-color:var(--border2)" onclick="showKonfirm('${s.id}','${sel}')" title="Edit"><i class="ti ti-pencil" style="font-size:13px"></i></button><button class="confirm-btn" style="background:var(--red-bg);color:var(--red-text);border-color:var(--red)" onclick="batalSpp('${s.id}','${sel}')" title="Batal"><i class="ti ti-x" style="font-size:13px"></i></button>`:''}${can('spp')?`<button class="confirm-btn" onclick="showKonfirmMulti('${s.id}')" title="Lunasi bulan"><i class="ti ti-checks" style="font-size:14px;margin-right:3px"></i>Lunasi</button>`:''}</div>
     </div>`;
 }
 function sppRows(list,sel){
